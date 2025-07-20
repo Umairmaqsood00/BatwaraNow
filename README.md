@@ -1,50 +1,165 @@
-# Welcome to your Expo app 👋
+# Expense Split App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Developed by Umair**
 
-## Get started
+A modern, mobile-friendly React Native app for splitting expenses between friends and family during trips and events.
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+### ✈️ Trip Management
+- Create trips with custom names
+- Add multiple participants to each trip
+- View all your trips in a clean list
 
-2. Start the app
+### 💰 Expense Tracking
+- Add expenses with descriptions and amounts
+- Specify who paid for each expense
+- Choose who should split each expense
+- Automatic date tracking
 
-   ```bash
-   npx expo start
-   ```
+### ⚖️ Balance Calculation
+- Automatic calculation of who owes whom
+- Clear display of outstanding balances
+- Optimized settlement suggestions
 
-In the output, you'll find options to open the app in a
+### 🎨 Modern UI
+- Clean, responsive design with soft colors
+- Smooth navigation between screens
+- Intuitive user experience
+- Mobile-optimized interface
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Screens
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 1. Trip List Screen
+- View all created trips
+- See total expenses and participant count for each trip
+- Create new trips with the "+ New Trip" button
 
-## Get a fresh project
+### 2. Create Trip Screen
+- Enter trip name
+- Add/remove participants
+- Customize participant names
 
-When you're ready, run:
+### 3. Trip Detail Screen
+- View trip summary (total expenses, participants, expense count)
+- See current balances between participants
+- List all expenses with details
+- Add new expenses
 
+### 4. Add Expense Screen
+- Enter expense description and amount
+- Select who paid (dropdown)
+- Choose who should split (checkboxes)
+- Form validation
+
+### 5. Settings Screen
+- App information and features
+- Usage instructions
+- Data management options
+
+## Technical Details
+
+### Built With
+- **React Native** - Cross-platform mobile development
+- **TypeScript** - Type safety and better development experience
+- **Expo** - Development platform and tools
+- **React Navigation** - Screen navigation
+
+### State Management
+- React's `useState` and `useEffect` hooks
+- Local state management (no backend required)
+- Temporary data storage in component state
+
+### Components
+- `TripListScreen` - Main trips overview
+- `TripDetailScreen` - Individual trip details
+- `AddExpenseScreen` - Expense creation form
+- `CreateTripScreen` - Trip creation form
+- `BalanceSummary` - Balance display component
+
+### Utilities
+- `balanceCalculator.ts` - Automatic balance calculation algorithm
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Expo CLI
+- iOS Simulator or Android Emulator (optional)
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run reset-project
+git clone <repository-url>
+cd expensetracker
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Install dependencies:
+```bash
+npm install
+```
 
-## Learn more
+3. Start the development server:
+```bash
+npm start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+4. Run on your preferred platform:
+- Press `i` for iOS simulator
+- Press `a` for Android emulator
+- Scan QR code with Expo Go app on your phone
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Usage
 
-## Join the community
+### Creating a Trip
+1. Tap "+ New Trip" on the main screen
+2. Enter a trip name (e.g., "Weekend Trip to Goa")
+3. Add participants by typing their names
+4. Tap "Create" to save
 
-Join our community of developers creating universal apps.
+### Adding Expenses
+1. Select a trip from the list
+2. Tap "+ Add" in the trip detail screen
+3. Fill in the expense details:
+   - Description (e.g., "Hotel Booking")
+   - Amount (e.g., 4500)
+   - Who paid (select from dropdown)
+   - Who should split (checkboxes)
+4. Tap "Save"
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Viewing Balances
+- Balances are automatically calculated and displayed
+- Shows who owes whom and how much
+- Updates in real-time as expenses are added
+
+## Sample Data
+
+The app comes with sample data to demonstrate functionality:
+- **Weekend Trip to Goa** with 3 participants (Alice, Bob, Charlie)
+- 2 sample expenses (Hotel Booking and Dinner)
+- Automatic balance calculations
+
+## Future Enhancements
+
+- [ ] Persistent data storage
+- [ ] User authentication
+- [ ] Cloud synchronization
+- [ ] Export functionality
+- [ ] Currency support
+- [ ] Photo receipts
+- [ ] Payment integration
+- [ ] Group chat features
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
