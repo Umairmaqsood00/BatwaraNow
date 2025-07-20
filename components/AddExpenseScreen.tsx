@@ -78,7 +78,7 @@ export default function AddExpenseScreen({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background.primary} />
       
-      {/* Header */}
+
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
         style={styles.header}
@@ -97,7 +97,7 @@ export default function AddExpenseScreen({
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
-          {/* Description Input */}
+    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.expense}</Text> Description
@@ -111,7 +111,7 @@ export default function AddExpenseScreen({
             />
           </View>
 
-          {/* Amount Input */}
+    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.money}</Text> Amount (₹)
@@ -126,7 +126,7 @@ export default function AddExpenseScreen({
             />
           </View>
 
-          {/* Paid By Section */}
+    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.user}</Text> Paid By
@@ -173,7 +173,7 @@ export default function AddExpenseScreen({
             </View>
           </View>
 
-          {/* Split Between Section */}
+    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.users}</Text> Split Between
@@ -209,7 +209,7 @@ export default function AddExpenseScreen({
             </View>
           </View>
 
-          {/* Summary Card */}
+    
           <View style={styles.summaryCard}>
             <LinearGradient
               colors={[Colors.primary[50], Colors.primary[100]]}
@@ -231,7 +231,7 @@ export default function AddExpenseScreen({
         </View>
       </ScrollView>
 
-      {/* Bottom Action Buttons */}
+
       <View style={styles.bottomActions}>
         <TouchableOpacity style={styles.cancelActionButton} onPress={onCancel}>
           <Text style={styles.cancelActionText}>Cancel</Text>

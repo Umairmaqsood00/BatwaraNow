@@ -9,7 +9,6 @@ import TripListScreen from '@/components/TripListScreen';
 import { calculateBalances, calculateTripSummary } from '@/utils/balanceCalculator';
 import { generateId, storage, type Balance, type Expense, type Trip } from '@/utils/storage';
 
-// ✅ Step 1: Ensure Proper Import - Check available methods
 console.log('Available storage methods:', Object.keys(storage));
 
 type Screen = 'trips' | 'tripDetail' | 'addExpense' | 'createTrip';
@@ -21,11 +20,10 @@ export default function ExpenseSplitApp() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [settledBalances, setSettledBalances] = useState<Balance[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Load data from storage on app start
   useEffect(() => {
     loadData();
-    // ✅ Step 1: Test storage methods on app start
     testStorageMethods();
   }, []);
 
@@ -175,12 +173,10 @@ export default function ExpenseSplitApp() {
     console.log('Trip ID to delete:', tripId);
     
     try {
-      // ✅ Step 3: Check deleteTrip Usage - Proper await with try-catch
       console.log('Calling storage.deleteTrip...');
       await storage.deleteTrip(tripId);
       console.log('Storage deleteTrip completed successfully');
       
-      // Update UI after successful storage deletion
       setTrips(prev => {
         const updated = prev.filter(trip => trip.id !== tripId);
         console.log('Trips before:', prev.length, 'Trips after:', updated.length);
@@ -193,7 +189,6 @@ export default function ExpenseSplitApp() {
         return updated;
       });
       
-      // Clear settled balances for this trip
       const tripExpenses = expenses.filter(exp => exp.tripId === tripId);
       const tripBalances = calculateBalances(tripExpenses);
       const updatedSettledBalances = settledBalances.filter(settled => 
@@ -204,7 +199,6 @@ export default function ExpenseSplitApp() {
       setSettledBalances(updatedSettledBalances);
       await storage.saveSettledBalances(updatedSettledBalances);
       
-      // If we're currently viewing the deleted trip, go back to trips list
       if (selectedTripId === tripId) {
         setSelectedTripId(null);
         setCurrentScreen('trips');

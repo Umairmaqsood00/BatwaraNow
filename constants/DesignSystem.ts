@@ -1,61 +1,49 @@
 import { StyleSheet } from 'react-native';
 
-// Dark Theme Color Palette
 export const Colors = {
-  // Dark Background Colors
   background: {
-    primary: '#0d1117',    // Deep navy background
-    secondary: '#161b22',  // Card background
-    tertiary: '#21262d',   // Elevated card background
-    quaternary: '#30363d', // Input background
+    primary: '#0d1117',
+    secondary: '#161b22',
+    tertiary: '#21262d',
+    quaternary: '#30363d',
   },
-  
-  // Text Colors
   text: {
-    primary: '#f0f6fc',    // White text
-    secondary: '#c9d1d9',  // Light gray text
-    tertiary: '#8b949e',   // Muted text
-    inverse: '#0d1117',    // Dark text for light backgrounds
+    primary: '#f0f6fc',
+    secondary: '#c9d1d9',
+    tertiary: '#8b949e',
+    inverse: '#0d1117',
   },
-  
-  // Accent Colors
   accent: {
-    teal: '#39d353',       // Primary accent
-    cyan: '#58a6ff',       // Secondary accent
-    purple: '#bc8cff',     // Tertiary accent
-    orange: '#ff7b72',     // Warning/error
-    yellow: '#f78166',     // Warning
+    teal: '#39d353',
+    cyan: '#58a6ff',
+    purple: '#bc8cff',
+    orange: '#ff7b72',
+    yellow: '#f78166',
   },
-  
-  // Primary Colors (Teal-based)
   primary: {
     50: '#0c2d1a',
     100: '#1a4d2e',
     200: '#2d7d46',
     300: '#40ad5e',
     400: '#53dd76',
-    500: '#39d353', // Main primary
+    500: '#39d353',
     600: '#2fb344',
     700: '#259335',
     800: '#1b7326',
     900: '#115317',
   },
-  
-  // Secondary Colors (Cyan-based)
   secondary: {
     50: '#0c1a2d',
     100: '#1a2d4d',
     200: '#2d4d7d',
     300: '#406dad',
     400: '#538ddd',
-    500: '#58a6ff', // Main secondary
+    500: '#58a6ff',
     600: '#4a8ce6',
     700: '#3c72cc',
     800: '#2e58b3',
     900: '#203e99',
   },
-  
-  // Neutral Colors
   neutral: {
     50: '#f6f8fa',
     100: '#e1e4e8',
@@ -68,14 +56,10 @@ export const Colors = {
     800: '#32383f',
     900: '#24292f',
   },
-  
-  // Semantic Colors
   success: '#39d353',
   warning: '#f78166',
   error: '#ff7b72',
   info: '#58a6ff',
-  
-  // Glassmorphism Colors
   glass: {
     primary: 'rgba(22, 27, 34, 0.8)',
     secondary: 'rgba(33, 38, 45, 0.9)',
@@ -83,10 +67,7 @@ export const Colors = {
     overlay: 'rgba(13, 17, 23, 0.8)',
   },
 };
-
-// Typography
 export const Typography = {
-  // Font Sizes
   sizes: {
     xs: 12,
     sm: 14,
@@ -97,8 +78,6 @@ export const Typography = {
     '3xl': 30,
     '4xl': 36,
   },
-  
-  // Font Weights
   weights: {
     normal: '400',
     medium: '500',
@@ -106,16 +85,12 @@ export const Typography = {
     bold: '700',
     extrabold: '800',
   },
-  
-  // Line Heights
   lineHeights: {
     tight: 1.2,
     normal: 1.5,
     relaxed: 1.75,
   },
 };
-
-// Spacing
 export const Spacing = {
   xs: 4,
   sm: 8,
@@ -125,8 +100,6 @@ export const Spacing = {
   '2xl': 48,
   '3xl': 64,
 };
-
-// Border Radius
 export const BorderRadius = {
   sm: 8,
   md: 12,
@@ -135,8 +108,6 @@ export const BorderRadius = {
   '2xl': 24,
   full: 9999,
 };
-
-// Enhanced Shadows for Dark Theme
 export const Shadows = {
   sm: {
     shadowColor: '#000',
@@ -179,8 +150,6 @@ export const Shadows = {
     elevation: 16,
   },
 };
-
-// Glassmorphism Effects
 export const Glassmorphism = {
   primary: {
     backgroundColor: Colors.glass.primary,
@@ -201,16 +170,11 @@ export const Glassmorphism = {
     borderColor: 'rgba(255, 255, 255, 0.03)',
   },
 };
-
-// Common Styles
 export const CommonStyles = StyleSheet.create({
-  // Container Styles
   container: {
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  
-  // Card Styles
   card: {
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
@@ -226,8 +190,6 @@ export const CommonStyles = StyleSheet.create({
     transform: [{ scale: 1.02 }],
     backgroundColor: Colors.background.tertiary,
   },
-  
-  // Button Styles
   buttonPrimary: {
     backgroundColor: Colors.primary[500],
     borderRadius: BorderRadius.md,
@@ -260,8 +222,6 @@ export const CommonStyles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadows.lg,
   },
-  
-  // Text Styles
   textH1: {
     fontSize: Typography.sizes['3xl'],
     fontWeight: '700' as const,
@@ -298,8 +258,6 @@ export const CommonStyles = StyleSheet.create({
     color: Colors.text.primary,
     lineHeight: Typography.sizes.sm * Typography.lineHeights.tight,
   },
-  
-  // Input Styles
   input: {
     backgroundColor: Colors.background.quaternary,
     borderRadius: BorderRadius.md,
@@ -311,8 +269,6 @@ export const CommonStyles = StyleSheet.create({
     borderColor: Colors.neutral[700],
     ...Shadows.sm,
   },
-  
-  // Header Styles
   header: {
     backgroundColor: Colors.background.secondary,
     paddingTop: Spacing.xl,
@@ -322,8 +278,6 @@ export const CommonStyles = StyleSheet.create({
     borderBottomColor: Colors.neutral[800],
     ...Shadows.sm,
   },
-  
-  // Section Styles
   section: {
     marginVertical: Spacing.lg,
   },
@@ -339,18 +293,15 @@ export const CommonStyles = StyleSheet.create({
 
 // Gradient Colors for Dark Theme
 export const Gradients = {
-  primary: [Colors.primary[500], Colors.primary[600]],
-  secondary: [Colors.secondary[500], Colors.secondary[600]],
+  primary: [Colors.primary[500], Colors.primary[700]],
+  secondary: [Colors.secondary[500], Colors.secondary[700]],
   accent: [Colors.accent.teal, Colors.accent.cyan],
   success: [Colors.success, Colors.primary[600]],
   warning: [Colors.warning, Colors.accent.orange],
   error: [Colors.error, Colors.accent.orange],
   glass: [Colors.glass.primary, Colors.glass.secondary],
 };
-
-// Enhanced Icons for Dark Theme
 export const Icons = {
-  // Action Icons
   add: '➕',
   delete: '🗑️',
   edit: '✏️',

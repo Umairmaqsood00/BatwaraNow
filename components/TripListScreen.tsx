@@ -125,7 +125,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background.primary} />
       
-      {/* Header */}
+
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
         style={styles.header}
@@ -172,7 +172,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
         </View>
       </LinearGradient>
 
-      {/* Content */}
+
       <View style={styles.content}>
         {trips.length === 0 ? (
           <View style={styles.emptyState}>
@@ -199,7 +199,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
         )}
       </View>
 
-      {/* Floating Action Button */}
+
       {trips.length > 0 && (
         <TouchableOpacity style={styles.fab} onPress={onCreateNewTrip} activeOpacity={0.8}>
           <View style={styles.fabContainer}>

@@ -2,7 +2,7 @@
   "name": "expensetracker",
   "main": "expo-router/entry",
   "version": "1.0.0",
-  "description": "A modern React Native app for splitting expenses between friends and family during trips and events",
+  "description": "A modern React Native app for splitting expenses between friends and family during trips and events. Built with Expo and TypeScript.",
   "author": "Umair",
   
   "repository": {

@@ -1,14 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Storage Keys
 const STORAGE_KEYS = {
   TRIPS: 'expense_tracker_trips',
   EXPENSES: 'expense_tracker_expenses',
   SETTINGS: 'expense_tracker_settings',
   SETTLED_BALANCES: 'expense_tracker_settled_balances',
 };
-
-// Types
 export type Trip = {
   id: string;
   name: string;
@@ -42,10 +38,7 @@ export type Settings = {
   theme: 'dark' | 'light';
   notifications: boolean;
 };
-
-// Storage Class
 class StorageManager {
-  // Trip Management
   async getTrips(): Promise<Trip[]> {
     try {
       const tripsJson = await AsyncStorage.getItem(STORAGE_KEYS.TRIPS);
@@ -96,15 +89,12 @@ class StorageManager {
       console.log('Storage: Filtered trips:', filteredTrips.length);
       await this.saveTrips(filteredTrips);
       
-      // Also delete associated expenses
       await this.deleteExpensesByTripId(tripId);
       console.log('Storage: Trip deleted successfully');
     } catch (error) {
       console.error('Error deleting trip:', error);
     }
   }
-
-  // Expense Management
   async getExpenses(): Promise<Expense[]> {
     try {
       const expensesJson = await AsyncStorage.getItem(STORAGE_KEYS.EXPENSES);
@@ -175,8 +165,6 @@ class StorageManager {
       console.error('Error deleting expenses by trip ID:', error);
     }
   }
-
-  // Settings Management
   async getSettings(): Promise<Settings> {
     try {
       const settingsJson = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS);
@@ -202,8 +190,6 @@ class StorageManager {
       console.error('Error saving settings:', error);
     }
   }
-
-  // Settled Balances Management
   async getSettledBalances(): Promise<Balance[]> {
     try {
       const balancesJson = await AsyncStorage.getItem(STORAGE_KEYS.SETTLED_BALANCES);
@@ -257,8 +243,6 @@ class StorageManager {
       console.error('Error deleting settled balance:', error);
     }
   }
-
-  // Utility Methods
   async clearAllData(): Promise<void> {
     try {
       await AsyncStorage.multiRemove([
@@ -299,13 +283,9 @@ class StorageManager {
     }
   }
 }
-
-// Export singleton instance
 export const storage = new StorageManager();
-
-// Helper functions
 export const generateId = (): string => {
-  return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  return Date.now().toString() + Math.random().toString(36).substring(2, 9);
 };
 
 export const formatCurrency = (amount: number, currency: string = '₹'): string => {

@@ -18,7 +18,7 @@ type BalanceSummaryProps = {
 };
 
 export default function BalanceSummary({ balances, participants }: BalanceSummaryProps) {
-  const totalOwed = balances.reduce((sum, balance) => sum + balance.amount, 0);
+  const totalOwed = balances.reduce((sum, balance) => sum + Math.abs(balance.amount), 0);
 
   const renderBalanceItem = (balance: Balance, index: number) => (
     <View key={index} style={styles.balanceItem}>

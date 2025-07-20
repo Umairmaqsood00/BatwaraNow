@@ -70,7 +70,7 @@ export default function GradientButton({
       style={getButtonStyle()}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.8}
+      activeOpacity={0.7}
     >
       <LinearGradient
         colors={disabled ? ['#E0E0E0', '#BDBDBD'] : getGradientColors()}

@@ -22,6 +22,7 @@ export default function SettingsScreen() {
             <Text style={styles.appName}>Expense Split App</Text>
             <Text style={styles.version}>Version 1.0.0</Text>
             <Text style={styles.developer}>Developed by Umair</Text>
+            <Text style={styles.tech}>React Native • Expo • TypeScript</Text>
             <Text style={styles.description}>
               A simple and elegant app to split expenses between friends and family during trips and events.
             </Text>
@@ -145,6 +146,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#3498db',
     marginBottom: 12,
+  },
+  tech: {
+    fontSize: 12,
+    color: '#7f8c8d',
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   description: {
     fontSize: 16,

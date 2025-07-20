@@ -155,7 +155,7 @@ export default function TripDetailScreen({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background.primary} />
       
-      {/* Header */}
+
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
         style={styles.header}
@@ -177,7 +177,7 @@ export default function TripDetailScreen({
       </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Summary Cards */}
+  
         <View style={styles.summarySection}>
           <View style={styles.summaryRow}>
             <View style={styles.summaryCard}>
@@ -215,7 +215,7 @@ export default function TripDetailScreen({
           </View>
         </View>
 
-        {/* Balances Section */}
+  
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Balance Summary</Text>
           {balances.length === 0 ? (
@@ -235,7 +235,7 @@ export default function TripDetailScreen({
           )}
         </View>
 
-        {/* Expenses Section */}
+  
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Expenses</Text>
           {expenses.length === 0 ? (

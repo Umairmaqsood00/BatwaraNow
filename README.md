@@ -2,6 +2,8 @@
 
 **Developed by Umair**
 
+*Built with React Native and Expo*
+
 A modern, mobile-friendly React Native app for splitting expenses between friends and family during trips and events.
 
 ## Features
@@ -86,13 +88,13 @@ A modern, mobile-friendly React Native app for splitting expenses between friend
 - Node.js (v16 or higher)
 - npm or yarn
 - Expo CLI
-- iOS Simulator or Android Emulator (optional)
+
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone <https://github.com/Umairmaqsood00/ExpenseTracker_By_Umair>
 cd expensetracker
 ```
 
@@ -160,6 +162,3 @@ The app comes with sample data to demonstrate functionality:
 4. Test thoroughly
 5. Submit a pull request
 
-## License
-
-This project is licensed under the MIT License.
