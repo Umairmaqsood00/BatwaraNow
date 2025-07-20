@@ -3,7 +3,6 @@ import { Balance, Expense } from './storage';
 export const calculateBalances = (expenses: Expense[]): Balance[] => {
   if (expenses.length === 0) return [];
 
-  // Get all unique participants
   const allParticipants = new Set<string>();
   expenses.forEach(expense => {
     allParticipants.add(expense.paidBy);
@@ -11,25 +10,17 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
   });
 
   const participants = Array.from(allParticipants);
-
-  // Calculate net amounts for each participant
   const netAmounts = new Map<string, number>();
   participants.forEach(participant => netAmounts.set(participant, 0));
 
   expenses.forEach(expense => {
     const paidAmount = expense.amount;
     const splitAmount = paidAmount / expense.splitBetween.length;
-
-    // Add what they paid
     netAmounts.set(expense.paidBy, netAmounts.get(expense.paidBy)! + paidAmount);
-
-    // Subtract what they owe
     expense.splitBetween.forEach(participant => {
       netAmounts.set(participant, netAmounts.get(participant)! - splitAmount);
     });
   });
-
-  // Separate debtors and creditors
   const debtors: Array<{ name: string; amount: number }> = [];
   const creditors: Array<{ name: string; amount: number }> = [];
 
@@ -40,12 +31,8 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
       creditors.push({ name: participant, amount });
     }
   });
-
-  // Sort by amount (highest first)
   debtors.sort((a, b) => b.amount - a.amount);
   creditors.sort((a, b) => b.amount - a.amount);
-
-  // Calculate balances
   const balances: Balance[] = [];
   let debtorIndex = 0;
   let creditorIndex = 0;

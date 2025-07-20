@@ -87,7 +87,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.background.primary} />
       
-      {/* Header */}
+
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
         style={styles.header}
@@ -106,7 +106,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
-          {/* Trip Name Input */}
+    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.trip}</Text> Trip Name
@@ -120,7 +120,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
             />
           </View>
 
-          {/* Participants Section */}
+    
           <View style={styles.inputGroup}>
             <View style={styles.sectionHeader}>
               <Text style={styles.label}>
@@ -159,7 +159,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
             </View>
           </View>
 
-          {/* Summary Card */}
+    
           <View style={styles.summaryCard}>
             <LinearGradient
               colors={[Colors.primary[50], Colors.primary[100]]}
@@ -183,7 +183,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
         </View>
       </ScrollView>
 
-      {/* Bottom Action Buttons */}
+
       <View style={styles.bottomActions}>
         <TouchableOpacity style={styles.cancelActionButton} onPress={onCancel}>
           <Text style={styles.cancelActionText}>Cancel</Text>
