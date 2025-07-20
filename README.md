@@ -95,6 +95,14 @@ npm start
 - [ ] Photo receipts
 - [ ] Payment integration
 - [ ] Group chat features
+![WhatsApp Image 2025-07-20 at 1 45 47 PM](https://github.com/user-attachments/assets/a42263fe-afcd-4d77-933b-6074e8cd91a8)
 
+![WhatsApp Image 2025-07-20 at 1 45 48 PM](https://github.com/user-attachments/assets/2fa7881d-e74f-4394-bc46-7b3e973903c8)
+![WhatsApp Image 2025-07-20 at 1 45 48 PM (1)](https://github.com/user-attachments/assets/c39db3cf-905e-4c1c-8d6c-a17abba43eb4)
+![WhatsApp Image 2025-07-20 at 1 45 49 PM](https://github.com/user-attachments/assets/8e1ab687-98e8-418f-b60b-f0ec9b672f71)
+
+![WhatsApp Image 2025-07-20 at 1 45 49 PM (1)](https://github.com/user-attachments/assets/5a115dd2-8902-4151-8e68-12b8f1413908)
+![WhatsApp Image 2025-07-20 at 1 45 50 PM](https://github.com/user-attachments/assets/6e3e1506-e88e-4354-9fd1-00181a310910)
+![WhatsApp Image 2025-07-20 at 1 45 50 PM (1)](https://github.com/user-attachments/assets/d3aa9ee3-e960-4a85-a0fa-3762d0abc161)
 
 
