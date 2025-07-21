@@ -2,24 +2,24 @@ import { BorderRadius, Colors, Icons, Spacing, Typography } from '@/constants/De
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-  Alert,
-  FlatList,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    Alert,
+    FlatList,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextStyle,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from 'react-native';
 
 type Expense = {
   id: string;
   description: string;
   amount: number;
-  paidBy: string;
+  paidBy: Array<{ name: string; amount: number }>;
   splitBetween: string[];
   date: string;
 };
@@ -66,6 +66,12 @@ export default function TripDetailScreen({
 }: TripDetailScreenProps) {
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
+  function getPayers(expense: any): Array<{ name: string; amount: number }> {
+    if (Array.isArray(expense.paidBy)) return expense.paidBy;
+    if (typeof expense.paidBy === 'string') return [{ name: expense.paidBy, amount: expense.amount }];
+    return [];
+  }
+
   const renderExpenseItem = ({ item }: { item: Expense }) => (
     <View style={styles.expenseCard}>
       <LinearGradient
@@ -88,7 +94,9 @@ export default function TripDetailScreen({
         <View style={styles.expenseFooter}>
           <View style={styles.expenseMeta}>
             <Text style={styles.paidByLabel}>Paid by</Text>
-            <Text style={styles.paidByValue}>{item.paidBy}</Text>
+            {getPayers(item).map((payer, idx) => (
+              <Text style={styles.paidByValue} key={idx}>{payer.name} (Rs.{payer.amount.toFixed(2)})</Text>
+            ))}
           </View>
           <View style={styles.expenseMeta}>
             <Text style={styles.splitLabel}>Split between</Text>
@@ -190,7 +198,6 @@ export default function TripDetailScreen({
                 <Text style={styles.summaryLabel}>Total Expenses</Text>
               </LinearGradient>
             </View>
-            
             <View style={styles.summaryCard}>
               <LinearGradient
                 colors={[Colors.secondary[50], Colors.secondary[100]]}
@@ -199,17 +206,6 @@ export default function TripDetailScreen({
                 <Text style={styles.summaryIcon}>{Icons.users}</Text>
                 <Text style={styles.summaryValue}>{trip.participants.length}</Text>
                 <Text style={styles.summaryLabel}>Members</Text>
-              </LinearGradient>
-            </View>
-            
-            <View style={styles.summaryCard}>
-              <LinearGradient
-                colors={[Colors.accent.purple + '20', Colors.accent.purple + '30']}
-                style={styles.summaryGradient}
-              >
-                <Text style={styles.summaryIcon}>{Icons.expense}</Text>
-                <Text style={styles.summaryValue}>{expenses.length}</Text>
-                <Text style={styles.summaryLabel}>Expenses</Text>
               </LinearGradient>
             </View>
           </View>
@@ -313,10 +309,16 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   } as TextStyle,
   tripSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   } as TextStyle,
   addButton: {
     width: 40,
@@ -357,21 +359,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    minWidth: 0,
+    maxWidth: 220,
   } as ViewStyle,
   summaryGradient: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
+    minWidth: 0,
+    maxWidth: 220,
   } as ViewStyle,
   summaryIcon: {
     fontSize: Typography.sizes.xl,
     marginBottom: Spacing.sm,
   } as TextStyle,
   summaryValue: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.base,
     fontWeight: '700' as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   } as TextStyle,
   summaryLabel: {
     fontSize: Typography.sizes.xs,

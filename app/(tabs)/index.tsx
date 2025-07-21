@@ -136,7 +136,7 @@ export default function ExpenseSplitApp() {
   const handleSaveExpense = async (expenseData: {
     description: string;
     amount: number;
-    paidBy: string;
+    paidBy: Array<{ name: string; amount: number }>;
     splitBetween: string[];
   }) => {
     if (!selectedTripId) return;
@@ -239,7 +239,7 @@ export default function ExpenseSplitApp() {
   const handleUpdateExpense = async (expenseId: string, updatedData: {
     description: string;
     amount: number;
-    paidBy: string;
+    paidBy: Array<{ name: string; amount: number }>;
     splitBetween: string[];
   }) => {
     const expense = expenses.find(e => e.id === expenseId);

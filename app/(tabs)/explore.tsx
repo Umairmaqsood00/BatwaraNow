@@ -1,3 +1,4 @@
+import { storage, type SettlementHistory } from '@/utils/storage';
 import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -7,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { storage, type SettlementHistory } from '@/utils/storage';
 
 export default function SettingsScreen() {
   const [history, setHistory] = useState<SettlementHistory[]>([]);
@@ -45,7 +45,7 @@ export default function SettingsScreen() {
             ) : (
               history.slice().reverse().map(entry => (
                 <View key={entry.id} style={{ marginBottom: 12 }}>
-                  <Text style={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                  <Text style={{ fontWeight: 'bold', color: '#ECEDEE' }}>
                     {entry.from} paid {entry.to} Rs.{entry.amount.toFixed(2)}
                   </Text>
                   <Text style={{ color: '#7f8c8d', fontSize: 12 }}>
@@ -118,7 +118,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#151718', // dark background
   },
   header: {
     padding: 20,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#2c3e50',
+    color: '#ECEDEE', // light text
   },
   content: {
     flex: 1,
@@ -139,11 +139,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2c3e50',
+    color: '#ECEDEE', // light text
     marginBottom: 12,
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: '#23262b', // dark card
     borderRadius: 16,
     padding: 20,
     shadowColor: '#000',
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#2c3e50',
+    color: '#ECEDEE', // light text
     marginBottom: 4,
   },
   version: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   developer: {
     fontSize: 14,
-    color: '#3498db',
+    color: '#4fa3ff', // accent blue
     marginBottom: 12,
   },
   tech: {
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#34495e',
+    color: '#ECEDEE', // light text
     lineHeight: 24,
   },
   featureItem: {
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 16,
-    color: '#2c3e50',
+    color: '#ECEDEE', // light text
   },
   stepItem: {
     flexDirection: 'row',
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#3498db',
+    backgroundColor: '#4fa3ff', // accent blue
     color: 'white',
     textAlign: 'center',
     lineHeight: 24,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: 16,
-    color: '#2c3e50',
+    color: '#ECEDEE', // light text
     flex: 1,
   },
   menuItem: {
@@ -223,11 +223,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ecf0f1',
+    borderBottomColor: '#23262b', // dark border
   },
   menuText: {
     fontSize: 16,
-    color: '#2c3e50',
+    color: '#ECEDEE', // light text
   },
   menuArrow: {
     fontSize: 16,

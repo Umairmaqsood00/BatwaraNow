@@ -3,17 +3,17 @@ import { BorderRadius, Colors, Icons, Spacing, Typography } from '@/constants/De
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    Alert,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TextStyle,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from 'react-native';
 
 type AddExpenseScreenProps = {
@@ -21,7 +21,7 @@ type AddExpenseScreenProps = {
   onSave: (expense: {
     description: string;
     amount: number;
-    paidBy: string;
+    paidBy: Array<{ name: string; amount: number }>;
     splitBetween: string[];
   }) => void;
   onCancel: () => void;
@@ -34,7 +34,9 @@ export default function AddExpenseScreen({
 }: AddExpenseScreenProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [paidBy, setPaidBy] = useState(participants[0] || '');
+  const [payerInputs, setPayerInputs] = useState<{ name: string; amount: string }[]>(
+    participants.map(name => ({ name, amount: '' }))
+  );
   const [splitBetween, setSplitBetween] = useState<string[]>(participants);
 
   const toggleParticipant = (participant: string) => {
@@ -45,31 +47,41 @@ export default function AddExpenseScreen({
     );
   };
 
+  const handlePayerAmountChange = (name: string, value: string) => {
+    setPayerInputs(prev =>
+      prev.map(p => p.name === name ? { ...p, amount: value } : p)
+    );
+  };
+
   const handleSave = () => {
     if (!description.trim()) {
       Alert.alert('Error', 'Please enter a description');
       return;
     }
-
     if (!amount || parseFloat(amount) <= 0) {
-      Alert.alert('Error', 'Please enter a valid amount');
+      Alert.alert('Error', 'Please enter a valid total amount');
       return;
     }
-
-    if (!paidBy) {
-      Alert.alert('Error', 'Please select who paid');
-      return;
-    }
-
     if (splitBetween.length === 0) {
       Alert.alert('Error', 'Please select at least one person to split with');
       return;
     }
-
+    const payers = payerInputs
+      .filter(p => p.amount && parseFloat(p.amount) > 0)
+      .map(p => ({ name: p.name, amount: parseFloat(p.amount) }));
+    const totalPaid = payers.reduce((sum, p) => sum + p.amount, 0);
+    if (payers.length === 0) {
+      Alert.alert('Error', 'Please enter at least one payer and amount');
+      return;
+    }
+    if (Math.abs(totalPaid - parseFloat(amount)) > 0.01) {
+      Alert.alert('Error', 'Sum of payer amounts must equal total amount');
+      return;
+    }
     onSave({
       description: description.trim(),
       amount: parseFloat(amount),
-      paidBy,
+      paidBy: payers,
       splitBetween,
     });
   };
@@ -129,48 +141,21 @@ export default function AddExpenseScreen({
     
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.user}</Text> Paid By
+              <Text style={styles.labelIcon}>{Icons.user}</Text> Who Paid & How Much
             </Text>
-            <View style={styles.dropdownContainer}>
-              {participants.map((participant) => (
-                <TouchableOpacity
-                  key={participant}
-                  style={[
-                    styles.dropdownOption,
-                    paidBy === participant && styles.dropdownOptionSelected,
-                  ]}
-                  onPress={() => setPaidBy(participant)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.dropdownOptionContent}>
-                    <View style={[
-                      styles.participantAvatar,
-                      paidBy === participant && styles.participantAvatarSelected
-                    ]}>
-                      <Text style={[
-                        styles.participantInitial,
-                        paidBy === participant && styles.participantInitialSelected
-                      ]}>
-                        {participant.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                    <Text
-                      style={[
-                        styles.dropdownOptionText,
-                        paidBy === participant && styles.dropdownOptionTextSelected,
-                      ]}
-                    >
-                      {participant}
-                    </Text>
-                  </View>
-                  {paidBy === participant && (
-                    <View style={styles.checkmarkContainer}>
-                      <Text style={styles.checkmark}>{Icons.check}</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
+            {participants.map((participant) => (
+              <View key={participant} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Text style={{ width: 80, color: '#fff' }}>{participant}</Text>
+                <TextInput
+                  style={[styles.input, { flex: 1 }]}
+                  value={payerInputs.find(p => p.name === participant)?.amount || ''}
+                  onChangeText={value => handlePayerAmountChange(participant, value)}
+                  placeholder="0.00"
+                  placeholderTextColor={Colors.text.tertiary}
+                  keyboardType="numeric"
+                />
+              </View>
+            ))}
           </View>
 
     
@@ -240,9 +225,9 @@ export default function AddExpenseScreen({
           title="Add Expense"
           onPress={handleSave}
           variant="primary"
-          size="large"
+          size="xlarge"
           icon={Icons.add}
-          style={styles.saveButton}
+          style={[styles.saveButton, styles.addExpenseButton]}
         />
       </View>
     </SafeAreaView>
@@ -510,5 +495,18 @@ const styles = StyleSheet.create({
   } as TextStyle,
   saveButton: {
     flex: 2,
+  } as ViewStyle,
+  addExpenseButton: {
+    backgroundColor: 'linear-gradient(90deg, #4fa3ff 0%, #1e3c72 100%)',
+    borderRadius: 32,
+    shadowColor: '#4fa3ff',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   } as ViewStyle,
 }); 

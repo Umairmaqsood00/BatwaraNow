@@ -20,7 +20,7 @@ export type Expense = {
   tripId: string;
   description: string;
   amount: number;
-  paidBy: string;
+  paidBy: Array<{ name: string; amount: number }>;
   splitBetween: string[];
   date: string;
   createdAt: string;

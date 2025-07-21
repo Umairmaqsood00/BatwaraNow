@@ -2,16 +2,16 @@ import { BorderRadius, Colors, Icons, Shadows, Spacing, Typography } from '@/con
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-  Alert,
-  FlatList,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    Alert,
+    FlatList,
+    SafeAreaView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextStyle,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from 'react-native';
 
 type Trip = {
@@ -49,45 +49,34 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
             <View style={styles.tripInfo}>
               <Text style={styles.tripIcon}>{Icons.trip}</Text>
               <View style={styles.tripDetails}>
-                <Text style={styles.tripName}>{item.name}</Text>
-                <Text style={styles.tripSubtitle}>
+                <Text style={styles.tripName} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                <Text style={styles.tripSubtitle} numberOfLines={1} ellipsizeMode="tail">
                   {item.participants.length} members • {item.expenseCount} expenses
                 </Text>
               </View>
             </View>
-            <View style={styles.tripHeaderActions}>
-              <View style={styles.amountContainer}>
-                <Text style={styles.amountLabel}>Total</Text>
-                <Text style={styles.amountValue}>Rs.{item.totalExpenses.toFixed(2)}</Text>
-              </View>
-              {onDeleteTrip && (
-                <TouchableOpacity
-                  style={styles.deleteTripButton}
-                  onPress={() => {
-                    console.log('=== DELETE BUTTON PRESSED ===');
-                    console.log('Trip ID:', item.id, 'Trip Name:', item.name);
-                    Alert.alert(
-                      'Delete Trip',
-                      `Are you sure you want to delete "${item.name}"? This will also delete all associated expenses.`,
-                      [
-                        { text: 'Cancel', style: 'cancel' },
-                        { 
-                          text: 'Delete', 
-                          style: 'destructive',
-                          onPress: () => {
-                            console.log('=== CONFIRMED DELETE ===');
-                            onDeleteTrip(item.id);
-                          }
-                        },
-                      ]
-                    );
-                  }}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Text style={styles.deleteTripIcon}>{Icons.delete}</Text>
-                </TouchableOpacity>
-              )}
+            <View style={styles.amountContainer}>
+              <Text style={styles.amountLabel}>Total</Text>
+              <Text style={styles.amountValue} numberOfLines={1} ellipsizeMode="tail">Rs.{item.totalExpenses.toFixed(2)}</Text>
             </View>
+            {onDeleteTrip && (
+              <TouchableOpacity
+                style={styles.deleteTripButton}
+                onPress={() => {
+                  Alert.alert(
+                    'Delete Trip',
+                    `Are you sure you want to delete "${item.name}"? This will also delete all associated expenses.`,
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: 'Delete', style: 'destructive', onPress: () => onDeleteTrip(item.id) },
+                    ]
+                  );
+                }}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.deleteTripIcon}>{Icons.delete}</Text>
+              </TouchableOpacity>
+            )}
           </View>
           
           <View style={styles.tripFooter}>
@@ -282,25 +271,35 @@ const styles = StyleSheet.create({
   tripCard: {
     borderRadius: BorderRadius.xl,
     ...Shadows.lg,
+    minWidth: 320,
+    maxWidth: 500,
+    alignSelf: 'center',
   } as ViewStyle,
   tripCardContent: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
+    minWidth: 320,
+    maxWidth: 500,
+    alignSelf: 'center',
   } as ViewStyle,
   cardGradient: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
+    minWidth: 320,
+    maxWidth: 500,
+    alignSelf: 'center',
   } as ViewStyle,
   tripHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: Spacing.lg,
   } as ViewStyle,
   tripInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    minWidth: 0,
   } as ViewStyle,
   tripIcon: {
     fontSize: Typography.sizes['2xl'],
@@ -308,16 +307,23 @@ const styles = StyleSheet.create({
   } as TextStyle,
   tripDetails: {
     flex: 1,
+    minWidth: 0,
   } as ViewStyle,
   tripName: {
     fontSize: Typography.sizes.lg,
     fontWeight: '600' as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   } as TextStyle,
   tripSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   } as TextStyle,
   tripHeaderActions: {
     flexDirection: 'row',
@@ -326,6 +332,9 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   amountContainer: {
     alignItems: 'flex-end',
+    minWidth: 0,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   } as ViewStyle,
   amountLabel: {
     fontSize: Typography.sizes.xs,
@@ -337,6 +346,9 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.lg,
     fontWeight: '700' as const,
     color: Colors.secondary[500],
+    minWidth: 0,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   } as TextStyle,
   deleteTripButton: {
     width: 40,

@@ -1,11 +1,17 @@
 import { Balance, Expense } from './storage';
 
+function getPayers(expense: any): Array<{ name: string; amount: number }> {
+  if (Array.isArray(expense.paidBy)) return expense.paidBy;
+  if (typeof expense.paidBy === 'string') return [{ name: expense.paidBy, amount: expense.amount }];
+  return [];
+}
+
 export const calculateBalances = (expenses: Expense[]): Balance[] => {
   if (expenses.length === 0) return [];
 
   const allParticipants = new Set<string>();
   expenses.forEach(expense => {
-    allParticipants.add(expense.paidBy);
+    getPayers(expense).forEach(payer => allParticipants.add(payer.name));
     expense.splitBetween.forEach(participant => allParticipants.add(participant));
   });
 
@@ -16,9 +22,11 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
   expenses.forEach(expense => {
     const paidAmount = expense.amount;
     const splitAmount = paidAmount / expense.splitBetween.length;
-    netAmounts.set(expense.paidBy, netAmounts.get(expense.paidBy)! + paidAmount);
+    getPayers(expense).forEach(payer => {
+      netAmounts.set(payer.name, (netAmounts.get(payer.name) || 0) + payer.amount);
+    });
     expense.splitBetween.forEach(participant => {
-      netAmounts.set(participant, netAmounts.get(participant)! - splitAmount);
+      netAmounts.set(participant, (netAmounts.get(participant) || 0) - splitAmount);
     });
   });
   const debtors: Array<{ name: string; amount: number }> = [];
@@ -68,12 +76,10 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
 export const calculateTripSummary = (expenses: Expense[]) => {
   const totalExpenses = expenses.reduce((sum, expense) => sum + Math.abs(expense.amount), 0);
   const uniqueParticipants = new Set<string>();
-  
   expenses.forEach(expense => {
-    uniqueParticipants.add(expense.paidBy);
+    getPayers(expense).forEach(payer => uniqueParticipants.add(payer.name));
     expense.splitBetween.forEach(participant => uniqueParticipants.add(participant));
   });
-
   return {
     totalExpenses,
     expenseCount: expenses.length,
@@ -86,20 +92,18 @@ export const calculateParticipantSummary = (expenses: Expense[], participantName
   let totalPaid = 0;
   let totalOwed = 0;
   let expenseCount = 0;
-
   expenses.forEach(expense => {
-    if (expense.paidBy === participantName) {
-      totalPaid += expense.amount;
-      expenseCount++;
-    }
-
+    getPayers(expense).forEach(payer => {
+      if (payer.name === participantName) {
+        totalPaid += payer.amount;
+        expenseCount++;
+      }
+    });
     if (expense.splitBetween.includes(participantName)) {
       totalOwed += expense.amount / expense.splitBetween.length;
     }
   });
-
   const netAmount = totalPaid - totalOwed;
-
   return {
     totalPaid,
     totalOwed,
