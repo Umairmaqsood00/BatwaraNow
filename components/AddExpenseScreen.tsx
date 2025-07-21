@@ -1,20 +1,26 @@
-import GradientButton from '@/components/ui/GradientButton';
-import { BorderRadius, Colors, Icons, Spacing, Typography } from '@/constants/DesignSystem';
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import GradientButton from "@/components/ui/GradientButton";
 import {
-    Alert,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TextStyle,
-    TouchableOpacity,
-    View,
-    ViewStyle,
-} from 'react-native';
+  BorderRadius,
+  Colors,
+  Icons,
+  Spacing,
+  Typography,
+} from "@/constants/DesignSystem";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 type AddExpenseScreenProps = {
   participants: string[];
@@ -32,50 +38,50 @@ export default function AddExpenseScreen({
   onSave,
   onCancel,
 }: AddExpenseScreenProps) {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [payerInputs, setPayerInputs] = useState<{ name: string; amount: string }[]>(
-    participants.map(name => ({ name, amount: '' }))
-  );
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [payerInputs, setPayerInputs] = useState<
+    { name: string; amount: string }[]
+  >(participants.map((name) => ({ name, amount: "" })));
   const [splitBetween, setSplitBetween] = useState<string[]>(participants);
 
   const toggleParticipant = (participant: string) => {
-    setSplitBetween(prev =>
+    setSplitBetween((prev) =>
       prev.includes(participant)
-        ? prev.filter(p => p !== participant)
+        ? prev.filter((p) => p !== participant)
         : [...prev, participant]
     );
   };
 
   const handlePayerAmountChange = (name: string, value: string) => {
-    setPayerInputs(prev =>
-      prev.map(p => p.name === name ? { ...p, amount: value } : p)
+    setPayerInputs((prev) =>
+      prev.map((p) => (p.name === name ? { ...p, amount: value } : p))
     );
   };
 
   const handleSave = () => {
     if (!description.trim()) {
-      Alert.alert('Error', 'Please enter a description');
+      Alert.alert("Error", "Please enter a description");
       return;
     }
     if (!amount || parseFloat(amount) <= 0) {
-      Alert.alert('Error', 'Please enter a valid total amount');
+      Alert.alert("Error", "Please enter a valid total amount");
       return;
     }
     if (splitBetween.length === 0) {
-      Alert.alert('Error', 'Please select at least one person to split with');
+      Alert.alert("Error", "Please select at least one person to split with");
       return;
     }
     const payers = payerInputs
-      .filter(p => p.amount && parseFloat(p.amount) > 0)
-      .map(p => ({ name: p.name, amount: parseFloat(p.amount) }));
+      .filter((p) => p.amount && parseFloat(p.amount) > 0)
+      .map((p) => ({ name: p.name, amount: parseFloat(p.amount) }));
     const totalPaid = payers.reduce((sum, p) => sum + p.amount, 0);
     if (payers.length === 0) {
-      Alert.alert('Error', 'Please enter at least one payer and amount');
+      Alert.alert("Error", "Please enter at least one payer and amount");
       return;
     }
     if (Math.abs(totalPaid - parseFloat(amount)) > 0.01) {
-      Alert.alert('Error', 'Sum of payer amounts must equal total amount');
+      Alert.alert("Error", "Sum of payer amounts must equal total amount");
       return;
     }
     onSave({
@@ -88,8 +94,10 @@ export default function AddExpenseScreen({
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.background.primary} />
-      
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.background.primary}
+      />
 
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
@@ -101,7 +109,9 @@ export default function AddExpenseScreen({
           </TouchableOpacity>
           <View style={styles.headerInfo}>
             <Text style={styles.headerTitle}>Add Expense</Text>
-            <Text style={styles.headerSubtitle}>Track and split your expense</Text>
+            <Text style={styles.headerSubtitle}>
+              Track and split your expense
+            </Text>
           </View>
           <View style={styles.headerSpacer} />
         </View>
@@ -109,7 +119,6 @@ export default function AddExpenseScreen({
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
-    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.expense}</Text> Description
@@ -123,7 +132,6 @@ export default function AddExpenseScreen({
             />
           </View>
 
-    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.money}</Text> Amount (Rs.)
@@ -138,18 +146,30 @@ export default function AddExpenseScreen({
             />
           </View>
 
-    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.user}</Text> Who Paid & How Much
+              <Text style={styles.labelIcon}>{Icons.user}</Text> Who Paid & How
+              Much
             </Text>
             {participants.map((participant) => (
-              <View key={participant} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={{ width: 80, color: '#fff' }}>{participant}</Text>
+              <View
+                key={participant}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 8,
+                }}
+              >
+                <Text style={{ width: 80, color: "#fff" }}>{participant}</Text>
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
-                  value={payerInputs.find(p => p.name === participant)?.amount || ''}
-                  onChangeText={value => handlePayerAmountChange(participant, value)}
+                  value={
+                    payerInputs.find((p) => p.name === participant)?.amount ||
+                    ""
+                  }
+                  onChangeText={(value) =>
+                    handlePayerAmountChange(participant, value)
+                  }
                   placeholder="0.00"
                   placeholderTextColor={Colors.text.tertiary}
                   keyboardType="numeric"
@@ -158,7 +178,6 @@ export default function AddExpenseScreen({
             ))}
           </View>
 
-    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.users}</Text> Split Between
@@ -175,17 +194,22 @@ export default function AddExpenseScreen({
                     <View
                       style={[
                         styles.checkbox,
-                        splitBetween.includes(participant) && styles.checkboxChecked,
+                        splitBetween.includes(participant) &&
+                          styles.checkboxChecked,
                       ]}
                     >
                       {splitBetween.includes(participant) && (
-                        <Text style={styles.checkboxCheckmark}>{Icons.check}</Text>
+                        <Text style={styles.checkboxCheckmark}>
+                          {Icons.check}
+                        </Text>
                       )}
                     </View>
                     <View style={styles.checkboxInfo}>
                       <Text style={styles.checkboxLabel}>{participant}</Text>
                       <Text style={styles.checkboxSubtitle}>
-                        {splitBetween.includes(participant) ? 'Included' : 'Not included'}
+                        {splitBetween.includes(participant)
+                          ? "Included"
+                          : "Not included"}
                       </Text>
                     </View>
                   </View>
@@ -194,7 +218,6 @@ export default function AddExpenseScreen({
             </View>
           </View>
 
-    
           <View style={styles.summaryCard}>
             <LinearGradient
               colors={[Colors.primary[50], Colors.primary[100]]}
@@ -204,18 +227,22 @@ export default function AddExpenseScreen({
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Amount per person:</Text>
                 <Text style={styles.summaryValue}>
-                  Rs.{amount && splitBetween.length > 0 ? (parseFloat(amount) / splitBetween.length).toFixed(2) : '0.00'}
+                  Rs.
+                  {amount && splitBetween.length > 0
+                    ? (parseFloat(amount) / splitBetween.length).toFixed(2)
+                    : "0.00"}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Splitting between:</Text>
-                <Text style={styles.summaryValue}>{splitBetween.length} people</Text>
+                <Text style={styles.summaryValue}>
+                  {splitBetween.length} people
+                </Text>
               </View>
             </LinearGradient>
           </View>
         </View>
       </ScrollView>
-
 
       <View style={styles.bottomActions}>
         <TouchableOpacity style={styles.cancelActionButton} onPress={onCancel}>
@@ -225,7 +252,7 @@ export default function AddExpenseScreen({
           title="Add Expense"
           onPress={handleSave}
           variant="primary"
-          size="xlarge"
+          size="large"
           icon={Icons.add}
           style={[styles.saveButton, styles.addExpenseButton]}
         />
@@ -245,25 +272,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     borderBottomLeftRadius: BorderRadius.xl,
     borderBottomRightRadius: BorderRadius.xl,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   } as ViewStyle,
   headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   } as ViewStyle,
   cancelButton: {
     width: 40,
     height: 40,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.background.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: Spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -278,7 +305,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   headerTitle: {
     fontSize: Typography.sizes.xl,
-    fontWeight: '700' as const,
+    fontWeight: "700" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   } as TextStyle,
@@ -300,7 +327,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   label: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.md,
   } as TextStyle,
@@ -316,7 +343,7 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     borderWidth: 1,
     borderColor: Colors.neutral[200],
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -325,8 +352,8 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -342,16 +369,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary[50],
   } as ViewStyle,
   dropdownOptionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   } as ViewStyle,
   participantAvatar: {
     width: 40,
     height: 40,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.neutral[300],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: Spacing.md,
   } as ViewStyle,
   participantAvatarSelected: {
@@ -359,7 +386,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   participantInitial: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
   } as TextStyle,
   participantInitialSelected: {
@@ -372,15 +399,15 @@ const styles = StyleSheet.create({
   } as TextStyle,
   dropdownOptionTextSelected: {
     color: Colors.primary[700],
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
   } as TextStyle,
   checkmarkContainer: {
     width: 24,
     height: 24,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary[500],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   } as ViewStyle,
   checkmark: {
     fontSize: Typography.sizes.sm,
@@ -390,7 +417,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -402,8 +429,8 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.neutral[100],
   } as ViewStyle,
   checkboxContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   } as ViewStyle,
   checkbox: {
     width: 28,
@@ -412,8 +439,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.neutral[400],
     marginRight: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   } as ViewStyle,
   checkboxChecked: {
     backgroundColor: Colors.primary[500],
@@ -422,14 +449,14 @@ const styles = StyleSheet.create({
   checkboxCheckmark: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.inverse,
-    fontWeight: '700' as const,
+    fontWeight: "700" as const,
   } as TextStyle,
   checkboxInfo: {
     flex: 1,
   } as ViewStyle,
   checkboxLabel: {
     fontSize: Typography.sizes.base,
-    fontWeight: '500' as const,
+    fontWeight: "500" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   } as TextStyle,
@@ -439,7 +466,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
   summaryCard: {
     borderRadius: BorderRadius.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -451,14 +478,14 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   summaryTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.md,
   } as TextStyle,
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: Spacing.sm,
   } as ViewStyle,
   summaryLabel: {
@@ -467,11 +494,11 @@ const styles = StyleSheet.create({
   } as TextStyle,
   summaryValue: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
   } as TextStyle,
   bottomActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: Spacing.lg,
     gap: Spacing.md,
     backgroundColor: Colors.background.secondary,
@@ -483,30 +510,25 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.tertiary,
     paddingVertical: Spacing.lg,
     borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: Colors.neutral[300],
   } as ViewStyle,
   cancelActionText: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.secondary,
   } as TextStyle,
   saveButton: {
     flex: 2,
   } as ViewStyle,
   addExpenseButton: {
-    backgroundColor: 'linear-gradient(90deg, #4fa3ff 0%, #1e3c72 100%)',
-    borderRadius: 32,
-    shadowColor: '#4fa3ff',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-    paddingVertical: 18,
-    paddingHorizontal: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#b7bac0ff",
+    borderRadius: 23,
+    paddingVertical: 10,
+    paddingHorizontal: 26,
+    alignItems: "center",
+    justifyContent: "center",
   } as ViewStyle,
-}); 
+});

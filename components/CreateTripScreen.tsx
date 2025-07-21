@@ -115,7 +115,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
               style={styles.input}
               value={tripName}
               onChangeText={setTripName}
-              placeholder="e.g., Weekend Trip to Goa"
+              placeholder="e.g., Weekend Trip to Kashmir"
               placeholderTextColor={Colors.text.tertiary}
             />
           </View>
@@ -191,11 +191,11 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
         <GradientButton
           title="Create Trip"
           onPress={handleSave}
-          variant="primary"
           size="large"
           icon={Icons.trip}
           loading={loading}
-          style={styles.saveButton}
+          
+          style={[styles.saveButton, { backgroundColor: '#e4edf0ff' }]}
         />
       </View>
     </SafeAreaView>

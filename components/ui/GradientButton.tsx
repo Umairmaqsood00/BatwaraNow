@@ -1,14 +1,14 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/DesignSystem';
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-  ActivityIndicator,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  ViewStyle,
+    ActivityIndicator,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TextStyle,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from 'react-native';
 
 interface GradientButtonProps {
@@ -72,12 +72,7 @@ export default function GradientButton({
       disabled={disabled || loading}
       activeOpacity={0.7}
     >
-      <LinearGradient
-        colors={disabled ? ['#E0E0E0', '#BDBDBD'] : getGradientColors()}
-        style={styles.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
+      <View style={styles.gradient}>
         {loading ? (
           <ActivityIndicator color={Colors.text.inverse} size="small" />
         ) : (
@@ -86,7 +81,7 @@ export default function GradientButton({
             <Text style={getTextStyle()}>{title}</Text>
           </>
         )}
-      </LinearGradient>
+      </View>
     </TouchableOpacity>
   );
 }
