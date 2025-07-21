@@ -30,35 +30,6 @@ A modern, mobile-friendly React Native app for splitting expenses between friend
 - Intuitive user experience
 - Mobile-optimized interface
 
-## Screens
-
-### 1. Trip List Screen
-- View all created trips
-- See total expenses and participant count for each trip
-- Create new trips with the "+ New Trip" button
-
-### 2. Create Trip Screen
-- Enter trip name
-- Add/remove participants
-- Customize participant names
-
-### 3. Trip Detail Screen
-- View trip summary (total expenses, participants, expense count)
-- See current balances between participants
-- List all expenses with details
-- Add new expenses
-
-### 4. Add Expense Screen
-- Enter expense description and amount
-- Select who paid (dropdown)
-- Choose who should split (checkboxes)
-- Form validation
-
-### 5. Settings Screen
-- App information and features
-- Usage instructions
-- Data management options
-
 ## Technical Details
 
 ### Built With
@@ -113,35 +84,6 @@ npm start
 - Press `a` for Android emulator
 - Scan QR code with Expo Go app on your phone
 
-## Usage
-
-### Creating a Trip
-1. Tap "+ New Trip" on the main screen
-2. Enter a trip name (e.g., "Weekend Trip to Goa")
-3. Add participants by typing their names
-4. Tap "Create" to save
-
-### Adding Expenses
-1. Select a trip from the list
-2. Tap "+ Add" in the trip detail screen
-3. Fill in the expense details:
-   - Description (e.g., "Hotel Booking")
-   - Amount (e.g., 4500)
-   - Who paid (select from dropdown)
-   - Who should split (checkboxes)
-4. Tap "Save"
-
-### Viewing Balances
-- Balances are automatically calculated and displayed
-- Shows who owes whom and how much
-- Updates in real-time as expenses are added
-
-## Sample Data
-
-The app comes with sample data to demonstrate functionality:
-- **Weekend Trip to Goa** with 3 participants (Alice, Bob, Charlie)
-- 2 sample expenses (Hotel Booking and Dinner)
-- Automatic balance calculations
 
 ## Future Enhancements
 
@@ -153,6 +95,7 @@ The app comes with sample data to demonstrate functionality:
 - [ ] Photo receipts
 - [ ] Payment integration
 - [ ] Group chat features
+      <div align="center"> <img src="https://github.com/user-attachments/assets/a42263fe-afcd-4d77-933b-6074e8cd91a8" width="300"/> <img src="https://github.com/user-attachments/assets/2fa7881d-e74f-4394-bc46-7b3e973903c8" width="300"/> <img src="https://github.com/user-attachments/assets/c39db3cf-905e-4c1c-8d6c-a17abba43eb4" width="300"/> <img src="https://github.com/user-attachments/assets/8e1ab687-98e8-418f-b60b-f0ec9b672f71" width="300"/> <img src="https://github.com/user-attachments/assets/5a115dd2-8902-4151-8e68-12b8f1413908" width="300"/> <img src="https://github.com/user-attachments/assets/6e3e1506-e88e-4354-9fd1-00181a310910" width="300"/> <img src="https://github.com/user-attachments/assets/d3aa9ee3-e960-4a85-a0fa-3762d0abc161" width="300"/> </div>
 
 
 
