@@ -27,7 +27,7 @@ export default function BalanceSummary({ balances, participants }: BalanceSummar
         <Text style={styles.arrowText}>→</Text>
         <Text style={styles.toText}>{balance.to}</Text>
       </View>
-      <Text style={styles.amountText}>₹{balance.amount.toFixed(2)}</Text>
+      <Text style={styles.amountText}>Rs.{balance.amount.toFixed(2)}</Text>
     </View>
   );
 
@@ -35,7 +35,7 @@ export default function BalanceSummary({ balances, participants }: BalanceSummar
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Balances</Text>
-        <Text style={styles.totalAmount}>₹{totalOwed.toFixed(2)}</Text>
+        <Text style={styles.totalAmount}>Rs.{totalOwed.toFixed(2)}</Text>
       </View>
 
       {balances.length === 0 ? (

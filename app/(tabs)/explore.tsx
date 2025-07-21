@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import { storage, type SettlementHistory } from '@/utils/storage';
 
 export default function SettingsScreen() {
+  const [history, setHistory] = useState<SettlementHistory[]>([]);
+
+  useEffect(() => {
+    storage.getSettlementHistory().then(setHistory);
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -19,13 +26,34 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
           <View style={styles.card}>
-            <Text style={styles.appName}>Expense Split App</Text>
+            <Text style={styles.appName}>BatwaraNow</Text>
             <Text style={styles.version}>Version 1.0.0</Text>
             <Text style={styles.developer}>Developed by Umair</Text>
             <Text style={styles.tech}>React Native • Expo • TypeScript</Text>
             <Text style={styles.description}>
               A simple and elegant app to split expenses between friends and family during trips and events.
             </Text>
+          </View>
+        </View>
+
+        {/* Settlement History Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Settlement History</Text>
+          <View style={styles.card}>
+            {history.length === 0 ? (
+              <Text style={styles.description}>No settlements yet.</Text>
+            ) : (
+              history.slice().reverse().map(entry => (
+                <View key={entry.id} style={{ marginBottom: 12 }}>
+                  <Text style={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                    {entry.from} paid {entry.to} Rs.{entry.amount.toFixed(2)}
+                  </Text>
+                  <Text style={{ color: '#7f8c8d', fontSize: 12 }}>
+                    {new Date(entry.settledAt).toLocaleString()} • Trip: {entry.tripName}
+                  </Text>
+                </View>
+              ))
+            )}
           </View>
         </View>
 
@@ -43,10 +71,6 @@ export default function SettingsScreen() {
             <View style={styles.featureItem}>
               <Text style={styles.featureIcon}>⚖️</Text>
               <Text style={styles.featureText}>Automatic balance calculation</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Text style={styles.featureIcon}>👥</Text>
-              <Text style={styles.featureText}>Split between multiple people</Text>
             </View>
           </View>
         </View>

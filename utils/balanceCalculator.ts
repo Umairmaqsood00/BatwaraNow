@@ -41,6 +41,11 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
     const debtor = debtors[debtorIndex];
     const creditor = creditors[creditorIndex];
 
+    if (debtor.name === creditor.name) {
+      debtorIndex++;
+      continue;
+    }
+
     const amount = Math.min(debtor.amount, creditor.amount);
 
     balances.push({

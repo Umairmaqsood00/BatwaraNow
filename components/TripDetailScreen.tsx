@@ -82,7 +82,7 @@ export default function TripDetailScreen({
               <Text style={styles.expenseDate}>{item.date}</Text>
             </View>
           </View>
-          <Text style={styles.expenseAmount}>₹{item.amount.toFixed(2)}</Text>
+          <Text style={styles.expenseAmount}>Rs.{item.amount.toFixed(2)}</Text>
         </View>
         
         <View style={styles.expenseFooter}>
@@ -118,7 +118,7 @@ export default function TripDetailScreen({
                 <Text style={styles.balanceArrow}> owes </Text>
                 <Text style={styles.balanceTo}>{balance.to}</Text>
               </Text>
-              <Text style={styles.balanceAmount}>₹{balance.amount.toFixed(2)}</Text>
+              <Text style={styles.balanceAmount}>Rs.{balance.amount.toFixed(2)}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -128,7 +128,7 @@ export default function TripDetailScreen({
               console.log('From:', balance.from, 'To:', balance.to, 'Amount:', balance.amount);
               Alert.alert(
                 'Mark as Paid',
-                `Mark that ${balance.from} has paid ${balance.to} ₹${balance.amount.toFixed(2)}?`,
+                `Mark that ${balance.from} has paid ${balance.to} Rs.${balance.amount.toFixed(2)}?`,
                 [
                   { text: 'Cancel', style: 'cancel' },
                   { 
@@ -186,7 +186,7 @@ export default function TripDetailScreen({
                 style={styles.summaryGradient}
               >
                 <Text style={styles.summaryIcon}>{Icons.money}</Text>
-                <Text style={styles.summaryValue}>₹{totalExpenses.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>Rs.{totalExpenses.toFixed(2)}</Text>
                 <Text style={styles.summaryLabel}>Total Expenses</Text>
               </LinearGradient>
             </View>

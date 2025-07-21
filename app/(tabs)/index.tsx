@@ -1,13 +1,13 @@
 import { Colors } from '@/constants/DesignSystem';
 import React, { useEffect, useState } from 'react';
-import { Alert, StatusBar, StyleSheet, View } from 'react-native';
+import { Alert, Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 import AddExpenseScreen from '@/components/AddExpenseScreen';
 import CreateTripScreen from '@/components/CreateTripScreen';
 import TripDetailScreen from '@/components/TripDetailScreen';
 import TripListScreen from '@/components/TripListScreen';
 import { calculateBalances, calculateTripSummary } from '@/utils/balanceCalculator';
-import { generateId, storage, type Balance, type Expense, type Trip } from '@/utils/storage';
+import { generateId, storage, type Balance, type Expense, type SettlementHistory, type Trip } from '@/utils/storage';
 
 console.log('Available storage methods:', Object.keys(storage));
 
@@ -177,6 +177,14 @@ export default function ExpenseSplitApp() {
       await storage.deleteTrip(tripId);
       console.log('Storage deleteTrip completed successfully');
       
+      const tripExpenses = expenses.filter(exp => exp.tripId === tripId);
+      const tripBalances = calculateBalances(tripExpenses);
+      const updatedSettledBalances = settledBalances.filter(settled => 
+        !tripBalances.some(balance => 
+          balance.from === settled.from && balance.to === settled.to
+        )
+      );
+      
       setTrips(prev => {
         const updated = prev.filter(trip => trip.id !== tripId);
         console.log('Trips before:', prev.length, 'Trips after:', updated.length);
@@ -189,13 +197,6 @@ export default function ExpenseSplitApp() {
         return updated;
       });
       
-      const tripExpenses = expenses.filter(exp => exp.tripId === tripId);
-      const tripBalances = calculateBalances(tripExpenses);
-      const updatedSettledBalances = settledBalances.filter(settled => 
-        !tripBalances.some(balance => 
-          balance.from === settled.from && balance.to === settled.to
-        )
-      );
       setSettledBalances(updatedSettledBalances);
       await storage.saveSettledBalances(updatedSettledBalances);
       
@@ -204,8 +205,22 @@ export default function ExpenseSplitApp() {
         setCurrentScreen('trips');
       }
       
+      if (Platform.OS === 'web') {
+        setTimeout(() => {
+          refreshData();
+        }, 500);
+      }
+      
       console.log('=== TRIP DELETED SUCCESSFULLY ===');
-      Alert.alert('Success!', 'Trip has been deleted.');
+      console.log('Updated trips count:', trips.length - 1);
+      console.log('Updated expenses count:', expenses.length - tripExpenses.length);
+      console.log('Updated settled balances count:', updatedSettledBalances.length);
+      
+      if (Platform.OS === 'web') {
+        alert('Trip has been deleted successfully!');
+      } else {
+        Alert.alert('Success!', 'Trip has been deleted.');
+      }
     } catch (error) {
       console.error('=== ERROR DELETING TRIP ===', error);
       Alert.alert('Error', 'Failed to delete trip. Please try again.');
@@ -260,21 +275,31 @@ export default function ExpenseSplitApp() {
           isSettled: true,
           settledAt: new Date().toISOString(),
         };
-        
+        // Log settlement history
+        if (selectedTrip) {
+          const historyEntry: SettlementHistory = {
+            id: generateId(),
+            from: settledBalance.from,
+            to: settledBalance.to,
+            amount: settledBalance.amount,
+            settledAt: settledBalance.settledAt!,
+            tripId: selectedTrip.id,
+            tripName: selectedTrip.name,
+          };
+          await storage.addSettlementHistory(historyEntry);
+        }
         // ✅ Step 3: Check addSettledBalance Usage - Proper await with try-catch
         console.log('Calling storage.addSettledBalance...');
         await storage.addSettledBalance(settledBalance);
         console.log('Storage addSettledBalance completed successfully');
-        
         // Update UI after successful storage operation
         setSettledBalances(prev => {
           const updated = [...prev, settledBalance];
           console.log('Settled balances before:', prev.length, 'after:', updated.length);
           return updated;
         });
-        
         console.log('=== BALANCE SETTLED SUCCESSFULLY ===');
-        Alert.alert('Success!', `${from} has paid ${to} ₹${balanceToSettle.amount.toFixed(2)}`);
+        Alert.alert('Success!', `${from} has paid ${to} Rs.${balanceToSettle.amount.toFixed(2)}`);
       } catch (error) {
         console.error('=== ERROR SETTLING BALANCE ===', error);
         Alert.alert('Error', 'Failed to settle balance. Please try again.');

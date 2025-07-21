@@ -58,7 +58,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
             <View style={styles.tripHeaderActions}>
               <View style={styles.amountContainer}>
                 <Text style={styles.amountLabel}>Total</Text>
-                <Text style={styles.amountValue}>₹{item.totalExpenses.toFixed(2)}</Text>
+                <Text style={styles.amountValue}>Rs.{item.totalExpenses.toFixed(2)}</Text>
               </View>
               {onDeleteTrip && (
                 <TouchableOpacity

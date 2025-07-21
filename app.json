@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "expensetracker",
+    "name": "BatwaraNow",
+    "displayName": "BatwaraNow",
     "slug": "expensetracker",
     "version": "1.0.0",
     "orientation": "portrait",

@@ -114,7 +114,7 @@ export default function AddExpenseScreen({
     
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.money}</Text> Amount (₹)
+              <Text style={styles.labelIcon}>{Icons.money}</Text> Amount (Rs.)
             </Text>
             <TextInput
               style={styles.input}
@@ -219,7 +219,7 @@ export default function AddExpenseScreen({
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Amount per person:</Text>
                 <Text style={styles.summaryValue}>
-                  ₹{amount && splitBetween.length > 0 ? (parseFloat(amount) / splitBetween.length).toFixed(2) : '0.00'}
+                  Rs.{amount && splitBetween.length > 0 ? (parseFloat(amount) / splitBetween.length).toFixed(2) : '0.00'}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
