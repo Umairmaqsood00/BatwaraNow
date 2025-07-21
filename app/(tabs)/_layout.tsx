@@ -1,8 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Image, Platform, Text } from 'react-native';
 
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -29,13 +28,10 @@ export default function TabLayout() {
     options={{
       title: 'Trips',
       tabBarIcon: ({ color }) => (
-        <IconSymbol size={28} name="airplane" color={color} />
+        <Image source={require('@/assets/images/plane.png')} style={{ width: 28, height: 28, tintColor: color }} />
       ),
       tabBarLabel: ({ color }) => (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconSymbol size={16} name="airplane" color={color} />
-          <Text style={{ color, fontSize: 14, marginLeft: 4 }}>Trips</Text>
-        </View>
+        <Text style={{ color, fontSize: 14, paddingTop: 4 }}>Trips</Text>
       ),
     }}
   />
@@ -44,13 +40,10 @@ export default function TabLayout() {
     options={{
       title: 'Settings',
       tabBarIcon: ({ color }) => (
-        <IconSymbol size={28} name="gear" color={color} />
+        <Image source={require('@/assets/images/settingicon.png')} style={{ width: 28, height: 28, tintColor: color }} />
       ),
       tabBarLabel: ({ color }) => (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconSymbol size={16} name="gear" color={color} />
-          <Text style={{ color, fontSize: 14, marginLeft: 4 }}>Settings</Text>
-        </View>
+        <Text style={{ color, fontSize: 14, paddingTop: 4 }}>Settings</Text>
       ),
     }}
   />

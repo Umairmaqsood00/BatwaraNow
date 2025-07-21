@@ -1,5 +1,5 @@
-import * as Haptics from 'expo-haptics';
-import { Platform, Pressable } from 'react-native';
+import * as Haptics from "expo-haptics";
+import { Platform, Pressable } from "react-native";
 
 type HapticTabProps = {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ type HapticTabProps = {
 
 export function HapticTab({ children, onPress, ...props }: HapticTabProps) {
   const handlePress = () => {
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     onPress?.();
@@ -20,4 +20,4 @@ export function HapticTab({ children, onPress, ...props }: HapticTabProps) {
       {children}
     </Pressable>
   );
-} 
+}

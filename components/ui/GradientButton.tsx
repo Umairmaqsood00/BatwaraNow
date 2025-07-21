@@ -1,21 +1,27 @@
-import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/DesignSystem';
-import React from 'react';
 import {
-    ActivityIndicator,
-    StyleProp,
-    StyleSheet,
-    Text,
-    TextStyle,
-    TouchableOpacity,
-    View,
-    ViewStyle,
-} from 'react-native';
+  BorderRadius,
+  Colors,
+  Shadows,
+  Spacing,
+  Typography,
+} from "@/constants/DesignSystem";
+import React from "react";
+import {
+  ActivityIndicator,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface GradientButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
-  size?: 'small' | 'medium' | 'large';
+  variant?: "primary" | "secondary" | "success" | "warning" | "error";
+  size?: "small" | "medium" | "large";
   disabled?: boolean;
   loading?: boolean;
   icon?: string;
@@ -26,8 +32,8 @@ interface GradientButtonProps {
 export default function GradientButton({
   title,
   onPress,
-  variant = 'primary',
-  size = 'medium',
+  variant = "primary",
+  size = "medium",
   disabled = false,
   loading = false,
   icon,
@@ -36,16 +42,16 @@ export default function GradientButton({
 }: GradientButtonProps) {
   const getGradientColors = (): [string, string] => {
     switch (variant) {
-      case 'secondary':
-        return ['#4CAF50', '#388E3C'];
-      case 'success':
-        return ['#4CAF50', '#388E3C'];
-      case 'warning':
-        return ['#FF9800', '#F57C00'];
-      case 'error':
-        return ['#F44336', '#D32F2F'];
+      case "secondary":
+        return ["#4CAF50", "#388E3C"];
+      case "success":
+        return ["#4CAF50", "#388E3C"];
+      case "warning":
+        return ["#FF9800", "#F57C00"];
+      case "error":
+        return ["#F44336", "#D32F2F"];
       default:
-        return ['#2196F3', '#1976D2'];
+        return ["#2196F3", "#1976D2"];
     }
   };
 
@@ -53,7 +59,7 @@ export default function GradientButton({
     const baseStyle = styles.button;
     const sizeStyle = styles[size];
     const disabledStyle = disabled ? styles.disabled : {};
-    
+
     return [baseStyle, sizeStyle, disabledStyle, style];
   };
 
@@ -61,7 +67,7 @@ export default function GradientButton({
     const baseTextStyle = styles.text;
     const sizeTextStyle = styles[`${size}Text`];
     const disabledTextStyle = disabled ? styles.disabledText : {};
-    
+
     return [baseTextStyle, sizeTextStyle, disabledTextStyle, textStyle];
   };
 
@@ -89,19 +95,19 @@ export default function GradientButton({
 const styles = StyleSheet.create({
   button: {
     borderRadius: BorderRadius.md,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...Shadows.md,
   } as ViewStyle,
   gradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: Spacing.lg,
   } as ViewStyle,
   text: {
     color: Colors.text.inverse,
-    fontWeight: '600' as const,
-    textAlign: 'center',
+    fontWeight: "600" as const,
+    textAlign: "center",
   } as TextStyle,
   icon: {
     fontSize: Typography.sizes.lg,
@@ -133,4 +139,4 @@ const styles = StyleSheet.create({
   disabledText: {
     color: Colors.text.tertiary,
   } as TextStyle,
-}); 
+});

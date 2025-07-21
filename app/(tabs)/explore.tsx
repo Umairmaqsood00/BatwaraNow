@@ -1,6 +1,7 @@
 import { storage, type SettlementHistory } from '@/utils/storage';
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -29,7 +30,7 @@ export default function SettingsScreen() {
             <Text style={styles.appName}>BatwaraNow</Text>
             <Text style={styles.version}>Version 1.0.0</Text>
             <Text style={styles.developer}>Developed by Umair</Text>
-            <Text style={styles.tech}>React Native • Expo • TypeScript</Text>
+            <Text style={styles.tech}>TypeScript • Expo • React Native </Text>
             <Text style={styles.description}>
               A simple and elegant app to split expenses between friends and family during trips and events.
             </Text>
@@ -100,12 +101,15 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Data</Text>
           <View style={styles.card}>
-            <TouchableOpacity style={styles.menuItem}>
-              <Text style={styles.menuText}>Export Data</Text>
-              <Text style={styles.menuArrow}>→</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
-              <Text style={styles.menuText}>Clear All Data</Text>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={async () => {
+                await storage.clearSettlementHistory();
+                setHistory([]);
+                Alert.alert('Success', 'Settlement history cleared.');
+              }}
+            >
+              <Text style={[styles.menuText, { color: '#ff7b72' }]}>Clear Settlement History</Text>
               <Text style={styles.menuArrow}>→</Text>
             </TouchableOpacity>
           </View>

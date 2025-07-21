@@ -1,10 +1,5 @@
-import React from 'react';
-import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 type Balance = {
   from: string;
@@ -17,8 +12,14 @@ type BalanceSummaryProps = {
   participants: string[];
 };
 
-export default function BalanceSummary({ balances, participants }: BalanceSummaryProps) {
-  const totalOwed = balances.reduce((sum, balance) => sum + Math.abs(balance.amount), 0);
+export default function BalanceSummary({
+  balances,
+  participants,
+}: BalanceSummaryProps) {
+  const totalOwed = balances.reduce(
+    (sum, balance) => sum + Math.abs(balance.amount),
+    0
+  );
 
   const renderBalanceItem = (balance: Balance, index: number) => (
     <View key={index} style={styles.balanceItem}>
@@ -46,13 +47,18 @@ export default function BalanceSummary({ balances, participants }: BalanceSummar
           </Text>
         </View>
       ) : (
-        <ScrollView style={styles.balancesList} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.balancesList}
+          showsVerticalScrollIndicator={false}
+        >
           {balances.map((balance, index) => renderBalanceItem(balance, index))}
         </ScrollView>
       )}
 
       <View style={styles.participantsSection}>
-        <Text style={styles.participantsTitle}>Participants ({participants.length})</Text>
+        <Text style={styles.participantsTitle}>
+          Participants ({participants.length})
+        </Text>
         <View style={styles.participantsList}>
           {participants.map((participant, index) => (
             <View key={index} style={styles.participantItem}>
@@ -68,11 +74,11 @@ export default function BalanceSummary({ balances, participants }: BalanceSummar
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 16,
     padding: 20,
     margin: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -82,91 +88,91 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontWeight: "bold",
+    color: "#2c3e50",
   },
   totalAmount: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#e74c3c',
+    fontWeight: "bold",
+    color: "#e74c3c",
   },
   balancesList: {
     maxHeight: 200,
   },
   balanceItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ecf0f1',
+    borderBottomColor: "#ecf0f1",
   },
   balanceInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   fromText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#e74c3c',
+    fontWeight: "600",
+    color: "#e74c3c",
   },
   arrowText: {
     fontSize: 16,
-    color: '#7f8c8d',
+    color: "#7f8c8d",
     marginHorizontal: 8,
   },
   toText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#27ae60',
+    fontWeight: "600",
+    color: "#27ae60",
   },
   amountText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontWeight: "bold",
+    color: "#2c3e50",
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   emptyStateText: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#27ae60',
+    fontWeight: "600",
+    color: "#27ae60",
     marginBottom: 4,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: '#7f8c8d',
-    textAlign: 'center',
+    color: "#7f8c8d",
+    textAlign: "center",
   },
   participantsSection: {
     marginTop: 20,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#ecf0f1',
+    borderTopColor: "#ecf0f1",
   },
   participantsTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#2c3e50',
+    fontWeight: "600",
+    color: "#2c3e50",
     marginBottom: 12,
   },
   participantsList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   participantItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 16,
     marginBottom: 8,
   },
@@ -174,11 +180,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#3498db',
+    backgroundColor: "#3498db",
     marginRight: 6,
   },
   participantName: {
     fontSize: 14,
-    color: '#2c3e50',
+    color: "#2c3e50",
   },
-}); 
+});

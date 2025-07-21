@@ -1,7 +1,13 @@
-import GradientButton from '@/components/ui/GradientButton';
-import { BorderRadius, Colors, Icons, Spacing, Typography } from '@/constants/DesignSystem';
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import GradientButton from "@/components/ui/GradientButton";
+import {
+  BorderRadius,
+  Colors,
+  Icons,
+  Spacing,
+  Typography,
+} from "@/constants/DesignSystem";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
 import {
   Alert,
   SafeAreaView,
@@ -14,20 +20,23 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native';
+} from "react-native";
 
 type CreateTripScreenProps = {
   onSave: (tripData: { name: string; participants: string[] }) => void;
   onCancel: () => void;
 };
 
-export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenProps) {
-  const [tripName, setTripName] = useState('');
-  const [participants, setParticipants] = useState<string[]>(['']);
+export default function CreateTripScreen({
+  onSave,
+  onCancel,
+}: CreateTripScreenProps) {
+  const [tripName, setTripName] = useState("");
+  const [participants, setParticipants] = useState<string[]>([""]);
   const [loading, setLoading] = useState(false);
 
   const addParticipant = () => {
-    setParticipants([...participants, '']);
+    setParticipants([...participants, ""]);
   };
 
   const removeParticipant = (index: number) => {
@@ -45,28 +54,27 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
 
   const handleSave = async () => {
     if (!tripName.trim()) {
-      Alert.alert('Error', 'Please enter a trip name');
+      Alert.alert("Error", "Please enter a trip name");
       return;
     }
 
     const validParticipants = participants
-      .map(p => p.trim())
-      .filter(p => p.length > 0);
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
 
     if (validParticipants.length === 0) {
-      Alert.alert('Error', 'Please add at least one participant');
+      Alert.alert("Error", "Please add at least one participant");
       return;
     }
 
     if (validParticipants.length < 2) {
-      Alert.alert('Error', 'Please add at least 2 participants');
+      Alert.alert("Error", "Please add at least 2 participants");
       return;
     }
 
-    // Check for duplicate names
     const uniqueParticipants = [...new Set(validParticipants)];
     if (uniqueParticipants.length !== validParticipants.length) {
-      Alert.alert('Error', 'Participant names must be unique');
+      Alert.alert("Error", "Participant names must be unique");
       return;
     }
 
@@ -77,7 +85,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
         participants: uniqueParticipants,
       });
     } catch (error) {
-      Alert.alert('Error', 'Failed to create trip');
+      Alert.alert("Error", "Failed to create trip");
     } finally {
       setLoading(false);
     }
@@ -85,8 +93,10 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.background.primary} />
-      
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Colors.background.primary}
+      />
 
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
@@ -98,7 +108,9 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
           </TouchableOpacity>
           <View style={styles.headerInfo}>
             <Text style={styles.headerTitle}>Create New Trip</Text>
-            <Text style={styles.headerSubtitle}>Start tracking expenses together</Text>
+            <Text style={styles.headerSubtitle}>
+              Start tracking expenses together
+            </Text>
           </View>
           <View style={styles.headerSpacer} />
         </View>
@@ -106,7 +118,6 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
-    
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
               <Text style={styles.labelIcon}>{Icons.trip}</Text> Trip Name
@@ -120,23 +131,25 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
             />
           </View>
 
-    
           <View style={styles.inputGroup}>
             <View style={styles.sectionHeader}>
               <Text style={styles.label}>
                 <Text style={styles.labelIcon}>{Icons.users}</Text> Participants
               </Text>
-              <TouchableOpacity onPress={addParticipant} style={styles.addButton}>
+              <TouchableOpacity
+                onPress={addParticipant}
+                style={styles.addButton}
+              >
                 <Text style={styles.addButtonText}>{Icons.add}</Text>
               </TouchableOpacity>
             </View>
-            
+
             <View style={styles.participantsContainer}>
               {participants.map((participant, index) => (
                 <View key={index} style={styles.participantRow}>
                   <View style={styles.participantAvatar}>
                     <Text style={styles.participantInitial}>
-                      {participant.charAt(0).toUpperCase() || '?'}
+                      {participant.charAt(0).toUpperCase() || "?"}
                     </Text>
                   </View>
                   <TextInput
@@ -151,7 +164,9 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
                       onPress={() => removeParticipant(index)}
                       style={styles.removeButton}
                     >
-                      <Text style={styles.removeButtonText}>{Icons.delete}</Text>
+                      <Text style={styles.removeButtonText}>
+                        {Icons.delete}
+                      </Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -159,7 +174,6 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
             </View>
           </View>
 
-    
           <View style={styles.summaryCard}>
             <LinearGradient
               colors={[Colors.primary[50], Colors.primary[100]]}
@@ -169,20 +183,19 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Trip Name:</Text>
                 <Text style={styles.summaryValue}>
-                  {tripName.trim() || 'Not set'}
+                  {tripName.trim() || "Not set"}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Participants:</Text>
                 <Text style={styles.summaryValue}>
-                  {participants.filter(p => p.trim()).length} people
+                  {participants.filter((p) => p.trim()).length} people
                 </Text>
               </View>
             </LinearGradient>
           </View>
         </View>
       </ScrollView>
-
 
       <View style={styles.bottomActions}>
         <TouchableOpacity style={styles.cancelActionButton} onPress={onCancel}>
@@ -194,8 +207,7 @@ export default function CreateTripScreen({ onSave, onCancel }: CreateTripScreenP
           size="large"
           icon={Icons.trip}
           loading={loading}
-          
-          style={[styles.saveButton, { backgroundColor: '#e4edf0ff' }]}
+          style={[styles.saveButton, { backgroundColor: "#e4edf0ff" }]}
         />
       </View>
     </SafeAreaView>
@@ -213,25 +225,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     borderBottomLeftRadius: BorderRadius.xl,
     borderBottomRightRadius: BorderRadius.xl,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   } as ViewStyle,
   headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   } as ViewStyle,
   cancelButton: {
     width: 40,
     height: 40,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.background.tertiary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: Spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -246,7 +258,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   headerTitle: {
     fontSize: Typography.sizes.xl,
-    fontWeight: '700' as const,
+    fontWeight: "700" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   } as TextStyle,
@@ -268,7 +280,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   label: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.md,
   } as TextStyle,
@@ -284,16 +296,16 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     borderWidth: 1,
     borderColor: Colors.neutral[700],
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   } as TextStyle,
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: Spacing.md,
   } as ViewStyle,
   addButton: {
@@ -303,8 +315,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.tertiary,
     borderWidth: 1,
     borderColor: Colors.text.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   } as ViewStyle,
   addButtonText: {
     fontSize: Typography.sizes.base,
@@ -314,15 +326,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   } as ViewStyle,
   participantRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.neutral[800],
@@ -332,13 +344,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary[500],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: Spacing.md,
   } as ViewStyle,
   participantInitial: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.inverse,
   } as TextStyle,
   participantInput: {
@@ -357,8 +369,8 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.error,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: Spacing.sm,
   } as ViewStyle,
   removeButtonText: {
@@ -367,7 +379,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
   summaryCard: {
     borderRadius: BorderRadius.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -379,14 +391,14 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   summaryTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.md,
   } as TextStyle,
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: Spacing.sm,
   } as ViewStyle,
   summaryLabel: {
@@ -395,33 +407,34 @@ const styles = StyleSheet.create({
   } as TextStyle,
   summaryValue: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
   } as TextStyle,
   bottomActions: {
-    flexDirection: 'row',
-    padding: Spacing.lg,
-    gap: Spacing.md,
+    flexDirection: "row",
+    padding: Spacing.md,
+    gap: Spacing.sm,
     backgroundColor: Colors.background.secondary,
     borderTopWidth: 1,
-    borderTopColor: Colors.neutral[800],
+    borderTopColor: Colors.neutral[200],
   } as ViewStyle,
   cancelActionButton: {
     flex: 1,
     backgroundColor: Colors.background.tertiary,
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
-    borderColor: Colors.neutral[700],
+    borderColor: Colors.neutral[300],
   } as ViewStyle,
   cancelActionText: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.secondary,
   } as TextStyle,
   saveButton: {
     flex: 2,
+    paddingVertical: Spacing.md,
   } as ViewStyle,
-}); 
+});

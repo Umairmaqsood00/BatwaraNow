@@ -1,20 +1,30 @@
-import { Colors } from '@/constants/DesignSystem';
-import React, { useEffect, useState } from 'react';
-import { Alert, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Colors } from "@/constants/DesignSystem";
+import React, { useEffect, useState } from "react";
+import { Alert, Platform, StatusBar, StyleSheet, View } from "react-native";
 
-import AddExpenseScreen from '@/components/AddExpenseScreen';
-import CreateTripScreen from '@/components/CreateTripScreen';
-import TripDetailScreen from '@/components/TripDetailScreen';
-import TripListScreen from '@/components/TripListScreen';
-import { calculateBalances, calculateTripSummary } from '@/utils/balanceCalculator';
-import { generateId, storage, type Balance, type Expense, type SettlementHistory, type Trip } from '@/utils/storage';
+import AddExpenseScreen from "@/components/AddExpenseScreen";
+import CreateTripScreen from "@/components/CreateTripScreen";
+import TripDetailScreen from "@/components/TripDetailScreen";
+import TripListScreen from "@/components/TripListScreen";
+import {
+  calculateBalances,
+  calculateTripSummary,
+} from "@/utils/balanceCalculator";
+import {
+  generateId,
+  storage,
+  type Balance,
+  type Expense,
+  type SettlementHistory,
+  type Trip,
+} from "@/utils/storage";
 
-console.log('Available storage methods:', Object.keys(storage));
+console.log("Available storage methods:", Object.keys(storage));
 
-type Screen = 'trips' | 'tripDetail' | 'addExpense' | 'createTrip';
+type Screen = "trips" | "tripDetail" | "addExpense" | "createTrip";
 
 export default function ExpenseSplitApp() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('trips');
+  const [currentScreen, setCurrentScreen] = useState<Screen>("trips");
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -28,38 +38,43 @@ export default function ExpenseSplitApp() {
   }, []);
 
   const testStorageMethods = async () => {
-    console.log('=== TESTING STORAGE METHODS ===');
+    console.log("=== TESTING STORAGE METHODS ===");
     try {
-      console.log('Testing getTrips...');
+      console.log("Testing getTrips...");
       const testTrips = await storage.getTrips();
-      console.log('getTrips result:', testTrips.length, 'trips');
-      
-      console.log('Testing getExpenses...');
+      console.log("getTrips result:", testTrips.length, "trips");
+
+      console.log("Testing getExpenses...");
       const testExpenses = await storage.getExpenses();
-      console.log('getExpenses result:', testExpenses.length, 'expenses');
-      
-      console.log('Testing getSettledBalances...');
+      console.log("getExpenses result:", testExpenses.length, "expenses");
+
+      console.log("Testing getSettledBalances...");
       const testBalances = await storage.getSettledBalances();
-      console.log('getSettledBalances result:', testBalances.length, 'balances');
-      
-      console.log('=== STORAGE METHODS TEST COMPLETED ===');
+      console.log(
+        "getSettledBalances result:",
+        testBalances.length,
+        "balances"
+      );
+
+      console.log("=== STORAGE METHODS TEST COMPLETED ===");
     } catch (error) {
-      console.error('=== STORAGE METHODS TEST FAILED ===', error);
+      console.error("=== STORAGE METHODS TEST FAILED ===", error);
     }
   };
 
   const loadData = async () => {
     try {
-      const [loadedTrips, loadedExpenses, loadedSettledBalances] = await Promise.all([
-        storage.getTrips(),
-        storage.getExpenses(),
-        storage.getSettledBalances(),
-      ]);
+      const [loadedTrips, loadedExpenses, loadedSettledBalances] =
+        await Promise.all([
+          storage.getTrips(),
+          storage.getExpenses(),
+          storage.getSettledBalances(),
+        ]);
       setTrips(loadedTrips);
       setExpenses(loadedExpenses);
       setSettledBalances(loadedSettledBalances);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error("Error loading data:", error);
     } finally {
       setLoading(false);
     }
@@ -67,46 +82,51 @@ export default function ExpenseSplitApp() {
 
   const refreshData = async () => {
     try {
-      console.log('Refreshing data from storage...');
-      const [loadedTrips, loadedExpenses, loadedSettledBalances] = await Promise.all([
-        storage.getTrips(),
-        storage.getExpenses(),
-        storage.getSettledBalances(),
-      ]);
+      console.log("Refreshing data from storage...");
+      const [loadedTrips, loadedExpenses, loadedSettledBalances] =
+        await Promise.all([
+          storage.getTrips(),
+          storage.getExpenses(),
+          storage.getSettledBalances(),
+        ]);
       setTrips(loadedTrips);
       setExpenses(loadedExpenses);
       setSettledBalances(loadedSettledBalances);
-      console.log('Data refreshed successfully');
-      console.log('Trips:', loadedTrips.length);
-      console.log('Expenses:', loadedExpenses.length);
-      console.log('Settled balances:', loadedSettledBalances.length);
+      console.log("Data refreshed successfully");
+      console.log("Trips:", loadedTrips.length);
+      console.log("Expenses:", loadedExpenses.length);
+      console.log("Settled balances:", loadedSettledBalances.length);
     } catch (error) {
-      console.error('Error refreshing data:', error);
+      console.error("Error refreshing data:", error);
     }
   };
 
-  const selectedTrip = trips.find(trip => trip.id === selectedTripId);
-  const tripExpenses = selectedTrip 
-    ? expenses.filter(expense => expense.tripId === selectedTrip.id)
+  const selectedTrip = trips.find((trip) => trip.id === selectedTripId);
+  const tripExpenses = selectedTrip
+    ? expenses.filter((expense) => expense.tripId === selectedTrip.id)
     : [];
   const allBalances = selectedTrip ? calculateBalances(tripExpenses) : [];
-  const balances = allBalances.filter(balance => 
-    !settledBalances.some(settled => 
-      settled.from === balance.from && settled.to === balance.to
-    )
+  const balances = allBalances.filter(
+    (balance) =>
+      !settledBalances.some(
+        (settled) => settled.from === balance.from && settled.to === balance.to
+      )
   );
   const tripSummary = selectedTrip ? calculateTripSummary(tripExpenses) : null;
 
   const handleTripPress = (tripId: string) => {
     setSelectedTripId(tripId);
-    setCurrentScreen('tripDetail');
+    setCurrentScreen("tripDetail");
   };
 
   const handleCreateNewTrip = () => {
-    setCurrentScreen('createTrip');
+    setCurrentScreen("createTrip");
   };
 
-  const handleSaveTrip = async (tripData: { name: string; participants: string[] }) => {
+  const handleSaveTrip = async (tripData: {
+    name: string;
+    participants: string[];
+  }) => {
     const newTrip: Trip = {
       id: generateId(),
       name: tripData.name,
@@ -117,20 +137,20 @@ export default function ExpenseSplitApp() {
 
     try {
       await storage.addTrip(newTrip);
-      setTrips(prev => [...prev, newTrip]);
+      setTrips((prev) => [...prev, newTrip]);
       setSelectedTripId(newTrip.id);
-      setCurrentScreen('tripDetail');
+      setCurrentScreen("tripDetail");
     } catch (error) {
-      console.error('Error saving trip:', error);
+      console.error("Error saving trip:", error);
     }
   };
 
   const handleCancelCreateTrip = () => {
-    setCurrentScreen('trips');
+    setCurrentScreen("trips");
   };
 
   const handleAddExpense = () => {
-    setCurrentScreen('addExpense');
+    setCurrentScreen("addExpense");
   };
 
   const handleSaveExpense = async (expenseData: {
@@ -145,104 +165,125 @@ export default function ExpenseSplitApp() {
       id: generateId(),
       tripId: selectedTripId,
       ...expenseData,
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split("T")[0],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     try {
       await storage.addExpense(newExpense);
-      setExpenses(prev => [...prev, newExpense]);
-      setCurrentScreen('tripDetail');
+      setExpenses((prev) => [...prev, newExpense]);
+      setCurrentScreen("tripDetail");
     } catch (error) {
-      console.error('Error saving expense:', error);
+      console.error("Error saving expense:", error);
     }
   };
 
   const handleCancelAddExpense = () => {
-    setCurrentScreen('tripDetail');
+    setCurrentScreen("tripDetail");
   };
 
   const handleBackFromTripDetail = () => {
-    setCurrentScreen('trips');
+    setCurrentScreen("trips");
     setSelectedTripId(null);
   };
 
   const handleDeleteTrip = async (tripId: string) => {
-    console.log('=== DELETE TRIP FUNCTION CALLED ===');
-    console.log('Trip ID to delete:', tripId);
-    
+    console.log("=== DELETE TRIP FUNCTION CALLED ===");
+    console.log("Trip ID to delete:", tripId);
+
     try {
-      console.log('Calling storage.deleteTrip...');
+      console.log("Calling storage.deleteTrip...");
       await storage.deleteTrip(tripId);
-      console.log('Storage deleteTrip completed successfully');
-      
-      const tripExpenses = expenses.filter(exp => exp.tripId === tripId);
+      console.log("Storage deleteTrip completed successfully");
+
+      const tripExpenses = expenses.filter((exp) => exp.tripId === tripId);
       const tripBalances = calculateBalances(tripExpenses);
-      const updatedSettledBalances = settledBalances.filter(settled => 
-        !tripBalances.some(balance => 
-          balance.from === settled.from && balance.to === settled.to
-        )
+      const updatedSettledBalances = settledBalances.filter(
+        (settled) =>
+          !tripBalances.some(
+            (balance) =>
+              balance.from === settled.from && balance.to === settled.to
+          )
       );
-      
-      setTrips(prev => {
-        const updated = prev.filter(trip => trip.id !== tripId);
-        console.log('Trips before:', prev.length, 'Trips after:', updated.length);
+
+      setTrips((prev) => {
+        const updated = prev.filter((trip) => trip.id !== tripId);
+        console.log(
+          "Trips before:",
+          prev.length,
+          "Trips after:",
+          updated.length
+        );
         return updated;
       });
-      
-      setExpenses(prev => {
-        const updated = prev.filter(expense => expense.tripId !== tripId);
-        console.log('Expenses before:', prev.length, 'Expenses after:', updated.length);
+
+      setExpenses((prev) => {
+        const updated = prev.filter((expense) => expense.tripId !== tripId);
+        console.log(
+          "Expenses before:",
+          prev.length,
+          "Expenses after:",
+          updated.length
+        );
         return updated;
       });
-      
+
       setSettledBalances(updatedSettledBalances);
       await storage.saveSettledBalances(updatedSettledBalances);
-      
+
       if (selectedTripId === tripId) {
         setSelectedTripId(null);
-        setCurrentScreen('trips');
+        setCurrentScreen("trips");
       }
-      
-      if (Platform.OS === 'web') {
+
+      if (Platform.OS === "web") {
         setTimeout(() => {
           refreshData();
         }, 500);
       }
-      
-      console.log('=== TRIP DELETED SUCCESSFULLY ===');
-      console.log('Updated trips count:', trips.length - 1);
-      console.log('Updated expenses count:', expenses.length - tripExpenses.length);
-      console.log('Updated settled balances count:', updatedSettledBalances.length);
-      
-      if (Platform.OS === 'web') {
-        alert('Trip has been deleted successfully!');
+
+      console.log("=== TRIP DELETED SUCCESSFULLY ===");
+      console.log("Updated trips count:", trips.length - 1);
+      console.log(
+        "Updated expenses count:",
+        expenses.length - tripExpenses.length
+      );
+      console.log(
+        "Updated settled balances count:",
+        updatedSettledBalances.length
+      );
+
+      if (Platform.OS === "web") {
+        alert("Trip has been deleted successfully!");
       } else {
-        Alert.alert('Success!', 'Trip has been deleted.');
+        Alert.alert("Success!", "Trip has been deleted.");
       }
     } catch (error) {
-      console.error('=== ERROR DELETING TRIP ===', error);
-      Alert.alert('Error', 'Failed to delete trip. Please try again.');
+      console.error("=== ERROR DELETING TRIP ===", error);
+      Alert.alert("Error", "Failed to delete trip. Please try again.");
     }
   };
 
   const handleDeleteExpense = async (expenseId: string) => {
     try {
       await storage.deleteExpense(expenseId);
-      setExpenses(prev => prev.filter(expense => expense.id !== expenseId));
+      setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
     } catch (error) {
-      console.error('Error deleting expense:', error);
+      console.error("Error deleting expense:", error);
     }
   };
 
-  const handleUpdateExpense = async (expenseId: string, updatedData: {
-    description: string;
-    amount: number;
-    paidBy: Array<{ name: string; amount: number }>;
-    splitBetween: string[];
-  }) => {
-    const expense = expenses.find(e => e.id === expenseId);
+  const handleUpdateExpense = async (
+    expenseId: string,
+    updatedData: {
+      description: string;
+      amount: number;
+      paidBy: Array<{ name: string; amount: number }>;
+      splitBetween: string[];
+    }
+  ) => {
+    const expense = expenses.find((e) => e.id === expenseId);
     if (!expense) return;
 
     const updatedExpense: Expense = {
@@ -253,21 +294,23 @@ export default function ExpenseSplitApp() {
 
     try {
       await storage.updateExpense(updatedExpense);
-      setExpenses(prev => 
-        prev.map(exp => exp.id === expenseId ? updatedExpense : exp)
+      setExpenses((prev) =>
+        prev.map((exp) => (exp.id === expenseId ? updatedExpense : exp))
       );
     } catch (error) {
-      console.error('Error updating expense:', error);
+      console.error("Error updating expense:", error);
     }
   };
 
   const handleSettleBalance = async (from: string, to: string) => {
-    console.log('=== SETTLE BALANCE FUNCTION CALLED ===');
-    console.log('From:', from, 'To:', to);
-    
-    const balanceToSettle = balances.find(b => b.from === from && b.to === to);
-    console.log('Balance found:', balanceToSettle);
-    
+    console.log("=== SETTLE BALANCE FUNCTION CALLED ===");
+    console.log("From:", from, "To:", to);
+
+    const balanceToSettle = balances.find(
+      (b) => b.from === from && b.to === to
+    );
+    console.log("Balance found:", balanceToSettle);
+
     if (balanceToSettle) {
       try {
         const settledBalance: Balance = {
@@ -289,32 +332,43 @@ export default function ExpenseSplitApp() {
           await storage.addSettlementHistory(historyEntry);
         }
         // ✅ Step 3: Check addSettledBalance Usage - Proper await with try-catch
-        console.log('Calling storage.addSettledBalance...');
+        console.log("Calling storage.addSettledBalance...");
         await storage.addSettledBalance(settledBalance);
-        console.log('Storage addSettledBalance completed successfully');
+        console.log("Storage addSettledBalance completed successfully");
         // Update UI after successful storage operation
-        setSettledBalances(prev => {
+        setSettledBalances((prev) => {
           const updated = [...prev, settledBalance];
-          console.log('Settled balances before:', prev.length, 'after:', updated.length);
+          console.log(
+            "Settled balances before:",
+            prev.length,
+            "after:",
+            updated.length
+          );
           return updated;
         });
-        console.log('=== BALANCE SETTLED SUCCESSFULLY ===');
-        Alert.alert('Success!', `${from} has paid ${to} Rs.${balanceToSettle.amount.toFixed(2)}`);
+        console.log("=== BALANCE SETTLED SUCCESSFULLY ===");
+        Alert.alert(
+          "Success!",
+          `${from} has paid ${to} Rs.${balanceToSettle.amount.toFixed(2)}`
+        );
       } catch (error) {
-        console.error('=== ERROR SETTLING BALANCE ===', error);
-        Alert.alert('Error', 'Failed to settle balance. Please try again.');
+        console.error("=== ERROR SETTLING BALANCE ===", error);
+        Alert.alert("Error", "Failed to settle balance. Please try again.");
       }
     } else {
-      console.log('=== NO BALANCE FOUND ===');
-      Alert.alert('Error', 'Balance not found. Please try again.');
+      console.log("=== NO BALANCE FOUND ===");
+      Alert.alert("Error", "Balance not found. Please try again.");
     }
   };
 
-  const handleUpdateTrip = async (tripId: string, updatedData: {
-    name: string;
-    participants: string[];
-  }) => {
-    const trip = trips.find(t => t.id === tripId);
+  const handleUpdateTrip = async (
+    tripId: string,
+    updatedData: {
+      name: string;
+      participants: string[];
+    }
+  ) => {
+    const trip = trips.find((t) => t.id === tripId);
     if (!trip) return;
 
     const updatedTrip: Trip = {
@@ -325,39 +379,40 @@ export default function ExpenseSplitApp() {
 
     try {
       await storage.updateTrip(updatedTrip);
-      setTrips(prev => 
-        prev.map(t => t.id === tripId ? updatedTrip : t)
-      );
+      setTrips((prev) => prev.map((t) => (t.id === tripId ? updatedTrip : t)));
     } catch (error) {
-      console.error('Error updating trip:', error);
+      console.error("Error updating trip:", error);
     }
   };
 
   const handleClearAllData = async () => {
     Alert.alert(
-      'Clear All Data',
-      'Are you sure you want to delete ALL trips, expenses, and settings? This action cannot be undone.',
+      "Clear All Data",
+      "Are you sure you want to delete ALL trips, expenses, and settings? This action cannot be undone.",
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Clear All Data', 
-          style: 'destructive',
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear All Data",
+          style: "destructive",
           onPress: async () => {
             try {
-              console.log('Clearing all data...');
+              console.log("Clearing all data...");
               await storage.clearAllData();
               setTrips([]);
               setExpenses([]);
               setSettledBalances([]);
               setSelectedTripId(null);
-              setCurrentScreen('trips');
-              Alert.alert('Success', 'All data has been cleared successfully.');
-              console.log('All data cleared successfully');
+              setCurrentScreen("trips");
+              Alert.alert("Success", "All data has been cleared successfully.");
+              console.log("All data cleared successfully");
             } catch (error) {
-              console.error('Error clearing all data:', error);
-              Alert.alert('Error', 'Failed to clear all data. Please try again.');
+              console.error("Error clearing all data:", error);
+              Alert.alert(
+                "Error",
+                "Failed to clear all data. Please try again."
+              );
             }
-          }
+          },
         },
       ]
     );
@@ -369,11 +424,13 @@ export default function ExpenseSplitApp() {
     }
 
     switch (currentScreen) {
-      case 'trips':
+      case "trips":
         return (
           <TripListScreen
-            trips={trips.map(trip => {
-              const tripExpenses = expenses.filter(exp => exp.tripId === trip.id);
+            trips={trips.map((trip) => {
+              const tripExpenses = expenses.filter(
+                (exp) => exp.tripId === trip.id
+              );
               const summary = calculateTripSummary(tripExpenses);
               return {
                 ...trip,
@@ -389,7 +446,7 @@ export default function ExpenseSplitApp() {
           />
         );
 
-      case 'createTrip':
+      case "createTrip":
         return (
           <CreateTripScreen
             onSave={handleSaveTrip}
@@ -397,7 +454,7 @@ export default function ExpenseSplitApp() {
           />
         );
 
-      case 'tripDetail':
+      case "tripDetail":
         if (!selectedTrip) return null;
         return (
           <TripDetailScreen
@@ -414,7 +471,7 @@ export default function ExpenseSplitApp() {
           />
         );
 
-      case 'addExpense':
+      case "addExpense":
         if (!selectedTrip) return null;
         return (
           <AddExpenseScreen
@@ -431,8 +488,8 @@ export default function ExpenseSplitApp() {
 
   return (
     <View style={styles.container}>
-      <StatusBar 
-        barStyle="light-content" 
+      <StatusBar
+        barStyle="light-content"
         backgroundColor={Colors.background.primary}
         translucent={false}
       />

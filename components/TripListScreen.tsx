@@ -1,18 +1,25 @@
-import { BorderRadius, Colors, Icons, Shadows, Spacing, Typography } from '@/constants/DesignSystem';
-import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
 import {
-    Alert,
-    FlatList,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextStyle,
-    TouchableOpacity,
-    View,
-    ViewStyle,
-} from 'react-native';
+  BorderRadius,
+  Colors,
+  Icons,
+  Shadows,
+  Spacing,
+  Typography,
+} from "@/constants/DesignSystem";
+import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import {
+  Alert,
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 type Trip = {
   id: string;
@@ -31,7 +38,14 @@ type TripListScreenProps = {
   onRefreshData?: () => void;
 };
 
-export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, onDeleteTrip, onClearAllData, onRefreshData }: TripListScreenProps) {
+export default function TripListScreen({
+  trips,
+  onTripPress,
+  onCreateNewTrip,
+  onDeleteTrip,
+  onClearAllData,
+  onRefreshData,
+}: TripListScreenProps) {
   const renderTripItem = ({ item }: { item: Trip }) => (
     <View style={styles.tripCard}>
       <TouchableOpacity
@@ -49,26 +63,47 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
             <View style={styles.tripInfo}>
               <Text style={styles.tripIcon}>{Icons.trip}</Text>
               <View style={styles.tripDetails}>
-                <Text style={styles.tripName} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-                <Text style={styles.tripSubtitle} numberOfLines={1} ellipsizeMode="tail">
-                  {item.participants.length} members • {item.expenseCount} expenses
+                <Text
+                  style={styles.tripName}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.name}
+                </Text>
+                <Text
+                  style={styles.tripSubtitle}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.participants.length} members • {item.expenseCount}{" "}
+                  expenses
                 </Text>
               </View>
             </View>
             <View style={styles.amountContainer}>
               <Text style={styles.amountLabel}>Total</Text>
-              <Text style={styles.amountValue} numberOfLines={1} ellipsizeMode="tail">Rs.{item.totalExpenses.toFixed(2)}</Text>
+              <Text
+                style={styles.amountValue}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                Rs.{item.totalExpenses.toFixed(2)}
+              </Text>
             </View>
             {onDeleteTrip && (
               <TouchableOpacity
                 style={styles.deleteTripButton}
                 onPress={() => {
                   Alert.alert(
-                    'Delete Trip',
+                    "Delete Trip",
                     `Are you sure you want to delete "${item.name}"? This will also delete all associated expenses.`,
                     [
-                      { text: 'Cancel', style: 'cancel' },
-                      { text: 'Delete', style: 'destructive', onPress: () => onDeleteTrip(item.id) },
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => onDeleteTrip(item.id),
+                      },
                     ]
                   );
                 }}
@@ -78,11 +113,14 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
               </TouchableOpacity>
             )}
           </View>
-          
+
           <View style={styles.tripFooter}>
             <View style={styles.participantsPreview}>
               {item.participants.slice(0, 3).map((participant, index) => (
-                <View key={index} style={[styles.participantAvatar, { zIndex: 3 - index }]}>
+                <View
+                  key={index}
+                  style={[styles.participantAvatar, { zIndex: 3 - index }]}
+                >
                   <Text style={styles.participantInitial}>
                     {participant.charAt(0).toUpperCase()}
                   </Text>
@@ -90,7 +128,9 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
               ))}
               {item.participants.length > 3 && (
                 <View style={styles.moreParticipants}>
-                  <Text style={styles.moreParticipantsText}>+{item.participants.length - 3}</Text>
+                  <Text style={styles.moreParticipantsText}>
+                    +{item.participants.length - 3}
+                  </Text>
                 </View>
               )}
             </View>
@@ -112,8 +152,10 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.background.primary} />
-      
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.background.primary}
+      />
 
       <LinearGradient
         colors={[Colors.background.secondary, Colors.background.primary]}
@@ -123,7 +165,8 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
           <View>
             <Text style={styles.headerTitle}>My Trips</Text>
             <Text style={styles.headerSubtitle}>
-              {trips.length} {trips.length === 1 ? 'trip' : 'trips'} • Manage expenses together
+              {trips.length} {trips.length === 1 ? "trip" : "trips"} • Manage
+              expenses together
             </Text>
           </View>
           <View style={styles.headerActions}>
@@ -135,23 +178,19 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
               <TouchableOpacity
                 style={styles.settingsButton}
                 onPress={() => {
-                  Alert.alert(
-                    'Settings',
-                    'Choose an option:',
-                    [
-                      { text: 'Cancel', style: 'cancel' },
-                      { 
-                        text: 'Refresh Data', 
-                        style: 'default',
-                        onPress: onRefreshData
-                      },
-                      { 
-                        text: 'Clear All Data', 
-                        style: 'destructive',
-                        onPress: onClearAllData
-                      },
-                    ]
-                  );
+                  Alert.alert("Settings", "Choose an option:", [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Refresh Data",
+                      style: "default",
+                      onPress: onRefreshData,
+                    },
+                    {
+                      text: "Clear All Data",
+                      style: "destructive",
+                      onPress: onClearAllData,
+                    },
+                  ]);
                 }}
               >
                 <Text style={styles.settingsIcon}>{Icons.settings}</Text>
@@ -161,7 +200,6 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
         </View>
       </LinearGradient>
 
-
       <View style={styles.content}>
         {trips.length === 0 ? (
           <View style={styles.emptyState}>
@@ -170,9 +208,13 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
             </View>
             <Text style={styles.emptyTitle}>No trips yet</Text>
             <Text style={styles.emptySubtitle}>
-              Create your first trip to start splitting expenses with friends and family
+              Create your first trip to start splitting expenses with friends
+              and family
             </Text>
-            <TouchableOpacity style={styles.emptyButton} onPress={onCreateNewTrip}>
+            <TouchableOpacity
+              style={styles.emptyButton}
+              onPress={onCreateNewTrip}
+            >
               <Text style={styles.emptyButtonText}>Create Your First Trip</Text>
             </TouchableOpacity>
           </View>
@@ -188,9 +230,12 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
         )}
       </View>
 
-
       {trips.length > 0 && (
-        <TouchableOpacity style={styles.fab} onPress={onCreateNewTrip} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={onCreateNewTrip}
+          activeOpacity={0.8}
+        >
           <View style={styles.fabContainer}>
             <Text style={styles.fabIcon}>{Icons.add}</Text>
           </View>
@@ -214,13 +259,13 @@ const styles = StyleSheet.create({
     ...Shadows.md,
   } as ViewStyle,
   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   } as ViewStyle,
   headerTitle: {
-    fontSize: Typography.sizes['3xl'],
-    fontWeight: '700' as const,
+    fontSize: Typography.sizes["3xl"],
+    fontWeight: "700" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   } as TextStyle,
@@ -229,15 +274,15 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
   } as TextStyle,
   headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   } as ViewStyle,
   headerStats: {
-    alignItems: 'center',
+    alignItems: "center",
   } as ViewStyle,
   totalTrips: {
-    fontSize: Typography.sizes['2xl'],
-    fontWeight: '700' as const,
+    fontSize: Typography.sizes["2xl"],
+    fontWeight: "700" as const,
     color: Colors.primary[500],
   } as TextStyle,
   totalTripsLabel: {
@@ -250,8 +295,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.neutral[200],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: Spacing.sm,
   } as ViewStyle,
   settingsIcon: {
@@ -273,36 +318,36 @@ const styles = StyleSheet.create({
     ...Shadows.lg,
     minWidth: 320,
     maxWidth: 500,
-    alignSelf: 'center',
+    alignSelf: "center",
   } as ViewStyle,
   tripCardContent: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     minWidth: 320,
     maxWidth: 500,
-    alignSelf: 'center',
+    alignSelf: "center",
   } as ViewStyle,
   cardGradient: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     minWidth: 320,
     maxWidth: 500,
-    alignSelf: 'center',
+    alignSelf: "center",
   } as ViewStyle,
   tripHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: Spacing.lg,
   } as ViewStyle,
   tripInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     minWidth: 0,
   } as ViewStyle,
   tripIcon: {
-    fontSize: Typography.sizes['2xl'],
+    fontSize: Typography.sizes["2xl"],
     marginRight: Spacing.md,
   } as TextStyle,
   tripDetails: {
@@ -311,30 +356,30 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   tripName: {
     fontSize: Typography.sizes.lg,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   } as TextStyle,
   tripSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   } as TextStyle,
   tripHeaderActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   } as ViewStyle,
   amountContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     minWidth: 0,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   } as ViewStyle,
   amountLabel: {
     fontSize: Typography.sizes.xs,
@@ -344,23 +389,23 @@ const styles = StyleSheet.create({
   } as TextStyle,
   amountValue: {
     fontSize: Typography.sizes.lg,
-    fontWeight: '700' as const,
+    fontWeight: "700" as const,
     color: Colors.secondary[500],
     minWidth: 0,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   } as TextStyle,
   deleteTripButton: {
     width: 40,
     height: 40,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.error + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: Colors.error + "20",
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: Spacing.sm,
     borderWidth: 2,
     borderColor: Colors.error,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -371,28 +416,28 @@ const styles = StyleSheet.create({
     color: Colors.error,
   } as TextStyle,
   tripFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   } as ViewStyle,
   participantsPreview: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   } as ViewStyle,
   participantAvatar: {
     width: 32,
     height: 32,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary[500],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: -8,
     borderWidth: 2,
     borderColor: Colors.background.secondary,
   } as ViewStyle,
   participantInitial: {
     fontSize: Typography.sizes.sm,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.inverse,
   } as TextStyle,
   moreParticipants: {
@@ -400,20 +445,20 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.neutral[300],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: Spacing.sm,
   } as ViewStyle,
   moreParticipantsText: {
     fontSize: Typography.sizes.xs,
-    fontWeight: '500' as const,
+    fontWeight: "500" as const,
     color: Colors.text.secondary,
   } as TextStyle,
   tripStats: {
-    flexDirection: 'row',
+    flexDirection: "row",
   } as ViewStyle,
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
   } as ViewStyle,
   statIcon: {
     fontSize: Typography.sizes.sm,
@@ -421,7 +466,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
   statValue: {
     fontSize: Typography.sizes.sm,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
   } as TextStyle,
   deleteButton: {
@@ -429,18 +474,18 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.lg,
     borderRadius: BorderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: Spacing.sm,
     ...Shadows.md,
   } as ViewStyle,
   deleteButtonText: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.inverse,
   } as TextStyle,
   fab: {
-    position: 'absolute',
+    position: "absolute",
     bottom: Spacing.xl,
     right: Spacing.xl,
     width: 56,
@@ -448,52 +493,60 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     ...Shadows.xl,
   } as ViewStyle,
+
   fabContainer: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.background.tertiary,
     borderWidth: 2,
     borderColor: Colors.text.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   } as ViewStyle,
+
   fabIcon: {
     fontSize: Typography.sizes.xl,
     color: Colors.text.primary,
   } as TextStyle,
+
   emptyState: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: Spacing.xl,
   } as ViewStyle,
+
   emptyIconContainer: {
     width: 80,
     height: 80,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary[100],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: Spacing.lg,
   } as ViewStyle,
+
   emptyIcon: {
-    fontSize: Typography.sizes['3xl'],
+    fontSize: Typography.sizes["3xl"],
   } as TextStyle,
+
   emptyTitle: {
     fontSize: Typography.sizes.xl,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.primary,
     marginBottom: Spacing.sm,
-    textAlign: 'center',
+    textAlign: "center",
   } as TextStyle,
+
   emptySubtitle: {
     fontSize: Typography.sizes.base,
     color: Colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: Typography.sizes.base * 1.5,
     marginBottom: Spacing.xl,
   } as TextStyle,
+
   emptyButton: {
     backgroundColor: Colors.primary[500],
     paddingVertical: Spacing.md,
@@ -501,9 +554,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     ...Shadows.md,
   } as ViewStyle,
+  
   emptyButtonText: {
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: "600" as const,
     color: Colors.text.inverse,
   } as TextStyle,
-}); 
+});
