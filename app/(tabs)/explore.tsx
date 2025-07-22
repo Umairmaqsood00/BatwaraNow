@@ -37,7 +37,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Settlement History Section */}
+       { /* Settlement History Section */ }
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settlement History</Text>
           <View style={styles.card}>
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   developer: {
     fontSize: 14,
-    color: '#4fa3ff', // accent blue
+    color: '#4fa3ff', 
     marginBottom: 12,
   },
   tech: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#ECEDEE', // light text
+    color: '#ECEDEE',
     lineHeight: 24,
   },
   featureItem: {
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 16,
-    color: '#ECEDEE', // light text
+    color: '#ECEDEE', 
   },
   stepItem: {
     flexDirection: 'row',
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#4fa3ff', // accent blue
+    backgroundColor: '#4fa3ff', 
     color: 'white',
     textAlign: 'center',
     lineHeight: 24,
