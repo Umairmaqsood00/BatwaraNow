@@ -30,7 +30,7 @@ export default function SettingsScreen() {
             <Text style={styles.appName}>BatwaraNow</Text>
             <Text style={styles.version}>Version 1.0.0</Text>
             <Text style={styles.developer}>Developed by Umair</Text>
-            <Text style={styles.tech}>TypeScript • Expo • React Native </Text>
+            <Text style={styles.tech}>Js • TypeScript • Expo • React Native </Text>
             <Text style={styles.description}>
               A simple and elegant app to split expenses between friends and family during trips and events.
             </Text>
