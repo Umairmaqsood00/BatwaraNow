@@ -22,30 +22,19 @@ import {
   ViewStyle,
 } from "react-native";
 
-type AddExpenseScreenProps = {
-  participants: string[];
-  onSave: (expense: {
-    description: string;
-    amount: number;
-    paidBy: Array<{ name: string; amount: number }>;
-    splitBetween: string[];
-  }) => void;
-  onCancel: () => void;
-};
-
 export default function AddExpenseScreen({
   participants,
   onSave,
   onCancel,
-}: AddExpenseScreenProps) {
+}) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [payerInputs, setPayerInputs] = useState<
-    { name: string; amount: string }[]
-  >(participants.map((name) => ({ name, amount: "" })));
-  const [splitBetween, setSplitBetween] = useState<string[]>(participants);
+  const [payerInputs, setPayerInputs] = useState(
+    participants.map((name) => ({ name, amount: "" }))
+  );
+  const [splitBetween, setSplitBetween] = useState(participants);
 
-  const toggleParticipant = (participant: string) => {
+  const toggleParticipant = (participant) => {
     setSplitBetween((prev) =>
       prev.includes(participant)
         ? prev.filter((p) => p !== participant)
@@ -53,7 +42,7 @@ export default function AddExpenseScreen({
     );
   };
 
-  const handlePayerAmountChange = (name: string, value: string) => {
+  const handlePayerAmountChange = (name, value) => {
     setPayerInputs((prev) =>
       prev.map((p) => (p.name === name ? { ...p, amount: value } : p))
     );
@@ -265,7 +254,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background.primary,
-  } as ViewStyle,
+  },
   header: {
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.lg,
@@ -277,11 +266,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
-  } as ViewStyle,
+  },
   cancelButton: {
     width: 40,
     height: 40,
@@ -295,45 +284,45 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  } as ViewStyle,
+  },
   cancelIcon: {
     fontSize: Typography.sizes.lg,
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   headerInfo: {
     flex: 1,
-  } as ViewStyle,
+  },
   headerTitle: {
     fontSize: Typography.sizes.xl,
-    fontWeight: "700" as const,
+    fontWeight: "700",
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
-  } as TextStyle,
+  },
   headerSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
-  } as TextStyle,
+  },
   headerSpacer: {
     width: 40,
-  } as ViewStyle,
+  },
   content: {
     flex: 1,
-  } as ViewStyle,
+  },
   form: {
     padding: Spacing.lg,
-  } as ViewStyle,
+  },
   inputGroup: {
     marginBottom: Spacing.xl,
-  } as ViewStyle,
+  },
   label: {
     fontSize: Typography.sizes.base,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
     marginBottom: Spacing.md,
-  } as TextStyle,
+  },
   labelIcon: {
     marginRight: Spacing.sm,
-  } as TextStyle,
+  },
   input: {
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
@@ -348,7 +337,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
-  } as TextStyle,
+  },
   dropdownContainer: {
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
@@ -358,20 +347,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   dropdownOption: {
     paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.neutral[100],
-  } as ViewStyle,
+  },
   dropdownOptionSelected: {
     backgroundColor: Colors.primary[50],
-  } as ViewStyle,
+  },
   dropdownOptionContent: {
     flexDirection: "row",
     alignItems: "center",
-  } as ViewStyle,
+  },
   participantAvatar: {
     width: 40,
     height: 40,
@@ -380,27 +369,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,
-  } as ViewStyle,
+  },
   participantAvatarSelected: {
     backgroundColor: Colors.primary[500],
-  } as ViewStyle,
+  },
   participantInitial: {
     fontSize: Typography.sizes.base,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   participantInitialSelected: {
     color: Colors.text.inverse,
-  } as TextStyle,
+  },
   dropdownOptionText: {
     fontSize: Typography.sizes.base,
     color: Colors.text.primary,
     flex: 1,
-  } as TextStyle,
+  },
   dropdownOptionTextSelected: {
     color: Colors.primary[700],
-    fontWeight: "600" as const,
-  } as TextStyle,
+    fontWeight: "600",
+  },
   checkmarkContainer: {
     width: 24,
     height: 24,
@@ -408,11 +397,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary[500],
     alignItems: "center",
     justifyContent: "center",
-  } as ViewStyle,
+  },
   checkmark: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.inverse,
-  } as TextStyle,
+  },
   checkboxContainer: {
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
@@ -422,16 +411,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   checkboxItem: {
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.neutral[100],
-  } as ViewStyle,
+  },
   checkboxContent: {
     flexDirection: "row",
     alignItems: "center",
-  } as ViewStyle,
+  },
   checkbox: {
     width: 28,
     height: 28,
@@ -441,29 +430,29 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
     alignItems: "center",
     justifyContent: "center",
-  } as ViewStyle,
+  },
   checkboxChecked: {
     backgroundColor: Colors.primary[500],
     borderColor: Colors.primary[500],
-  } as ViewStyle,
+  },
   checkboxCheckmark: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.inverse,
-    fontWeight: "700" as const,
-  } as TextStyle,
+    fontWeight: "700",
+  },
   checkboxInfo: {
     flex: 1,
-  } as ViewStyle,
+  },
   checkboxLabel: {
     fontSize: Typography.sizes.base,
-    fontWeight: "500" as const,
+    fontWeight: "500",
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
-  } as TextStyle,
+  },
   checkboxSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
-  } as TextStyle,
+  },
   summaryCard: {
     borderRadius: BorderRadius.lg,
     shadowColor: "#000",
@@ -471,32 +460,32 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   summaryGradient: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
-  } as ViewStyle,
+  },
   summaryTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
     marginBottom: Spacing.md,
-  } as TextStyle,
+  },
   summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: Spacing.sm,
-  } as ViewStyle,
+  },
   summaryLabel: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
-  } as TextStyle,
+  },
   summaryValue: {
     fontSize: Typography.sizes.base,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   bottomActions: {
     flexDirection: "row",
     padding: Spacing.lg,
@@ -504,7 +493,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     borderTopWidth: 1,
     borderTopColor: Colors.neutral[200],
-  } as ViewStyle,
+  },
   cancelActionButton: {
     flex: 1,
     backgroundColor: Colors.background.tertiary,
@@ -514,15 +503,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: Colors.neutral[300],
-  } as ViewStyle,
+  },
   cancelActionText: {
     fontSize: Typography.sizes.base,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.secondary,
-  } as TextStyle,
+  },
   saveButton: {
     flex: 2,
-  } as ViewStyle,
+  },
   addExpenseButton: {
     backgroundColor: "#b7bac0ff",
     borderRadius: 23,
@@ -530,5 +519,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 26,
     alignItems: "center",
     justifyContent: "center",
-  } as ViewStyle,
+  },
 });
