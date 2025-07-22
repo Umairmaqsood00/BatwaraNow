@@ -1,27 +1,15 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-type Balance = {
-  from: string;
-  to: string;
-  amount: number;
-};
+// Removed all TypeScript type definitions
 
-type BalanceSummaryProps = {
-  balances: Balance[];
-  participants: string[];
-};
-
-export default function BalanceSummary({
-  balances,
-  participants,
-}: BalanceSummaryProps) {
+export default function BalanceSummary({ balances, participants }) {
   const totalOwed = balances.reduce(
     (sum, balance) => sum + Math.abs(balance.amount),
     0
   );
 
-  const renderBalanceItem = (balance: Balance, index: number) => (
+  const renderBalanceItem = (balance, index) => (
     <View key={index} style={styles.balanceItem}>
       <View style={styles.balanceInfo}>
         <Text style={styles.fromText}>{balance.from}</Text>

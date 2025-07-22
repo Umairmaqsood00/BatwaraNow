@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     ...Shadows.md,
   } as ViewStyle,
-  
+
   emptyButtonText: {
     fontSize: Typography.sizes.base,
     fontWeight: "600" as const,

@@ -21,42 +21,117 @@ import {
   ViewStyle,
 } from "react-native";
 
-type Expense = {
-  id: string;
-  description: string;
-  amount: number;
-  paidBy: Array<{ name: string; amount: number }>;
-  splitBetween: string[];
-  date: string;
-};
+function getPayers(expense) {
+  if (Array.isArray(expense.paidBy)) return expense.paidBy;
+  if (typeof expense.paidBy === "string")
+    return [{ name: expense.paidBy, amount: expense.amount }];
+  return [];
+}
 
-type TripDetailScreenProps = {
-  trip: {
-    id: string;
-    name: string;
-    participants: string[];
-  };
-  expenses: Expense[];
-  balances: Array<{
-    from: string;
-    to: string;
-    amount: number;
-    isSettled: boolean;
-    settledAt?: string;
-  }>;
-  summary?: {
-    totalExpenses: number;
-    expenseCount: number;
-    participantCount: number;
-    averagePerExpense: number;
-  };
-  onAddExpense: () => void;
-  onBack: () => void;
-  onDeleteExpense?: (expenseId: string) => void;
-  onUpdateExpense?: (expenseId: string, data: any) => void;
-  onSettleBalance?: (from: string, to: string) => void;
-  onUpdateTrip?: (tripId: string, data: any) => void;
-};
+const renderExpenseItem = ({ item }) => (
+  <View style={styles.expenseCard}>
+    <LinearGradient
+      colors={[Colors.background.secondary, Colors.background.tertiary]}
+      style={styles.expenseGradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <View style={styles.expenseHeader}>
+        <View style={styles.expenseInfo}>
+          <Text style={styles.expenseIcon}>{Icons.expense}</Text>
+          <View style={styles.expenseDetails}>
+            <Text style={styles.expenseDescription}>{item.description}</Text>
+            <Text style={styles.expenseDate}>{item.date}</Text>
+          </View>
+        </View>
+        <Text style={styles.expenseAmount}>Rs.{item.amount.toFixed(2)}</Text>
+      </View>
+
+      <View style={styles.expenseFooter}>
+        <View style={styles.expenseMeta}>
+          <Text style={styles.paidByLabel}>Paid by</Text>
+          {getPayers(item).map((payer, idx) => (
+            <Text style={styles.paidByValue} key={idx}>
+              {payer.name} (Rs.{payer.amount.toFixed(2)})
+            </Text>
+          ))}
+        </View>
+        <View style={styles.expenseMeta}>
+          <Text style={styles.splitLabel}>Split between</Text>
+          <Text style={styles.splitValue}>
+            {item.splitBetween.length} people
+          </Text>
+        </View>
+      </View>
+    </LinearGradient>
+  </View>
+);
+
+const renderBalanceItem = (
+  balance,
+  index
+) => (
+  <View key={index} style={styles.balanceCard}>
+    <LinearGradient
+      colors={[Colors.secondary[50], Colors.secondary[100]]}
+      style={styles.balanceGradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <View style={styles.balanceContent}>
+        <View style={styles.balanceLeftSection}>
+          <View style={styles.balanceIconContainer}>
+            <Text style={styles.balanceIcon}>{Icons.balance}</Text>
+          </View>
+          <View style={styles.balanceInfo}>
+            <Text style={styles.balanceText}>
+              <Text style={styles.balanceFrom}>{balance.from}</Text>
+              <Text style={styles.balanceArrow}> owes </Text>
+              <Text style={styles.balanceTo}>{balance.to}</Text>
+            </Text>
+            <Text style={styles.balanceAmount}>
+              Rs.{balance.amount.toFixed(2)}
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.balanceSettleButton}
+          onPress={() => {
+            console.log("=== SETTLE BUTTON PRESSED ===");
+            console.log(
+              "From:",
+              balance.from,
+              "To:",
+              balance.to,
+              "Amount:",
+              balance.amount
+            );
+            Alert.alert(
+              "Mark as Paid",
+              `Mark that ${balance.from} has paid ${
+                balance.to
+              } Rs.${balance.amount.toFixed(2)}?`,
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Mark as Paid",
+                  style: "default",
+                  onPress: () => {
+                    console.log("=== CONFIRMED SETTLEMENT ===");
+                    onSettleBalance?.(balance.from, balance.to);
+                  },
+                },
+              ]
+            );
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={styles.balanceSettleIcon}>{Icons.check}</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
+  </View>
+);
 
 export default function TripDetailScreen({
   trip,
@@ -69,122 +144,10 @@ export default function TripDetailScreen({
   onUpdateExpense,
   onSettleBalance,
   onUpdateTrip,
-}: TripDetailScreenProps) {
+}) {
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + expense.amount,
     0
-  );
-
-  function getPayers(expense: any): Array<{ name: string; amount: number }> {
-    if (Array.isArray(expense.paidBy)) return expense.paidBy;
-    if (typeof expense.paidBy === "string")
-      return [{ name: expense.paidBy, amount: expense.amount }];
-    return [];
-  }
-
-  const renderExpenseItem = ({ item }: { item: Expense }) => (
-    <View style={styles.expenseCard}>
-      <LinearGradient
-        colors={[Colors.background.secondary, Colors.background.tertiary]}
-        style={styles.expenseGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.expenseHeader}>
-          <View style={styles.expenseInfo}>
-            <Text style={styles.expenseIcon}>{Icons.expense}</Text>
-            <View style={styles.expenseDetails}>
-              <Text style={styles.expenseDescription}>{item.description}</Text>
-              <Text style={styles.expenseDate}>{item.date}</Text>
-            </View>
-          </View>
-          <Text style={styles.expenseAmount}>Rs.{item.amount.toFixed(2)}</Text>
-        </View>
-
-        <View style={styles.expenseFooter}>
-          <View style={styles.expenseMeta}>
-            <Text style={styles.paidByLabel}>Paid by</Text>
-            {getPayers(item).map((payer, idx) => (
-              <Text style={styles.paidByValue} key={idx}>
-                {payer.name} (Rs.{payer.amount.toFixed(2)})
-              </Text>
-            ))}
-          </View>
-          <View style={styles.expenseMeta}>
-            <Text style={styles.splitLabel}>Split between</Text>
-            <Text style={styles.splitValue}>
-              {item.splitBetween.length} people
-            </Text>
-          </View>
-        </View>
-      </LinearGradient>
-    </View>
-  );
-
-  const renderBalanceItem = (
-    balance: { from: string; to: string; amount: number },
-    index: number
-  ) => (
-    <View key={index} style={styles.balanceCard}>
-      <LinearGradient
-        colors={[Colors.secondary[50], Colors.secondary[100]]}
-        style={styles.balanceGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.balanceContent}>
-          <View style={styles.balanceLeftSection}>
-            <View style={styles.balanceIconContainer}>
-              <Text style={styles.balanceIcon}>{Icons.balance}</Text>
-            </View>
-            <View style={styles.balanceInfo}>
-              <Text style={styles.balanceText}>
-                <Text style={styles.balanceFrom}>{balance.from}</Text>
-                <Text style={styles.balanceArrow}> owes </Text>
-                <Text style={styles.balanceTo}>{balance.to}</Text>
-              </Text>
-              <Text style={styles.balanceAmount}>
-                Rs.{balance.amount.toFixed(2)}
-              </Text>
-            </View>
-          </View>
-          <TouchableOpacity
-            style={styles.balanceSettleButton}
-            onPress={() => {
-              console.log("=== SETTLE BUTTON PRESSED ===");
-              console.log(
-                "From:",
-                balance.from,
-                "To:",
-                balance.to,
-                "Amount:",
-                balance.amount
-              );
-              Alert.alert(
-                "Mark as Paid",
-                `Mark that ${balance.from} has paid ${
-                  balance.to
-                } Rs.${balance.amount.toFixed(2)}?`,
-                [
-                  { text: "Cancel", style: "cancel" },
-                  {
-                    text: "Mark as Paid",
-                    style: "default",
-                    onPress: () => {
-                      console.log("=== CONFIRMED SETTLEMENT ===");
-                      onSettleBalance?.(balance.from, balance.to);
-                    },
-                  },
-                ]
-              );
-            }}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Text style={styles.balanceSettleIcon}>{Icons.check}</Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
-    </View>
   );
 
   return (
@@ -308,7 +271,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background.primary,
-  } as ViewStyle,
+  },
   header: {
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.lg,
@@ -320,11 +283,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
-  } as ViewStyle,
+  },
   backButton: {
     width: 40,
     height: 40,
@@ -338,30 +301,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  } as ViewStyle,
+  },
   backIcon: {
     fontSize: Typography.sizes.lg,
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   headerInfo: {
     flex: 1,
-  } as ViewStyle,
+  },
   tripTitle: {
     fontSize: Typography.sizes.xl,
-    fontWeight: "700" as const,
+    fontWeight: "700",
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
     flexShrink: 1,
     flexWrap: "wrap",
     minWidth: 0,
-  } as TextStyle,
+  },
   tripSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
     flexShrink: 1,
     flexWrap: "wrap",
     minWidth: 0,
-  } as TextStyle,
+  },
   addButton: {
     width: 40,
     height: 40,
@@ -376,23 +339,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 4,
-  } as ViewStyle,
+  },
   addIcon: {
     fontSize: Typography.sizes.lg,
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   content: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
-  } as ViewStyle,
+  },
   summarySection: {
     marginTop: Spacing.lg,
     marginBottom: Spacing.xl,
-  } as ViewStyle,
+  },
   summaryRow: {
     flexDirection: "row",
     gap: Spacing.md,
-  } as ViewStyle,
+  },
   summaryCard: {
     flex: 1,
     borderRadius: BorderRadius.lg,
@@ -403,41 +366,41 @@ const styles = StyleSheet.create({
     elevation: 3,
     minWidth: 0,
     maxWidth: 220,
-  } as ViewStyle,
+  },
   summaryGradient: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: "center",
     minWidth: 0,
     maxWidth: 220,
-  } as ViewStyle,
+  },
   summaryIcon: {
     fontSize: Typography.sizes.xl,
     marginBottom: Spacing.sm,
-  } as TextStyle,
+  },
   summaryValue: {
     fontSize: Typography.sizes.base,
-    fontWeight: "700" as const,
+    fontWeight: "700",
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
     flexShrink: 1,
     flexWrap: "wrap",
     minWidth: 0,
-  } as TextStyle,
+  },
   summaryLabel: {
     fontSize: Typography.sizes.xs,
     color: Colors.text.secondary,
     textAlign: "center",
-  } as TextStyle,
+  },
   section: {
     marginBottom: Spacing.xl,
-  } as ViewStyle,
+  },
   sectionTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
     marginBottom: Spacing.md,
-  } as TextStyle,
+  },
   emptyBalance: {
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
@@ -448,7 +411,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   emptyBalanceIcon: {
     width: 60,
     height: 60,
@@ -457,25 +420,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.md,
-  } as ViewStyle,
+  },
   emptyBalanceIconText: {
     fontSize: Typography.sizes.xl,
     color: Colors.success,
-  } as TextStyle,
+  },
   emptyBalanceTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
     marginBottom: Spacing.sm,
-  } as TextStyle,
+  },
   emptyBalanceSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
     textAlign: "center",
-  } as TextStyle,
+  },
   balancesList: {
     gap: Spacing.md,
-  } as ViewStyle,
+  },
 
   balanceCard: {
     borderRadius: BorderRadius.lg,
@@ -484,21 +447,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   balanceGradient: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
-  } as ViewStyle,
+  },
   balanceContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  } as ViewStyle,
+  },
   balanceLeftSection: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
-  } as ViewStyle,
+  },
   balanceIconContainer: {
     width: 48,
     height: 48,
@@ -507,34 +470,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,
-  } as ViewStyle,
+  },
   balanceIcon: {
     fontSize: Typography.sizes.lg,
-  } as TextStyle,
+  },
   balanceInfo: {
     flex: 1,
-  } as ViewStyle,
+  },
   balanceText: {
     fontSize: Typography.sizes.base,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
-  } as TextStyle,
+  },
   balanceFrom: {
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.error,
-  } as TextStyle,
+  },
   balanceArrow: {
     color: Colors.text.secondary,
-  } as TextStyle,
+  },
   balanceTo: {
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.success,
-  } as TextStyle,
+  },
   balanceAmount: {
     fontSize: Typography.sizes.lg,
-    fontWeight: "700" as const,
+    fontWeight: "700",
     color: Colors.text.primary,
-  } as TextStyle,
+  },
 
   emptyExpenses: {
     backgroundColor: Colors.background.secondary,
@@ -546,7 +509,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   emptyExpensesIcon: {
     width: 60,
     height: 60,
@@ -555,22 +518,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.md,
-  } as ViewStyle,
+  },
   emptyExpensesIconText: {
     fontSize: Typography.sizes.xl,
-  } as TextStyle,
+  },
   emptyExpensesTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
     marginBottom: Spacing.sm,
-  } as TextStyle,
+  },
   emptyExpensesSubtitle: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
     textAlign: "center",
     marginBottom: Spacing.lg,
-  } as TextStyle,
+  },
   emptyExpensesButton: {
     backgroundColor: Colors.primary[500],
     paddingVertical: Spacing.md,
@@ -581,15 +544,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-  } as ViewStyle,
+  },
   emptyExpensesButtonText: {
     fontSize: Typography.sizes.base,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.inverse,
-  } as TextStyle,
+  },
   expenseSeparator: {
     height: Spacing.md,
-  } as ViewStyle,
+  },
   expenseCard: {
     borderRadius: BorderRadius.lg,
     shadowColor: "#000",
@@ -597,71 +560,71 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  } as ViewStyle,
+  },
   expenseGradient: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
-  } as ViewStyle,
+  },
   expenseHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: Spacing.md,
-  } as ViewStyle,
+  },
   expenseInfo: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
-  } as ViewStyle,
+  },
   expenseIcon: {
     fontSize: Typography.sizes.xl,
     marginRight: Spacing.md,
-  } as TextStyle,
+  },
   expenseDetails: {
     flex: 1,
-  } as ViewStyle,
+  },
   expenseDescription: {
     fontSize: Typography.sizes.base,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
-  } as TextStyle,
+  },
   expenseDate: {
     fontSize: Typography.sizes.sm,
     color: Colors.text.secondary,
-  } as TextStyle,
+  },
   expenseAmount: {
     fontSize: Typography.sizes.lg,
-    fontWeight: "700" as const,
+    fontWeight: "700",
     color: Colors.error,
-  } as TextStyle,
+  },
   expenseFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
-  } as ViewStyle,
+  },
   expenseMeta: {
     alignItems: "flex-start",
-  } as ViewStyle,
+  },
   paidByLabel: {
     fontSize: Typography.sizes.xs,
     color: Colors.text.secondary,
     marginBottom: Spacing.xs,
-  } as TextStyle,
+  },
   paidByValue: {
     fontSize: Typography.sizes.sm,
-    fontWeight: "500" as const,
+    fontWeight: "500",
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   splitLabel: {
     fontSize: Typography.sizes.xs,
     color: Colors.text.secondary,
     marginBottom: Spacing.xs,
-  } as TextStyle,
+  },
   splitValue: {
     fontSize: Typography.sizes.sm,
-    fontWeight: "500" as const,
+    fontWeight: "500",
     color: Colors.text.primary,
-  } as TextStyle,
+  },
   balanceSettleButton: {
     width: 40,
     height: 40,
@@ -674,9 +637,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-  } as ViewStyle,
+  },
   balanceSettleIcon: {
     fontSize: Typography.sizes.xl,
     color: Colors.success,
-  } as TextStyle,
+  },
 });
