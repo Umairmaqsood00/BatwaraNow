@@ -1,28 +1,25 @@
-# Expense Split App
+# BatwaraNow
 
 **Developed by Umair**
 
 *Built with React Native and Expo*
 
 A modern, mobile-friendly React Native app for splitting expenses between friends and family during trips and events.
-
+ This project is for learning/demo purposes only. Unauthorized reuse, distribution, or modification of this code without permission is prohibited.
+ 
 ## Features
 
 ### ✈️ Trip Management
 - Create trips with custom names
 - Add multiple participants to each trip
 - View all your trips in a clean list
+- Settlement History (if someone pays back it will have a record in this section )
 
 ### 💰 Expense Tracking
 - Add expenses with descriptions and amounts
 - Specify who paid for each expense
 - Choose who should split each expense
 - Automatic date tracking
-
-### ⚖️ Balance Calculation
-- Automatic calculation of who owes whom
-- Clear display of outstanding balances
-- Optimized settlement suggestions
 
 ### 🎨 Modern UI
 - Clean, responsive design with soft colors
@@ -60,12 +57,11 @@ A modern, mobile-friendly React Native app for splitting expenses between friend
 - npm or yarn
 - Expo CLI
 
-
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <https://github.com/Umairmaqsood00/ExpenseTracker_By_Umair>
+git clone <https://github.com/Umairmaqsood00/BatwaraNow>
 cd expensetracker
 ```
 
@@ -78,7 +74,6 @@ npm install
 ```bash
 npm start
 ```
-
 4. Run on your preferred platform:
 - Press `i` for iOS simulator
 - Press `a` for Android emulator
@@ -95,7 +90,7 @@ npm start
 - [ ] Photo receipts
 - [ ] Payment integration
 - [ ] Group chat features
-      <div align="center"> <img src="https://github.com/user-attachments/assets/a42263fe-afcd-4d77-933b-6074e8cd91a8" width="300"/> <img src="https://github.com/user-attachments/assets/2fa7881d-e74f-4394-bc46-7b3e973903c8" width="300"/> <img src="https://github.com/user-attachments/assets/c39db3cf-905e-4c1c-8d6c-a17abba43eb4" width="300"/> <img src="https://github.com/user-attachments/assets/8e1ab687-98e8-418f-b60b-f0ec9b672f71" width="300"/> <img src="https://github.com/user-attachments/assets/5a115dd2-8902-4151-8e68-12b8f1413908" width="300"/> <img src="https://github.com/user-attachments/assets/6e3e1506-e88e-4354-9fd1-00181a310910" width="300"/> <img src="https://github.com/user-attachments/assets/d3aa9ee3-e960-4a85-a0fa-3762d0abc161" width="300"/> </div>
+   
 
 
 
