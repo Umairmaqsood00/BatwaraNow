@@ -1,13 +1,14 @@
+import { Colors } from '@/constants/DesignSystem';
 import { storage, type SettlementHistory } from '@/utils/storage';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 export default function SettingsScreen() {
@@ -46,10 +47,10 @@ export default function SettingsScreen() {
             ) : (
               history.slice().reverse().map(entry => (
                 <View key={entry.id} style={{ marginBottom: 12 }}>
-                  <Text style={{ fontWeight: 'bold', color: '#ECEDEE' }}>
+                  <Text style={{ fontWeight: 'bold', color: Colors.text.primary }}>
                     {entry.from} paid {entry.to} Rs.{entry.amount.toFixed(2)}
                   </Text>
-                  <Text style={{ color: '#7f8c8d', fontSize: 12 }}>
+                  <Text style={{ color: Colors.text.secondary, fontSize: 12 }}>
                     {new Date(entry.settledAt).toLocaleString()} • Trip: {entry.tripName}
                   </Text>
                 </View>
@@ -109,7 +110,7 @@ export default function SettingsScreen() {
                 Alert.alert('Success', 'Settlement history cleared.');
               }}
             >
-              <Text style={[styles.menuText, { color: '#ff7b72' }]}>Clear Settlement History</Text>
+              <Text style={[styles.menuText, { color: Colors.error }]}>Clear Settlement History</Text>
               <Text style={styles.menuArrow}>→</Text>
             </TouchableOpacity>
           </View>
@@ -122,7 +123,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#151718', // dark background
+    backgroundColor: Colors.background.primary,
   },
   header: {
     padding: 20,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ECEDEE', // light text
+    color: Colors.text.primary,
   },
   content: {
     flex: 1,
@@ -143,11 +144,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ECEDEE', // light text
+    color: Colors.text.primary,
     marginBottom: 12,
   },
   card: {
-    backgroundColor: '#23262b', // dark card
+    backgroundColor: Colors.background.secondary,
     borderRadius: 16,
     padding: 20,
     shadowColor: '#000',
@@ -162,28 +163,28 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ECEDEE', // light text
+    color: Colors.text.primary,
     marginBottom: 4,
   },
   version: {
     fontSize: 14,
-    color: '#7f8c8d',
+    color: Colors.text.secondary,
     marginBottom: 12,
   },
   developer: {
     fontSize: 14,
-    color: '#4fa3ff', 
+    color: '#3b82f6',
     marginBottom: 12,
   },
   tech: {
     fontSize: 12,
-    color: '#7f8c8d',
+    color: Colors.text.secondary,
     marginBottom: 12,
     fontStyle: 'italic',
   },
   description: {
     fontSize: 16,
-    color: '#ECEDEE',
+    color: Colors.text.primary,
     lineHeight: 24,
   },
   featureItem: {
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 16,
-    color: '#ECEDEE', 
+    color: Colors.text.primary,
   },
   stepItem: {
     flexDirection: 'row',
@@ -208,8 +209,8 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#4fa3ff', 
-    color: 'white',
+    backgroundColor: Colors.primary[600],
+    color: Colors.background.primary,
     textAlign: 'center',
     lineHeight: 24,
     fontSize: 14,
@@ -218,7 +219,7 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: 16,
-    color: '#ECEDEE', // light text
+    color: Colors.text.primary,
     flex: 1,
   },
   menuItem: {
@@ -227,14 +228,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#23262b', // dark border
+    borderBottomColor: Colors.background.quaternary,
   },
   menuText: {
     fontSize: 16,
-    color: '#ECEDEE', // light text
+    color: Colors.text.primary,
   },
   menuArrow: {
     fontSize: 16,
-    color: '#7f8c8d',
+    color: Colors.text.secondary,
   },
 });

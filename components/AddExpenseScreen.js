@@ -16,10 +16,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TextStyle,
   TouchableOpacity,
-  View,
-  ViewStyle,
+  View
 } from "react-native";
 
 export default function AddExpenseScreen({
@@ -209,7 +207,7 @@ export default function AddExpenseScreen({
 
           <View style={styles.summaryCard}>
             <LinearGradient
-              colors={[Colors.primary[50], Colors.primary[100]]}
+              colors={[Colors.background.secondary, Colors.background.tertiary]}
               style={styles.summaryGradient}
             >
               <Text style={styles.summaryTitle}>Expense Summary</Text>
@@ -455,6 +453,7 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     borderRadius: BorderRadius.lg,
+    backgroundColor: Colors.background.secondary,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -464,6 +463,7 @@ const styles = StyleSheet.create({
   summaryGradient: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
+    backgroundColor: Colors.background.tertiary,
   },
   summaryTitle: {
     fontSize: Typography.sizes.lg,
@@ -476,15 +476,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: Spacing.sm,
+    backgroundColor: Colors.background.quaternary,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
   },
   summaryLabel: {
     fontSize: Typography.sizes.sm,
-    color: Colors.text.secondary,
+    color: Colors.text.primary,
   },
   summaryValue: {
     fontSize: Typography.sizes.base,
     fontWeight: "600",
-    color: Colors.text.primary,
+    color: Colors.primary[500],
   },
   bottomActions: {
     flexDirection: "row",
@@ -513,7 +516,7 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   addExpenseButton: {
-    backgroundColor: "#b7bac0ff",
+    backgroundColor: Colors.primary[500],
     borderRadius: 23,
     paddingVertical: 10,
     paddingHorizontal: 26,

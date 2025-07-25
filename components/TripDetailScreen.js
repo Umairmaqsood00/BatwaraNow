@@ -15,10 +15,8 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextStyle,
   TouchableOpacity,
-  View,
-  ViewStyle,
+  View
 } from "react-native";
 
 function getPayers(expense) {
@@ -67,72 +65,6 @@ const renderExpenseItem = ({ item }) => (
   </View>
 );
 
-const renderBalanceItem = (
-  balance,
-  index
-) => (
-  <View key={index} style={styles.balanceCard}>
-    <LinearGradient
-      colors={[Colors.secondary[50], Colors.secondary[100]]}
-      style={styles.balanceGradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      <View style={styles.balanceContent}>
-        <View style={styles.balanceLeftSection}>
-          <View style={styles.balanceIconContainer}>
-            <Text style={styles.balanceIcon}>{Icons.balance}</Text>
-          </View>
-          <View style={styles.balanceInfo}>
-            <Text style={styles.balanceText}>
-              <Text style={styles.balanceFrom}>{balance.from}</Text>
-              <Text style={styles.balanceArrow}> owes </Text>
-              <Text style={styles.balanceTo}>{balance.to}</Text>
-            </Text>
-            <Text style={styles.balanceAmount}>
-              Rs.{balance.amount.toFixed(2)}
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          style={styles.balanceSettleButton}
-          onPress={() => {
-            console.log("=== SETTLE BUTTON PRESSED ===");
-            console.log(
-              "From:",
-              balance.from,
-              "To:",
-              balance.to,
-              "Amount:",
-              balance.amount
-            );
-            Alert.alert(
-              "Mark as Paid",
-              `Mark that ${balance.from} has paid ${
-                balance.to
-              } Rs.${balance.amount.toFixed(2)}?`,
-              [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Mark as Paid",
-                  style: "default",
-                  onPress: () => {
-                    console.log("=== CONFIRMED SETTLEMENT ===");
-                    onSettleBalance?.(balance.from, balance.to);
-                  },
-                },
-              ]
-            );
-          }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.balanceSettleIcon}>{Icons.check}</Text>
-        </TouchableOpacity>
-      </View>
-    </LinearGradient>
-  </View>
-);
-
 export default function TripDetailScreen({
   trip,
   expenses,
@@ -148,6 +80,72 @@ export default function TripDetailScreen({
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + expense.amount,
     0
+  );
+
+  const renderBalanceItem = (
+    balance,
+    index
+  ) => (
+    <View key={index} style={styles.balanceCard}>
+      <LinearGradient
+        colors={[Colors.background.secondary, Colors.background.tertiary]}
+        style={styles.balanceGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={styles.balanceContent}>
+          <View style={styles.balanceLeftSection}>
+            <View style={styles.balanceIconContainer}>
+              <Text style={styles.balanceIcon}>{Icons.balance}</Text>
+            </View>
+            <View style={styles.balanceInfo}>
+              <Text style={styles.balanceText}>
+                <Text style={styles.balanceFrom}>{balance.from}</Text>
+                <Text style={styles.balanceArrow}> owes </Text>
+                <Text style={styles.balanceTo}>{balance.to}</Text>
+              </Text>
+              <Text style={styles.balanceAmount}>
+                Rs.{balance.amount.toFixed(2)}
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.balanceSettleButton}
+            onPress={() => {
+              console.log("=== SETTLE BUTTON PRESSED ===");
+              console.log(
+                "From:",
+                balance.from,
+                "To:",
+                balance.to,
+                "Amount:",
+                balance.amount
+              );
+              Alert.alert(
+                "Mark as Paid",
+                `Mark that ${balance.from} has paid ${
+                  balance.to
+                } Rs.${balance.amount.toFixed(2)}?`,
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Mark as Paid",
+                    style: "default",
+                    onPress: () => {
+                      console.log("=== CONFIRMED SETTLEMENT ===");
+                      onSettleBalance?.(balance.from, balance.to);
+                    },
+                  },
+                ]
+              );
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text style={styles.balanceSettleIcon}>{Icons.check}</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+    </View>
   );
 
   return (
@@ -182,7 +180,7 @@ export default function TripDetailScreen({
           <View style={styles.summaryRow}>
             <View style={styles.summaryCard}>
               <LinearGradient
-                colors={[Colors.primary[50], Colors.primary[100]]}
+                colors={[Colors.background.secondary, Colors.background.tertiary]}
                 style={styles.summaryGradient}
               >
                 <Text style={styles.summaryIcon}>{Icons.money}</Text>
@@ -194,7 +192,7 @@ export default function TripDetailScreen({
             </View>
             <View style={styles.summaryCard}>
               <LinearGradient
-                colors={[Colors.secondary[50], Colors.secondary[100]]}
+                colors={[Colors.background.secondary, Colors.background.tertiary]}
                 style={styles.summaryGradient}
               >
                 <Text style={styles.summaryIcon}>{Icons.users}</Text>
@@ -389,7 +387,7 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: Typography.sizes.xs,
-    color: Colors.text.secondary,
+    color: Colors.text.primary,
     textAlign: "center",
   },
   section: {
@@ -596,7 +594,7 @@ const styles = StyleSheet.create({
   expenseAmount: {
     fontSize: Typography.sizes.lg,
     fontWeight: "700",
-    color: Colors.error,
+    color: Colors.text.primary,
   },
   expenseFooter: {
     flexDirection: "row",

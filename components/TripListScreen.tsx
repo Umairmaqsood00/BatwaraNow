@@ -316,23 +316,19 @@ const styles = StyleSheet.create({
   tripCard: {
     borderRadius: BorderRadius.xl,
     ...Shadows.lg,
-    minWidth: 320,
-    maxWidth: 500,
-    alignSelf: "center",
+    width: "100%",
+    backgroundColor: Colors.background.secondary,
   } as ViewStyle,
   tripCardContent: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
-    minWidth: 320,
-    maxWidth: 500,
-    alignSelf: "center",
+    width: "100%",
+    minHeight: 180,
   } as ViewStyle,
   cardGradient: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
-    minWidth: 320,
-    maxWidth: 500,
-    alignSelf: "center",
+    width: "100%",
   } as ViewStyle,
   tripHeader: {
     flexDirection: "row",
@@ -362,6 +358,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexWrap: "wrap",
     minWidth: 0,
+    lineHeight: Typography.sizes.lg * 1.2,
   } as TextStyle,
   tripSubtitle: {
     fontSize: Typography.sizes.sm,
@@ -390,7 +387,7 @@ const styles = StyleSheet.create({
   amountValue: {
     fontSize: Typography.sizes.lg,
     fontWeight: "700" as const,
-    color: Colors.secondary[500],
+    color: Colors.primary[500], // Changed to white for better visibility
     minWidth: 0,
     flexShrink: 1,
     flexWrap: "wrap",
@@ -459,15 +456,21 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   statItem: {
     alignItems: "center",
+    backgroundColor: Colors.background.tertiary,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    minWidth: 60,
+    marginLeft: Spacing.sm,
   } as ViewStyle,
   statIcon: {
     fontSize: Typography.sizes.sm,
     marginBottom: Spacing.xs,
+    color: Colors.text.primary,
   } as TextStyle,
   statValue: {
     fontSize: Typography.sizes.sm,
     fontWeight: "600" as const,
-    color: Colors.text.primary,
+    color: Colors.primary[500], // Changed to white for better visibility
   } as TextStyle,
   deleteButton: {
     backgroundColor: Colors.error,

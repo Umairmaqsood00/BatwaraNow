@@ -1,20 +1,20 @@
 import {
-  BorderRadius,
-  Colors,
-  Shadows,
-  Spacing,
-  Typography,
+    BorderRadius,
+    Colors,
+    Shadows,
+    Spacing,
+    Typography,
 } from "@/constants/DesignSystem";
 import React from "react";
 import {
-  ActivityIndicator,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    ActivityIndicator,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TextStyle,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from "react-native";
 
 interface GradientButtonProps {
@@ -43,15 +43,15 @@ export default function GradientButton({
   const getGradientColors = (): [string, string] => {
     switch (variant) {
       case "secondary":
-        return ["#4CAF50", "#388E3C"];
+        return ["#ffffff", "#d9d9d9"];
       case "success":
-        return ["#4CAF50", "#388E3C"];
+        return ["#a0a0a0", "#737373"];
       case "warning":
-        return ["#FF9800", "#F57C00"];
+        return ["#bfbfbf", "#8c8c8c"];
       case "error":
-        return ["#F44336", "#D32F2F"];
+        return ["#d9d9d9", "#808080"];
       default:
-        return ["#2196F3", "#1976D2"];
+        return ["#000000", "#333333"];
     }
   };
 
