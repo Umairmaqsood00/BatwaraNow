@@ -62,7 +62,7 @@ A modern, mobile-friendly React Native app for splitting expenses between friend
 1. Clone the repository:
 ```bash
 git clone <https://github.com/Umairmaqsood00/BatwaraNow>
-cd expensetracker
+cd BatwaraNow
 ```
 
 2. Install dependencies:
