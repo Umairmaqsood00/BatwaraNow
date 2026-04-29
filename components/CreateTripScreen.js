@@ -1,25 +1,21 @@
-import {
-  BorderRadius,
-  Colors,
-  Icons,
-  Spacing,
-  Typography,
-} from "@/constants/DesignSystem";
-import { LinearGradient } from "expo-linear-gradient";
+import InputField from "@/components/InputField";
+import { BlurView } from "expo-blur";
 import React, { useState } from "react";
 import {
   Alert,
-  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CreateTripScreen({ onSave, onCancel }) {
+  const insets = useSafeAreaInsets();
   const [tripName, setTripName] = useState("");
   const [participants, setParticipants] = useState([""]);
 
@@ -61,91 +57,117 @@ export default function CreateTripScreen({ onSave, onCancel }) {
     });
   };
 
+  const renderRemoveParticipant = (index) => (
+    <Pressable
+      onPress={() => removeParticipant(index)}
+      style={({ pressed }) => [
+        styles.removeButton,
+        pressed && styles.pressedScale,
+      ]}
+    >
+      <Text style={styles.removeButtonText}>✕</Text>
+    </Pressable>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      <LinearGradient
-        colors={[Colors.background.secondary, Colors.background.primary]}
-        style={styles.header}
+      <BlurView
+        intensity={24}
+        tint="dark"
+        style={[styles.headerBlur, { paddingTop: insets.top + 4 }]}
       >
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-            <Text style={styles.cancelIcon}>{Icons.close}</Text>
-          </TouchableOpacity>
-          <View style={styles.headerInfo}>
+          <Pressable
+            onPress={onCancel}
+            style={({ pressed }) => [
+              styles.closeButton,
+              pressed && styles.pressedScale,
+            ]}
+          >
+            <Text style={styles.closeIcon}>✕</Text>
+          </Pressable>
+          <View style={styles.headerTextWrap}>
             <Text style={styles.headerTitle}>Create New Trip</Text>
             <Text style={styles.headerSubtitle}>
-              Start tracking expenses together
+              Start tracking shared expenses with your group
             </Text>
           </View>
-          <View style={styles.headerSpacer} />
         </View>
-      </LinearGradient>
+      </BlurView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.trip}</Text> Trip Name
-            </Text>
-            <TextInput
-              style={styles.input}
+      <KeyboardAvoidingView
+        style={styles.content}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="none"
+        >
+          <View style={styles.form}>
+            <InputField
+              label="Trip Name"
               value={tripName}
               onChangeText={setTripName}
               placeholder="Enter trip name"
-              placeholderTextColor={Colors.text.tertiary}
             />
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.users}</Text> Participants
-            </Text>
-            {participants.map((participant, index) => (
-              <View key={index} style={styles.participantInput}>
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
+            <View style={styles.participantsSection}>
+              <Text style={styles.sectionLabel}>Participants</Text>
+              {participants.map((participant, index) => (
+                <InputField
+                  key={`${index}`}
                   value={participant}
                   onChangeText={(text) => updateParticipant(text, index)}
                   placeholder={`Participant ${index + 1}`}
-                  placeholderTextColor={Colors.text.tertiary}
+                  containerStyle={styles.participantInput}
+                  rightElement={
+                    participants.length > 1
+                      ? renderRemoveParticipant(index)
+                      : null
+                  }
                 />
-                {participants.length > 1 && (
-                  <TouchableOpacity
-                    style={styles.removeButton}
-                    onPress={() => removeParticipant(index)}
-                  >
-                    <Text style={styles.removeButtonText}>{Icons.close}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            ))}
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={addParticipant}
-            >
-              <Text style={styles.addButtonText}>
-                {Icons.add} Add Participant
-              </Text>
-            </TouchableOpacity>
+              ))}
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.addParticipantButton,
+                  pressed && styles.addParticipantButtonPressed,
+                ]}
+                onPress={addParticipant}
+              >
+                <Text style={styles.addParticipantButtonText}>
+                  ＋ Add Participant
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <View style={styles.bottomActions}>
-        <TouchableOpacity
-          style={styles.cancelActionButton}
+        <Pressable
+          style={({ pressed }) => [
+            styles.cancelActionButton,
+            pressed && styles.pressedScale,
+          ]}
           onPress={onCancel}
         >
           <Text style={styles.cancelActionText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.createButton}
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.createButton,
+            pressed && styles.pressedScale,
+          ]}
           onPress={handleSave}
         >
           <Text style={styles.createButtonText}>Create Trip</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -154,143 +176,145 @@ export default function CreateTripScreen({ onSave, onCancel }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: "#05080F",
   },
-  header: {
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    borderBottomLeftRadius: BorderRadius.xl,
-    borderBottomRightRadius: BorderRadius.xl,
+  headerBlur: {
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.02)",
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
-  cancelButton: {
+  closeButton: {
     width: 40,
     height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.background.secondary,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.07)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: Spacing.md,
+    marginRight: 12,
   },
-  cancelIcon: {
-    fontSize: Typography.sizes.lg,
-    color: Colors.text.primary,
+  closeIcon: {
+    fontSize: 16,
+    color: "#E5E7EB",
   },
-  headerInfo: {
+  headerTextWrap: {
     flex: 1,
   },
   headerTitle: {
-    fontSize: Typography.sizes.xl,
+    fontSize: 24,
     fontWeight: "700",
-    color: Colors.text.primary,
-    marginBottom: Spacing.xs,
+    color: "#E5E7EB",
+    marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.text.secondary,
-  },
-  headerSpacer: {
-    width: 40,
+    fontSize: 13,
+    color: "#6B7280",
   },
   content: {
     flex: 1,
   },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   form: {
-    padding: Spacing.lg,
+    padding: 16,
   },
-  inputGroup: {
-    marginBottom: Spacing.xl,
+  participantsSection: {
+    marginTop: 8,
   },
-  label: {
-    fontSize: Typography.sizes.base,
-    fontWeight: "600",
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
-  },
-  labelIcon: {
-    marginRight: Spacing.sm,
-  },
-  input: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    fontSize: Typography.sizes.base,
-    color: Colors.text.primary,
-    borderWidth: 1,
-    borderColor: Colors.neutral[700],
+  sectionLabel: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginBottom: 8,
+    fontWeight: "500",
   },
   participantInput: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: Spacing.md,
+    marginBottom: 12,
   },
   removeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.background.tertiary,
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: Spacing.sm,
+    marginLeft: 8,
   },
   removeButtonText: {
-    fontSize: Typography.sizes.base,
-    color: Colors.text.secondary,
+    fontSize: 13,
+    color: "#9CA3AF",
   },
-  addButton: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    alignItems: "center",
+  addParticipantButton: {
+    height: 48,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.primary[500],
-    marginTop: Spacing.sm,
+    borderStyle: "dashed",
+    borderColor: "rgba(255,255,255,0.14)",
+    backgroundColor: "rgba(255,255,255,0.02)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  addButtonText: {
-    fontSize: Typography.sizes.base,
-    color: Colors.primary[500],
+  addParticipantButtonPressed: {
+    borderColor: "#4F7CFF",
+    backgroundColor: "rgba(79,124,255,0.10)",
+    transform: [{ scale: 0.98 }],
+  },
+  addParticipantButtonText: {
+    fontSize: 15,
+    color: "#9FB8FF",
     fontWeight: "600",
   },
   bottomActions: {
     flexDirection: "row",
-    padding: Spacing.lg,
-    backgroundColor: Colors.background.secondary,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+    backgroundColor: "#05080F",
     borderTopWidth: 1,
-    borderTopColor: Colors.neutral[700],
-    gap: Spacing.md,
+    borderTopColor: "rgba(255,255,255,0.06)",
+    gap: 12,
   },
   cancelActionButton: {
     flex: 1,
-    backgroundColor: Colors.background.tertiary,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    height: 48,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+    backgroundColor: "rgba(255,255,255,0.02)",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Colors.neutral[700],
   },
   cancelActionText: {
-    fontSize: Typography.sizes.base,
+    fontSize: 15,
     fontWeight: "600",
-    color: Colors.text.secondary,
+    color: "#9CA3AF",
   },
   createButton: {
-    flex: 2,
-    backgroundColor: Colors.primary[500],
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    flex: 1.4,
+    height: 48,
+    borderRadius: 999,
+    backgroundColor: "rgba(79,124,255,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(79,124,255,0.30)",
     alignItems: "center",
     justifyContent: "center",
   },
   createButtonText: {
-    fontSize: Typography.sizes.base,
+    fontSize: 15,
     fontWeight: "600",
-    color: Colors.background.primary,
+    color: "#4F7CFF",
+  },
+  pressedScale: {
+    transform: [{ scale: 0.97 }],
   },
 }); 
