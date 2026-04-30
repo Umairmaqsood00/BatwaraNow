@@ -53,6 +53,7 @@ const SectionHeader = memo(({ title, icon }) => (
     <Text style={styles.sectionTitle}>{title}</Text>
   </View>
 ));
+SectionHeader.displayName = "SectionHeader";
 
 const AmountInput = memo(({ value, onChangeText }) => {
   return (
@@ -69,6 +70,7 @@ const AmountInput = memo(({ value, onChangeText }) => {
     </View>
   );
 });
+AmountInput.displayName = "AmountInput";
 
 const PayerInput = memo(
   React.forwardRef(function PayerInput({ participant }, ref) {
@@ -129,6 +131,7 @@ const ParticipantCheckbox = memo(({ participant, isSelected, onToggle }) => {
     </Pressable>
   );
 });
+ParticipantCheckbox.displayName = "ParticipantCheckbox";
 
 // ─── Main Screen Component ─────────────────────────────────────────────────────
 

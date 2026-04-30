@@ -31,7 +31,6 @@ export default function ExpenseSplitApp() {
   const [settledBalances, setSettledBalances] = useState<Balance[]>([]);
   const [settlementHistory, setSettlementHistory] = useState<SettlementHistory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -162,7 +161,7 @@ export default function ExpenseSplitApp() {
   const handleSaveExpense = async (expenseData: {
     description: string;
     amount: number;
-    paidBy: Array<{ name: string; amount: number }>;
+    paidBy: { name: string; amount: number }[];
     splitBetween: string[];
   }) => {
     if (!selectedTripId) return;
@@ -285,7 +284,7 @@ export default function ExpenseSplitApp() {
     updatedData: {
       description: string;
       amount: number;
-      paidBy: Array<{ name: string; amount: number }>;
+      paidBy: { name: string; amount: number }[];
       splitBetween: string[];
     }
   ) => {

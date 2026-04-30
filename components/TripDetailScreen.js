@@ -90,6 +90,7 @@ const ExpenseItem = memo(({ item }) => {
     </Card>
   );
 });
+ExpenseItem.displayName = "ExpenseItem";
 
 const BalanceItem = memo(({ balance, onSettleBalance }) => {
   return (
@@ -135,6 +136,7 @@ const BalanceItem = memo(({ balance, onSettleBalance }) => {
     </Card>
   );
 });
+BalanceItem.displayName = "BalanceItem";
 
 const ScreenHeader = memo(({ trip, expensesCount, onBack, onAddExpense }) => {
   const insets = useSafeAreaInsets();
@@ -177,6 +179,8 @@ const ScreenHeader = memo(({ trip, expensesCount, onBack, onAddExpense }) => {
     </BlurView>
   );
 });
+ScreenHeader.displayName = "ScreenHeader";
+ScreenHeader.displayName = "ScreenHeader";
 
 // ─── Main Screen Component ─────────────────────────────────────────────────────
 
@@ -191,6 +195,7 @@ export default function TripDetailScreen({
   onUpdateExpense,
   onSettleBalance,
   onUpdateTrip,
+  onDeleteTrip,
 }) {
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + expense.amount,

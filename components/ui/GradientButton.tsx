@@ -40,21 +40,6 @@ export default function GradientButton({
   style,
   textStyle,
 }: GradientButtonProps) {
-  const getGradientColors = (): [string, string] => {
-    switch (variant) {
-      case "secondary":
-        return ["#ffffff", "#d9d9d9"];
-      case "success":
-        return ["#a0a0a0", "#737373"];
-      case "warning":
-        return ["#bfbfbf", "#8c8c8c"];
-      case "error":
-        return ["#d9d9d9", "#808080"];
-      default:
-        return ["#000000", "#333333"];
-    }
-  };
-
   const getButtonStyle = (): StyleProp<ViewStyle> => {
     const baseStyle = styles.button;
     const sizeStyle = styles[size];
