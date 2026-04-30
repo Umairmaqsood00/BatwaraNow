@@ -17,6 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "pan",
       "package": "com.umairmaqsood488.expensetracker"
     },
     "web": {
@@ -45,9 +46,7 @@
         "projectId": "6a163f9e-103f-4e65-92cf-f9482712ba23"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/6a163f9e-103f-4e65-92cf-f9482712ba23"
     }

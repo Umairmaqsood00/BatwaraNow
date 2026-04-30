@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 const colors = {
@@ -10,7 +10,13 @@ const colors = {
   textSecondary: "#6B7280",
 };
 
-export default function InputField({
+// memo() is CRITICAL here.
+// Without it, when isFocused changes, React re-renders the parent component
+// (e.g. CreateTripScreen) which then reconciles ALL children including
+// ParticipantInputs — causing Android to reset native TextInput focus.
+// With memo(), the isFocused state update stays fully contained inside
+// this component and the parent never re-renders.
+const InputField = memo(function InputField({
   label,
   value,
   onChangeText,
@@ -19,6 +25,9 @@ export default function InputField({
   containerStyle,
 }) {
   const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = useCallback(() => setIsFocused(true), []);
+  const handleBlur = useCallback(() => setIsFocused(false), []);
 
   const wrapperStyle = useMemo(
     () => [
@@ -39,14 +48,16 @@ export default function InputField({
           placeholder={placeholder}
           placeholderTextColor={colors.textSecondary}
           style={styles.input}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
         {rightElement}
       </View>
     </View>
   );
-}
+});
+
+export default InputField;
 
 const styles = StyleSheet.create({
   group: {
@@ -71,11 +82,6 @@ const styles = StyleSheet.create({
   inputWrapperFocused: {
     borderColor: colors.primary,
     backgroundColor: colors.primarySoft,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.22,
-    shadowRadius: 10,
-    elevation: 2,
   },
   input: {
     flex: 1,

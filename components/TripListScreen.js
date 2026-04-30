@@ -34,9 +34,8 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 /** @param {TripListScreenProps} props */
 export default function TripListScreen({ trips, onTripPress, onCreateNewTrip }) {
   const insets = useSafeAreaInsets();
-  const activeTripsLabel = `${trips.length} Active ${
-    trips.length === 1 ? "Trip" : "Trips"
-  }`;
+  const activeTripsLabel = `${trips.length} Active ${trips.length === 1 ? "Trip" : "Trips"
+    }`;
 
   /** @param {{ item: Trip }} param0 */
   const renderTripItem = ({ item }) => (
@@ -79,7 +78,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip }) 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#070B14" />
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <View style={[styles.header, { paddingTop: insets.top - 15 }]}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerTextWrap}>
             <Text style={styles.headerTitle}>My Trips</Text>
@@ -240,7 +239,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   tripAmount: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
     color: ACCENT,
   },

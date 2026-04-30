@@ -1,57 +1,159 @@
-import GradientButton from "@/components/ui/GradientButton";
-import {
-  BorderRadius,
-  Colors,
-  Icons,
-  Spacing,
-  Typography,
-} from "@/constants/DesignSystem";
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import InputField from "@/components/InputField";
+import { Icons } from "@/constants/DesignSystem";
+import { BlurView } from "expo-blur";
+import React, { memo, useCallback, useImperativeHandle, useRef, useState } from "react";
 import {
   Alert,
-  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
-  View
+  View,
 } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function AddExpenseScreen({
-  participants,
-  onSave,
-  onCancel,
-}) {
+// ─── Reusable Components ──────────────────────────────────────────────────────
+
+const ScreenHeader = memo(function ScreenHeader({ onCancel }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <BlurView
+      intensity={24}
+      tint="dark"
+      style={[styles.headerBlur, { paddingTop: insets.top - 10 }]}
+    >
+      <View style={styles.headerContent}>
+        <Pressable
+          onPress={onCancel}
+          style={({ pressed }) => [
+            styles.closeButton,
+            pressed && styles.pressedScale,
+          ]}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text style={styles.closeIcon}>{Icons.close}</Text>
+        </Pressable>
+        <View style={styles.headerTextWrap}>
+          <Text style={styles.headerTitle}>Add Expense</Text>
+          <Text style={styles.headerSubtitle}>Track and split your expense</Text>
+        </View>
+        <View style={{ width: 40 }} />
+      </View>
+    </BlurView>
+  );
+});
+
+const SectionHeader = memo(({ title, icon }) => (
+  <View style={styles.sectionHeader}>
+    {icon && <Text style={styles.sectionIcon}>{icon}</Text>}
+    <Text style={styles.sectionTitle}>{title}</Text>
+  </View>
+));
+
+const AmountInput = memo(({ value, onChangeText }) => {
+  return (
+    <View style={styles.amountContainer}>
+      <Text style={styles.currencySymbol}>Rs.</Text>
+      <TextInput
+        style={styles.amountInput}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder="0.00"
+        placeholderTextColor="rgba(79,124,255,0.4)"
+        keyboardType="numeric"
+      />
+    </View>
+  );
+});
+
+const PayerInput = memo(
+  React.forwardRef(function PayerInput({ participant }, ref) {
+    const valueRef = useRef("");
+
+    useImperativeHandle(ref, () => ({ getValue: () => valueRef.current }), []);
+
+    return (
+      <View style={styles.payerRow} focusable={false}>
+        <View style={styles.payerNameContainer}>
+          <View style={styles.payerAvatar}>
+            <Text style={styles.payerAvatarText}>
+              {participant.charAt(0).toUpperCase()}
+            </Text>
+          </View>
+          <Text style={styles.payerName} numberOfLines={1}>
+            {participant}
+          </Text>
+        </View>
+        <View style={styles.payerInputWrapper}>
+          <Text style={styles.payerCurrency}>Rs.</Text>
+          <TextInput
+            defaultValue=""
+            onChangeText={(text) => {
+              valueRef.current = text;
+            }}
+            placeholder="0.00"
+            placeholderTextColor="#6B7280"
+            style={styles.payerTextInput}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
+    );
+  })
+);
+
+const ParticipantCheckbox = memo(({ participant, isSelected, onToggle }) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.checkboxRow,
+        pressed && styles.pressedScale,
+      ]}
+      onPress={() => onToggle(participant)}
+    >
+      <View
+        style={[styles.checkbox, isSelected && styles.checkboxSelected]}
+      >
+        {isSelected && <Text style={styles.checkmark}>{Icons.check}</Text>}
+      </View>
+      <View style={styles.checkboxInfo}>
+        <Text style={styles.checkboxName}>{participant}</Text>
+        <Text style={styles.checkboxStatus}>
+          {isSelected ? "Included in split" : "Not included"}
+        </Text>
+      </View>
+    </Pressable>
+  );
+});
+
+// ─── Main Screen Component ─────────────────────────────────────────────────────
+
+export default function AddExpenseScreen({ participants, onSave, onCancel }) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [payerInputs, setPayerInputs] = useState(
-    participants.map((name) => ({ name, amount: "" }))
-  );
   const [splitBetween, setSplitBetween] = useState(participants);
 
-  const toggleParticipant = (participant) => {
+  // Map of participant name → ref object exposing getValue()
+  const payerRefs = useRef({});
+
+  const toggleParticipant = useCallback((participant) => {
     setSplitBetween((prev) =>
       prev.includes(participant)
         ? prev.filter((p) => p !== participant)
         : [...prev, participant]
     );
-  };
+  }, []);
 
-  const handlePayerAmountChange = (name, value) => {
-    setPayerInputs((prev) =>
-      prev.map((p) => (p.name === name ? { ...p, amount: value } : p))
-    );
-  };
-
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!description.trim()) {
       Alert.alert("Error", "Please enter a description");
       return;
     }
-    if (!amount || parseFloat(amount) <= 0) {
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       Alert.alert("Error", "Please enter a valid total amount");
       return;
     }
@@ -59,468 +161,442 @@ export default function AddExpenseScreen({
       Alert.alert("Error", "Please select at least one person to split with");
       return;
     }
-    const payers = payerInputs
-      .filter((p) => p.amount && parseFloat(p.amount) > 0)
-      .map((p) => ({ name: p.name, amount: parseFloat(p.amount) }));
+
+    // Read dynamic payer values safely via refs
+    const payers = participants
+      .map((p) => {
+        const val = payerRefs.current[p]?.getValue() || "";
+        return { name: p, amount: parseFloat(val) };
+      })
+      .filter((p) => !isNaN(p.amount) && p.amount > 0);
+
     const totalPaid = payers.reduce((sum, p) => sum + p.amount, 0);
+
     if (payers.length === 0) {
       Alert.alert("Error", "Please enter at least one payer and amount");
       return;
     }
+
     if (Math.abs(totalPaid - parseFloat(amount)) > 0.01) {
-      Alert.alert("Error", "Sum of payer amounts must equal total amount");
+      Alert.alert("Error", "Sum of payer amounts must equal the total amount");
       return;
     }
+
     onSave({
       description: description.trim(),
       amount: parseFloat(amount),
       paidBy: payers,
       splitBetween,
     });
-  };
+  }, [description, amount, splitBetween, participants, onSave]);
+
+  const splitAmount =
+    amount && !isNaN(parseFloat(amount)) && splitBetween.length > 0
+      ? (parseFloat(amount) / splitBetween.length).toFixed(2)
+      : "0.00";
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={Colors.background.primary}
-      />
+      <StatusBar barStyle="light-content" backgroundColor="#070B14" />
+      <ScreenHeader onCancel={onCancel} />
 
-      <LinearGradient
-        colors={[Colors.background.secondary, Colors.background.primary]}
-        style={styles.header}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.headerContent}>
-          <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-            <Text style={styles.cancelIcon}>{Icons.close}</Text>
-          </TouchableOpacity>
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerTitle}>Add Expense</Text>
-            <Text style={styles.headerSubtitle}>
-              Track and split your expense
-            </Text>
-          </View>
-          <View style={styles.headerSpacer} />
-        </View>
-      </LinearGradient>
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="none"
+        >
+          <View style={styles.form}>
+            {/* Description */}
+            <View style={styles.section}>
+              <SectionHeader title="Description" /* icon={Icons.expense} */ />
+              <InputField
+                value={description}
+                onChangeText={setDescription}
+                placeholder="What was this expense for?"
+              />
+            </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.expense}</Text> Description
-            </Text>
-            <TextInput
-              style={styles.input}
-              value={description}
-              onChangeText={setDescription}
-              placeholder="What was this expense for?"
-              placeholderTextColor={Colors.text.tertiary}
-            />
-          </View>
+            {/* Amount */}
+            <View style={styles.section}>
+              <SectionHeader title="Amount" /* icon={Icons.money} */ />
+              <AmountInput value={amount} onChangeText={setAmount} />
+            </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.money}</Text> Amount (Rs.)
-            </Text>
-            <TextInput
-              style={styles.input}
-              value={amount}
-              onChangeText={setAmount}
-              placeholder="0.00"
-              placeholderTextColor={Colors.text.tertiary}
-              keyboardType="numeric"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.user}</Text> Who Paid & How
-              Much
-            </Text>
-            {participants.map((participant) => (
-              <View
-                key={participant}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginBottom: 8,
-                }}
-              >
-                <Text style={{ width: 80, color: "#fff" }}>{participant}</Text>
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  value={
-                    payerInputs.find((p) => p.name === participant)?.amount ||
-                    ""
-                  }
-                  onChangeText={(value) =>
-                    handlePayerAmountChange(participant, value)
-                  }
-                  placeholder="0.00"
-                  placeholderTextColor={Colors.text.tertiary}
-                  keyboardType="numeric"
-                />
-              </View>
-            ))}
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              <Text style={styles.labelIcon}>{Icons.users}</Text> Split Between
-            </Text>
-            <View style={styles.checkboxContainer}>
-              {participants.map((participant) => (
-                <TouchableOpacity
-                  key={participant}
-                  style={styles.checkboxItem}
-                  onPress={() => toggleParticipant(participant)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.checkboxContent}>
-                    <View
-                      style={[
-                        styles.checkbox,
-                        splitBetween.includes(participant) &&
-                          styles.checkboxChecked,
-                      ]}
-                    >
-                      {splitBetween.includes(participant) && (
-                        <Text style={styles.checkboxCheckmark}>
-                          {Icons.check}
-                        </Text>
-                      )}
-                    </View>
-                    <View style={styles.checkboxInfo}>
-                      <Text style={styles.checkboxLabel}>{participant}</Text>
-                      <Text style={styles.checkboxSubtitle}>
-                        {splitBetween.includes(participant)
-                          ? "Included"
-                          : "Not included"}
-                      </Text>
-                    </View>
+            {/* Who Paid */}
+            <View style={styles.section}>
+              <SectionHeader title="Who Paid & How Much" icon={Icons.user} />
+              <View style={styles.card}>
+                {participants.map((participant, index) => (
+                  <View key={participant}>
+                    <PayerInput
+                      ref={(r) => {
+                        if (r) payerRefs.current[participant] = r;
+                        else delete payerRefs.current[participant];
+                      }}
+                      participant={participant}
+                    />
+                    {index < participants.length - 1 && (
+                      <View style={styles.divider} />
+                    )}
                   </View>
-                </TouchableOpacity>
-              ))}
+                ))}
+              </View>
+            </View>
+
+            {/* Split Between */}
+            <View style={styles.section}>
+              <SectionHeader title="Split Between" icon={Icons.users} />
+              <View style={styles.card}>
+                {participants.map((participant, index) => (
+                  <View key={participant}>
+                    <ParticipantCheckbox
+                      participant={participant}
+                      isSelected={splitBetween.includes(participant)}
+                      onToggle={toggleParticipant}
+                    />
+                    {index < participants.length - 1 && (
+                      <View style={styles.divider} />
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Summary */}
+            <View style={styles.section}>
+              <View style={styles.summaryCard}>
+                <View style={styles.summaryHeader}>
+                  <Text style={styles.summaryTitle}>Expense Summary</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>Amount per person</Text>
+                  <Text style={styles.summaryValue}>Rs. {splitAmount}</Text>
+                </View>
+                <View style={[styles.summaryRow, { marginBottom: 0 }]}>
+                  <Text style={styles.summaryLabel}>Splitting between</Text>
+                  <Text style={styles.summaryValue}>
+                    {splitBetween.length} people
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-
-          <View style={styles.summaryCard}>
-            <LinearGradient
-              colors={[Colors.background.secondary, Colors.background.tertiary]}
-              style={styles.summaryGradient}
-            >
-              <Text style={styles.summaryTitle}>Expense Summary</Text>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Amount per person:</Text>
-                <Text style={styles.summaryValue}>
-                  Rs.
-                  {amount && splitBetween.length > 0
-                    ? (parseFloat(amount) / splitBetween.length).toFixed(2)
-                    : "0.00"}
-                </Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Splitting between:</Text>
-                <Text style={styles.summaryValue}>
-                  {splitBetween.length} people
-                </Text>
-              </View>
-            </LinearGradient>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <View style={styles.bottomActions}>
-        <TouchableOpacity style={styles.cancelActionButton} onPress={onCancel}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.cancelActionButton,
+            pressed && styles.pressedScale,
+          ]}
+          onPress={onCancel}
+        >
           <Text style={styles.cancelActionText}>Cancel</Text>
-        </TouchableOpacity>
-        <GradientButton
-          title="Add Expense"
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.createButton,
+            pressed && styles.pressedScale,
+          ]}
           onPress={handleSave}
-          variant="primary"
-          size="large"
-          icon={Icons.add}
-          style={[styles.saveButton, styles.addExpenseButton]}
-        />
+        >
+          <Text style={styles.createButtonText}>Add Expense</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 }
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: "#070B14",
   },
-  header: {
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    borderBottomLeftRadius: BorderRadius.xl,
-    borderBottomRightRadius: BorderRadius.xl,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+  flex: {
+    flex: 1,
+  },
+  // ── Header ──
+  headerBlur: {
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.02)",
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
-  cancelButton: {
+  closeButton: {
     width: 40,
     height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.background.secondary,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.07)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: Spacing.md,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
-  cancelIcon: {
-    fontSize: Typography.sizes.lg,
-    color: Colors.text.primary,
+  closeIcon: {
+    fontSize: 16,
+    color: "#E5E7EB",
   },
-  headerInfo: {
+  headerTextWrap: {
     flex: 1,
+    alignItems: "center",
   },
   headerTitle: {
-    fontSize: Typography.sizes.xl,
+    fontSize: 20,
     fontWeight: "700",
-    color: Colors.text.primary,
-    marginBottom: Spacing.xs,
+    color: "#E5E7EB",
+    marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.text.secondary,
+    fontSize: 13,
+    color: "#6B7280",
   },
-  headerSpacer: {
-    width: 40,
-  },
-  content: {
-    flex: 1,
+  // ── Layout ──
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 40,
   },
   form: {
-    padding: Spacing.lg,
+    gap: 24,
   },
-  inputGroup: {
-    marginBottom: Spacing.xl,
+  section: {
+    gap: 8,
   },
-  label: {
-    fontSize: Typography.sizes.base,
-    fontWeight: "600",
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
-  },
-  labelIcon: {
-    marginRight: Spacing.sm,
-  },
-  input: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    fontSize: Typography.sizes.base,
-    color: Colors.text.primary,
-    borderWidth: 1,
-    borderColor: Colors.neutral[200],
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  dropdownContainer: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  dropdownOption: {
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.neutral[100],
-  },
-  dropdownOptionSelected: {
-    backgroundColor: Colors.primary[50],
-  },
-  dropdownOptionContent: {
+  sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 4,
   },
-  participantAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.neutral[300],
+  sectionIcon: {
+    fontSize: 16,
+    color: "#6B7280",
+    marginRight: 8,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#6B7280",
+  },
+  card: {
+    backgroundColor: "rgba(255,255,255,0.02)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    marginLeft: 16,
+  },
+  // ── Amount Input ──
+  amountContainer: {
+    backgroundColor: "rgba(79,124,255,0.05)",
+    borderWidth: 1,
+    borderColor: "rgba(79,124,255,0.2)",
+    borderRadius: 16,
+    padding: 10,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: Spacing.md,
   },
-  participantAvatarSelected: {
-    backgroundColor: Colors.primary[500],
-  },
-  participantInitial: {
-    fontSize: Typography.sizes.base,
+  currencySymbol: {
+    fontSize: 26,
+    color: "#4F7CFF",
+    marginRight: 8,
     fontWeight: "600",
-    color: Colors.text.primary,
   },
-  participantInitialSelected: {
-    color: Colors.text.inverse,
+  amountInput: {
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#E5E7EB",
+    padding: 0,
+    minWidth: 100,
   },
-  dropdownOptionText: {
-    fontSize: Typography.sizes.base,
-    color: Colors.text.primary,
+  // ── Payer Input ──
+  payerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+  },
+  payerNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginRight: 16,
+  },
+  payerAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  payerAvatarText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#E5E7EB",
+  },
+  payerName: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#E5E7EB",
     flex: 1,
   },
-  dropdownOptionTextSelected: {
-    color: Colors.primary[700],
-    fontWeight: "600",
-  },
-  checkmarkContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary[500],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkmark: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.text.inverse,
-  },
-  checkboxContainer: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  checkboxItem: {
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.neutral[100],
-  },
-  checkboxContent: {
+  payerInputWrapper: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 44,
+    width: 120,
+  },
+  payerCurrency: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginRight: 4,
+  },
+  payerTextInput: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#E5E7EB",
+    padding: 0,
+  },
+  // ── Checkbox Row ──
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
   },
   checkbox: {
-    width: 28,
-    height: 28,
-    borderRadius: BorderRadius.md,
+    width: 24,
+    height: 24,
+    borderRadius: 8,
     borderWidth: 2,
-    borderColor: Colors.neutral[400],
-    marginRight: Spacing.md,
+    borderColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 16,
   },
-  checkboxChecked: {
-    backgroundColor: Colors.primary[500],
-    borderColor: Colors.primary[500],
+  checkboxSelected: {
+    backgroundColor: "#4F7CFF",
+    borderColor: "#4F7CFF",
   },
-  checkboxCheckmark: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.text.inverse,
-    fontWeight: "700",
+  checkmark: {
+    fontSize: 14,
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
   checkboxInfo: {
     flex: 1,
   },
-  checkboxLabel: {
-    fontSize: Typography.sizes.base,
+  checkboxName: {
+    fontSize: 16,
     fontWeight: "500",
-    color: Colors.text.primary,
-    marginBottom: Spacing.xs,
+    color: "#E5E7EB",
+    marginBottom: 2,
   },
-  checkboxSubtitle: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.text.secondary,
+  checkboxStatus: {
+    fontSize: 13,
+    color: "#6B7280",
   },
+  // ── Summary Card ──
   summaryCard: {
-    borderRadius: BorderRadius.lg,
-    backgroundColor: Colors.background.secondary,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: "rgba(79,124,255,0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(79,124,255,0.2)",
+    borderRadius: 16,
+    padding: 16,
   },
-  summaryGradient: {
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    backgroundColor: Colors.background.tertiary,
+  summaryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
   },
   summaryTitle: {
-    fontSize: Typography.sizes.lg,
+    fontSize: 16,
     fontWeight: "600",
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
+    color: "#4F7CFF",
   },
   summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Spacing.sm,
-    backgroundColor: Colors.background.quaternary,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.md,
+    marginBottom: 12,
   },
   summaryLabel: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.text.primary,
+    fontSize: 14,
+    color: "#9CA3AF",
   },
   summaryValue: {
-    fontSize: Typography.sizes.base,
-    fontWeight: "600",
-    color: Colors.primary[500],
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#E5E7EB",
   },
+  // ── Bottom Actions ──
   bottomActions: {
     flexDirection: "row",
-    padding: Spacing.lg,
-    gap: Spacing.md,
-    backgroundColor: Colors.background.secondary,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
+    backgroundColor: "#070B14",
     borderTopWidth: 1,
-    borderTopColor: Colors.neutral[200],
+    borderTopColor: "rgba(255,255,255,0.06)",
+    gap: 12,
   },
   cancelActionButton: {
     flex: 1,
-    backgroundColor: Colors.background.tertiary,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    height: 52,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+    backgroundColor: "rgba(255,255,255,0.02)",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Colors.neutral[300],
   },
   cancelActionText: {
-    fontSize: Typography.sizes.base,
+    fontSize: 15,
     fontWeight: "600",
-    color: Colors.text.secondary,
+    color: "#9CA3AF",
   },
-  saveButton: {
-    flex: 2,
-  },
-  addExpenseButton: {
-    backgroundColor: Colors.primary[500],
-    borderRadius: 23,
-    paddingVertical: 10,
-    paddingHorizontal: 26,
+  createButton: {
+    flex: 1.4,
+    height: 52,
+    borderRadius: 999,
+    backgroundColor: "rgba(79,124,255,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(79,124,255,0.30)",
     alignItems: "center",
     justifyContent: "center",
+  },
+  createButtonText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#4F7CFF",
+  },
+  // ── Utilities ──
+  pressedScale: {
+    transform: [{ scale: 0.97 }],
   },
 });

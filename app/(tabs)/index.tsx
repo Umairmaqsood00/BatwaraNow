@@ -29,6 +29,7 @@ export default function ExpenseSplitApp() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [settledBalances, setSettledBalances] = useState<Balance[]>([]);
+  const [settlementHistory, setSettlementHistory] = useState<SettlementHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -64,15 +65,17 @@ export default function ExpenseSplitApp() {
 
   const loadData = async () => {
     try {
-      const [loadedTrips, loadedExpenses, loadedSettledBalances] =
+      const [loadedTrips, loadedExpenses, loadedSettledBalances, loadedHistory] =
         await Promise.all([
           storage.getTrips(),
           storage.getExpenses(),
           storage.getSettledBalances(),
+          storage.getSettlementHistory(),
         ]);
       setTrips(loadedTrips);
       setExpenses(loadedExpenses);
       setSettledBalances(loadedSettledBalances);
+      setSettlementHistory(loadedHistory);
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -83,19 +86,22 @@ export default function ExpenseSplitApp() {
   const refreshData = async () => {
     try {
       console.log("Refreshing data from storage...");
-      const [loadedTrips, loadedExpenses, loadedSettledBalances] =
+      const [loadedTrips, loadedExpenses, loadedSettledBalances, loadedHistory] =
         await Promise.all([
           storage.getTrips(),
           storage.getExpenses(),
           storage.getSettledBalances(),
+          storage.getSettlementHistory(),
         ]);
       setTrips(loadedTrips);
       setExpenses(loadedExpenses);
       setSettledBalances(loadedSettledBalances);
+      setSettlementHistory(loadedHistory);
       console.log("Data refreshed successfully");
       console.log("Trips:", loadedTrips.length);
       console.log("Expenses:", loadedExpenses.length);
       console.log("Settled balances:", loadedSettledBalances.length);
+      console.log("Settlement history:", loadedHistory.length);
     } catch (error) {
       console.error("Error refreshing data:", error);
     }
@@ -105,13 +111,13 @@ export default function ExpenseSplitApp() {
   const tripExpenses = selectedTrip
     ? expenses.filter((expense) => expense.tripId === selectedTrip.id)
     : [];
-  const allBalances = selectedTrip ? calculateBalances(tripExpenses) : [];
-  const balances = allBalances.filter(
-    (balance) =>
-      !settledBalances.some(
-        (settled) => settled.from === balance.from && settled.to === balance.to
-      )
-  );
+  const tripSettlements = selectedTrip
+    ? settlementHistory.filter((s) => s.tripId === selectedTrip.id)
+    : [];
+  
+  // calculateBalances now handles settlements correctly by treating them as payments
+  const balances = selectedTrip ? calculateBalances(tripExpenses, tripSettlements).filter(b => b.amount > 0.01) : [];
+  
   const tripSummary = selectedTrip ? calculateTripSummary(tripExpenses) : null;
 
   const handleTripPress = (tripId: string) => {
@@ -330,6 +336,8 @@ export default function ExpenseSplitApp() {
             tripName: selectedTrip.name,
           };
           await storage.addSettlementHistory(historyEntry);
+          // Update settlementHistory state immediately for accurate real-time UI
+          setSettlementHistory((prev) => [...prev, historyEntry]);
         }
         // ✅ Step 3: Check addSettledBalance Usage - Proper await with try-catch
         console.log("Calling storage.addSettledBalance...");
@@ -401,6 +409,7 @@ export default function ExpenseSplitApp() {
               setTrips([]);
               setExpenses([]);
               setSettledBalances([]);
+              setSettlementHistory([]);
               setSelectedTripId(null);
               setCurrentScreen("trips");
               Alert.alert("Success", "All data has been cleared successfully.");

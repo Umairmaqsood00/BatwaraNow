@@ -8,7 +8,7 @@ export const Colors = {
     quaternary: '#404040',
   },
   text: {
-    primary: '#ffffff',
+    primary: '#ffffffea',
     secondary: '#d9d9d9',
     tertiary: '#a0a0a0',
     inverse: '#000000',
@@ -184,7 +184,7 @@ export const CommonStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.05)',
   },
-  
+
   cardHover: {
     ...Shadows.lg,
     transform: [{ scale: 1.02 }],
@@ -281,7 +281,7 @@ export const CommonStyles = StyleSheet.create({
   section: {
     marginVertical: Spacing.lg,
   },
-  
+
   sectionTitle: {
     fontSize: Typography.sizes.lg,
     fontWeight: '600' as const,
@@ -310,12 +310,12 @@ export const Icons = {
   back: '←',
   check: '✓',
   close: '✕',
-  
+
   // Navigation Icons
   home: '🏠',
   settings: '⚙️',
   profile: '👤',
-  
+
   // Financial Icons
   money: '💸',
   expense: '🧾',
@@ -323,30 +323,30 @@ export const Icons = {
   card: '💳',
   wallet: '👛',
   bank: '🏦',
-  
+
   // Trip Icons
   trip: '✈️',
   location: '📍',
   calendar: '📅',
   clock: '🕐',
-  
+
   // People Icons
   user: '👤',
   users: '👥',
   group: '👨‍👩‍👧‍👦',
-  
+
   // Status Icons
   success: '✅',
   warning: '⚠️',
   error: '❌',
   info: 'ℹ️',
-  
+
   // Action Icons
   settle: '🔁',
   pay: '💳',
   receive: '📥',
   send: '📤',
-  
+
   // Category Icons
   food: '🍽️',
   transport: '🚗',

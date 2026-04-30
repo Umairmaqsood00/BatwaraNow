@@ -7,8 +7,8 @@ function getPayers(expense: any): Array<{ name: string; amount: number }> {
   return [];
 }
 
-export const calculateBalances = (expenses: Expense[]): Balance[] => {
-  if (expenses.length === 0) return [];
+export const calculateBalances = (expenses: Expense[], settlements: any[] = []): Balance[] => {
+  if (expenses.length === 0 && settlements.length === 0) return [];
 
   const allParticipants = new Set<string>();
   expenses.forEach((expense) => {
@@ -17,11 +17,16 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
       allParticipants.add(participant)
     );
   });
+  settlements.forEach((settlement) => {
+    allParticipants.add(settlement.from);
+    allParticipants.add(settlement.to);
+  });
 
   const participants = Array.from(allParticipants);
   const netAmounts = new Map<string, number>();
   participants.forEach((participant) => netAmounts.set(participant, 0));
 
+  // Process normal expenses
   expenses.forEach((expense) => {
     const paidAmount = expense.amount;
     const splitAmount = paidAmount / expense.splitBetween.length;
@@ -37,6 +42,20 @@ export const calculateBalances = (expenses: Expense[]): Balance[] => {
         (netAmounts.get(participant) || 0) - splitAmount
       );
     });
+  });
+
+  // Process settlements as pseudo-expenses where 'from' paid 'to'
+  settlements.forEach((settlement) => {
+    // 'from' paid the amount, so their net increases
+    netAmounts.set(
+      settlement.from,
+      (netAmounts.get(settlement.from) || 0) + settlement.amount
+    );
+    // 'to' received the amount (it was paid on their behalf), so their net decreases
+    netAmounts.set(
+      settlement.to,
+      (netAmounts.get(settlement.to) || 0) - settlement.amount
+    );
   });
   const debtors: Array<{ name: string; amount: number }> = [];
   const creditors: Array<{ name: string; amount: number }> = [];
