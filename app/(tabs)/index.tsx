@@ -477,6 +477,7 @@ export default function ExpenseSplitApp() {
             onUpdateExpense={handleUpdateExpense}
             onSettleBalance={handleSettleBalance}
             onUpdateTrip={handleUpdateTrip}
+            onDeleteTrip={handleDeleteTrip}
           />
         );
 

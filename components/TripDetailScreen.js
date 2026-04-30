@@ -290,6 +290,32 @@ export default function TripDetailScreen({
             </View>
           )}
         </View>
+
+        {/* Delete Trip Section */}
+        <View style={styles.deleteSection}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.deleteTripButton,
+              pressed && styles.pressedScale,
+            ]}
+            onPress={() => {
+              Alert.alert(
+                "Delete Trip",
+                "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => onDeleteTrip && onDeleteTrip(trip.id),
+                  },
+                ]
+              );
+            }}
+          >
+            <Text style={styles.deleteTripText}> Delete Trip</Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -601,6 +627,28 @@ const styles = StyleSheet.create({
   settleIcon: {
     fontSize: 16,
     color: "#51CF66",
+  },
+  // ── Delete Trip ──
+  deleteSection: {
+    marginTop: 40,
+    marginBottom: 24,
+    alignItems: "center",
+  },
+  deleteTripButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 44,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(239, 68, 68, 0.3)",
+  },
+  deleteTripText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#EF4444",
   },
   // ── Utilities ──
   pressedScale: {

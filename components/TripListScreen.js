@@ -43,6 +43,20 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
     <TouchableOpacity
       style={styles.tripCardTouchable}
       onPress={() => onTripPress(item.id)}
+      onLongPress={() => {
+        Alert.alert(
+          "Delete Trip",
+          "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: () => onDeleteTrip && onDeleteTrip(item.id),
+            },
+          ]
+        );
+      }}
       activeOpacity={0.92}
     >
       <View style={styles.tripCard}>
@@ -70,29 +84,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
               {item.participants.length} total members
             </Text>
           </View>
-          <View style={styles.actionsContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  "Delete Trip",
-                  "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
-                  [
-                    { text: "Cancel", style: "cancel" },
-                    {
-                      text: "Delete",
-                      style: "destructive",
-                      onPress: () => onDeleteTrip && onDeleteTrip(item.id),
-                    },
-                  ]
-                );
-              }}
-              style={styles.deleteButton}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Text style={styles.deleteIcon}>{Icons.delete}</Text>
-            </TouchableOpacity>
-            <Text style={styles.detailsLink}>View details →</Text>
-          </View>
+          <Text style={styles.detailsLink}>View details →</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -298,25 +290,6 @@ const styles = StyleSheet.create({
     color: ACCENT,
     fontSize: 14,
     fontWeight: "600",
-  },
-  actionsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.md,
-  },
-  deleteButton: {
-    width: 32,
-    height: 32,
-    borderRadius: BorderRadius.full,
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(239, 68, 68, 0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  deleteIcon: {
-    fontSize: 14,
-    color: "#EF4444",
   },
   emptyState: {
     flex: 1,
