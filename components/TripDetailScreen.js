@@ -166,12 +166,12 @@ const ScreenHeader = memo(({ trip, expensesCount, onBack, onAddExpense }) => {
         <Pressable
           onPress={onAddExpense}
           style={({ pressed }) => [
-            styles.iconButton,
+            styles.actionButton,
             pressed && styles.pressedScale,
           ]}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Text style={styles.iconButtonText}>{Icons.add}</Text>
+          <Text style={styles.actionButtonText}>+ Add Expense</Text>
         </Pressable>
       </View>
     </BlurView>
@@ -328,6 +328,21 @@ const styles = StyleSheet.create({
   iconButtonText: {
     fontSize: 16,
     color: "#E5E7EB",
+  },
+  actionButton: {
+    height: 36,
+    paddingHorizontal: 16,
+    borderRadius: 999,
+    backgroundColor: "rgba(79,124,255,0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(79,124,255,0.24)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#3B82F6",
   },
   headerTextWrap: {
     flex: 1,
