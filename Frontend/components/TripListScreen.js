@@ -4,6 +4,8 @@ import {
   Icons,
   Spacing,
 } from "@/constants/DesignSystem";
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import React from "react";
 import {
   FlatList,
@@ -30,11 +32,15 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
  * @property {Trip[]} trips
  * @property {(tripId: string) => void} onTripPress
  * @property {() => void} onCreateNewTrip
+ * @property {(tripId: string) => void} onDeleteTrip
+ * @property {() => Promise<void>} [onClearAllData]
+ * @property {() => Promise<void>} [onRefreshData]
  */
 
 /** @param {TripListScreenProps} props */
 export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, onDeleteTrip }) {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   const activeTripsLabel = `${trips.length} Active ${trips.length === 1 ? "Trip" : "Trips"
     }`;
 
@@ -95,11 +101,19 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
       <StatusBar barStyle="light-content" backgroundColor="#070B14" />
       <View style={[styles.header, { paddingTop: insets.top - 15 }]}>
         <View style={styles.headerTopRow}>
-          <View style={styles.headerTextWrap}>
-            <Text style={styles.headerTitle}>My Trips</Text>
-            <Text style={styles.headerSubtitle}>
-              Track shared expenses across your trips
-            </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity 
+              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+              style={{ marginRight: 16, padding: 4 }}
+            >
+              <Ionicons name="menu" size={28} color="#ffffff" />
+            </TouchableOpacity>
+            <View style={styles.headerTextWrap}>
+              <Text style={styles.headerTitle}>My Trips</Text>
+              <Text style={styles.headerSubtitle}>
+                Track shared expenses across your trips
+              </Text>
+            </View>
           </View>
           <TouchableOpacity
             style={styles.newTripButton}

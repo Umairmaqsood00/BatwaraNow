@@ -214,6 +214,16 @@ export const CommonStyles = StyleSheet.create({
     borderColor: Colors.neutral[700],
     ...Shadows.sm,
   },
+  buttonTextPrimary: {
+    color: '#ffffff',
+    fontSize: Typography.sizes.base,
+    fontWeight: '600' as const,
+  },
+  buttonTextSecondary: {
+    color: Colors.text.primary,
+    fontSize: Typography.sizes.base,
+    fontWeight: '600' as const,
+  },
   buttonFloating: {
     position: 'absolute',
     bottom: Spacing.xl,

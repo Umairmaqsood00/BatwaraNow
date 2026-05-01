@@ -16,10 +16,12 @@ app.use(cors()); // Allow cross-origin requests
 app.use(express.json()); // Parse JSON bodies
 
 // Import Routes
+const authRoutes = require('./routes/authRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 
 // Mount Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/expenses', expenseRoutes);
 
