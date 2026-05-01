@@ -1,15 +1,17 @@
-import { Colors } from "@/constants/DesignSystem";
+import { Colors, CommonStyles, Spacing, Typography } from "@/constants/DesignSystem";
 import { storage, type SettlementHistory } from "@/utils/storage";
+import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const [history, setHistory] = useState<SettlementHistory[]>([]);
@@ -18,102 +20,99 @@ export default function SettingsScreen() {
     storage.getSettlementHistory().then(setHistory);
   }, []);
 
+  const insets = useSafeAreaInsets();
+
+  const handleClearHistory = () => {
+    Alert.alert(
+      "Clear History",
+      "Are you sure you want to delete all settlement history? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear",
+          style: "destructive",
+          onPress: async () => {
+            await storage.clearSettlementHistory();
+            setHistory([]);
+            Alert.alert("Success", "Settlement history has been cleared.");
+          }
+        }
+      ]
+    );
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
+    <SafeAreaView style={CommonStyles.container} edges={['right', 'bottom', 'left']}>
+      <StatusBar barStyle="light-content" backgroundColor="#070B14" />
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <Text style={CommonStyles.textH1}>Settings</Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+
+        {/* About Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <View style={styles.card}>
-            <Text style={styles.appName}>BatwaraNow</Text>
-            <Text style={styles.version}>Version 1.0.0</Text>
-            <Text style={styles.developer}>Developed by Umair</Text>
-            <Text style={styles.tech}>
-              Js • TypeScript • Expo • React Native{" "}
+          <Text style={CommonStyles.sectionTitle}>About</Text>
+          <View style={CommonStyles.card}>
+            <View style={styles.aboutHeader}>
+              <Text style={CommonStyles.textH3}>BatwaraNow</Text>
+              <Text style={CommonStyles.textCaption}>v1.0.0</Text>
+            </View>
+            <Text style={[CommonStyles.textLabel, { color: Colors.primary[500], marginBottom: Spacing.sm }]}>
+              Developed by Umair
             </Text>
-            <Text style={styles.description}>
-              A simple and elegant app to split expenses between friends and
-              family during trips and events.
+            <View style={styles.chipContainer}>
+              <Text style={styles.techChip}>React Native</Text>
+              <Text style={styles.techChip}>Node.js</Text>
+              <Text style={styles.techChip}>Expo</Text>
+            </View>
+            <Text style={CommonStyles.textBody}>
+              Focus on the memories, we will handle the math
             </Text>
           </View>
         </View>
 
         {/* Settlement History Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Settlement History</Text>
-          <View style={styles.card}>
+          <Text style={CommonStyles.sectionTitle}>Settlement History</Text>
+          <View style={CommonStyles.card}>
             {history.length === 0 ? (
-              <Text style={styles.description}>No settlements yet.</Text>
+              <View style={styles.emptyState}>
+                <Ionicons name="receipt-outline" size={48} color={Colors.neutral[600]} style={{ marginBottom: Spacing.sm }} />
+                <Text style={[CommonStyles.textBody, { color: Colors.text.secondary, textAlign: 'center' }]}>
+                  No settlements to show yet. Time to plan a trip!
+                </Text>
+              </View>
             ) : (
               history
                 .slice()
                 .reverse()
-                .map((entry) => (
-                  <View key={entry.id} style={{ marginBottom: 12 }}>
-                    <Text
-                      style={{ fontWeight: "bold", color: Colors.text.primary }}
-                    >
-                      {entry.from} paid {entry.to} Rs.{entry.amount.toFixed(2)}
+                .map((entry, index) => (
+                  <View key={entry.id} style={[styles.historyItem, index !== history.length - 1 && styles.borderBottom]}>
+                    <Text style={[CommonStyles.textBody, { fontWeight: '600' }]}>
+                      {entry.from} paid {entry.to} <Text style={{ color: Colors.success }}>Rs.{entry.amount.toFixed(2)}</Text>
                     </Text>
-                    <Text
-                      style={{ color: Colors.text.secondary, fontSize: 12 }}
-                    >
-                      {new Date(entry.settledAt).toLocaleString()} • Trip:{" "}
-                      {entry.tripName}
+                    <Text style={CommonStyles.textCaption}>
+                      {new Date(entry.settledAt).toLocaleDateString()} • {entry.tripName}
                     </Text>
                   </View>
                 ))
             )}
           </View>
         </View>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>How to Use</Text>
-          <View style={styles.card}>
-            <View style={styles.stepItem}>
-              <Text style={styles.stepNumber}>1</Text>
-              <Text style={styles.stepText}>
-                Create a new trip and add participants
-              </Text>
-            </View>
-            <View style={styles.stepItem}>
-              <Text style={styles.stepNumber}>2</Text>
-              <Text style={styles.stepText}>
-                Add expenses with who paid and who should split
-              </Text>
-            </View>
-            <View style={styles.stepItem}>
-              <Text style={styles.stepNumber}>3</Text>
-              <Text style={styles.stepText}>
-                View automatic balance calculations
-              </Text>
-            </View>
-            <View style={styles.stepItem}>
-              <Text style={styles.stepNumber}>4</Text>
-              <Text style={styles.stepText}>
-                Settle up with friends easily!
-              </Text>
-            </View>
-          </View>
-        </View>
 
+        {/* Data Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data</Text>
-          <View style={styles.card}>
+          <Text style={CommonStyles.sectionTitle}>Data</Text>
+          <View style={CommonStyles.card}>
             <TouchableOpacity
-              style={styles.menuItem}
-              onPress={async () => {
-                await storage.clearSettlementHistory();
-                setHistory([]);
-                Alert.alert("Success", "Settlement history cleared.");
-              }}
+              style={styles.destructiveButton}
+              onPress={handleClearHistory}
             >
-              <Text style={[styles.menuText, { color: Colors.error }]}>
+              <Ionicons name="trash-outline" size={20} color="#EF4444" style={{ marginRight: Spacing.sm }} />
+              <Text style={[CommonStyles.textBody, { color: '#EF4444', fontWeight: '600' }]}>
                 Clear Settlement History
               </Text>
-              <Text style={styles.menuArrow}>→</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -123,121 +122,61 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background.primary,
-  },
   header: {
-    padding: 20,
-    paddingTop: 10,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: Colors.text.primary,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.05)",
+    backgroundColor: "#070B14",
   },
   content: {
     flex: 1,
   },
   section: {
-    marginBottom: 24,
-    paddingHorizontal: 20,
+    marginBottom: Spacing.lg,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.text.primary,
-    marginBottom: 12,
+  aboutHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
   },
-  card: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
+    marginBottom: Spacing.md,
   },
-  appName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.text.primary,
-    marginBottom: 4,
-  },
-  version: {
-    fontSize: 14,
+  techChip: {
+    fontSize: Typography.sizes.xs,
     color: Colors.text.secondary,
-    marginBottom: 12,
-  },
-  developer: {
-    fontSize: 14,
-    color: "#3b82f6",
-    marginBottom: 12,
-  },
-  tech: {
-    fontSize: 12,
-    color: Colors.text.secondary,
-    marginBottom: 12,
-    fontStyle: "italic",
-  },
-  description: {
-    fontSize: 16,
-    color: Colors.text.primary,
-    lineHeight: 24,
-  },
-  featureItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  featureIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  featureText: {
-    fontSize: 16,
-    color: Colors.text.primary,
-  },
-  stepItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  stepNumber: {
-    width: 24,
-    height: 24,
+    backgroundColor: Colors.background.tertiary,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
     borderRadius: 12,
-    backgroundColor: Colors.primary[600],
-    color: Colors.background.primary,
-    textAlign: "center",
-    lineHeight: 24,
-    fontSize: 14,
-    fontWeight: "bold",
-    marginRight: 12,
+    overflow: 'hidden',
   },
-  stepText: {
-    fontSize: 16,
-    color: Colors.text.primary,
-    flex: 1,
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.lg,
   },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
+  historyItem: {
+    paddingVertical: Spacing.md,
+  },
+  borderBottom: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.background.quaternary,
   },
-  menuText: {
-    fontSize: 16,
-    color: Colors.text.primary,
-  },
-  menuArrow: {
-    fontSize: 16,
-    color: Colors.text.secondary,
-  },
+  destructiveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    backgroundColor: '#EF444415',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#EF444430',
+  }
 });
