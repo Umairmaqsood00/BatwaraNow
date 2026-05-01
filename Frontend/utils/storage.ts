@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
+const API_URL = 'http://192.168.100.70:5000/api';
+
 const STORAGE_KEYS = {
   TRIPS: 'expense_tracker_trips',
   EXPENSES: 'expense_tracker_expenses',
@@ -89,11 +91,25 @@ class StorageManager {
   }
   async getTrips(): Promise<Trip[]> {
     try {
+      // Try to get from API first
+      const response = await fetch(`${API_URL}/trips`);
+      const json = await response.json();
+      
+      if (json.success) {
+        // Map MongoDB _id to id for frontend compatibility
+        return json.data.map((trip: any) => ({
+          ...trip,
+          id: trip._id
+        }));
+      }
+
+      // Fallback to local storage if API fails
       const tripsJson = await this.webStorageGetItem(STORAGE_KEYS.TRIPS);
       return tripsJson ? JSON.parse(tripsJson) : [];
     } catch (error) {
-      console.error('Error getting trips:', error);
-      return [];
+      console.error('Error getting trips from API:', error);
+      const tripsJson = await this.webStorageGetItem(STORAGE_KEYS.TRIPS);
+      return tripsJson ? JSON.parse(tripsJson) : [];
     }
   }
 
@@ -113,11 +129,28 @@ class StorageManager {
 
   async addTrip(trip: Trip): Promise<void> {
     try {
+      const response = await fetch(`${API_URL}/trips`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: trip.name,
+          participants: trip.participants
+        })
+      });
+      
+      const json = await response.json();
+      if (!json.success) throw new Error(json.error);
+
+      // Also save locally as backup
+      const trips = await this.getTrips();
+      trips.push({ ...trip, id: json.data._id });
+      await this.saveTrips(trips);
+    } catch (error) {
+      console.error('Error adding trip to API:', error);
+      // Still add locally if API fails
       const trips = await this.getTrips();
       trips.push(trip);
       await this.saveTrips(trips);
-    } catch (error) {
-      console.error('Error adding trip:', error);
     }
   }
 
@@ -167,6 +200,8 @@ class StorageManager {
   }
   async getExpenses(): Promise<Expense[]> {
     try {
+      // Note: In a real app, we'd fetch expenses per trip. 
+      // For now, we'll rely on the getTrip endpoint or fetch all if needed.
       const expensesJson = await AsyncStorage.getItem(STORAGE_KEYS.EXPENSES);
       return expensesJson ? JSON.parse(expensesJson) : [];
     } catch (error) {
@@ -177,11 +212,22 @@ class StorageManager {
 
   async getExpensesByTripId(tripId: string): Promise<Expense[]> {
     try {
+      const response = await fetch(`${API_URL}/trips/${tripId}`);
+      const json = await response.json();
+      
+      if (json.success && json.data.expenses) {
+        return json.data.expenses.map((exp: any) => ({
+          ...exp,
+          id: exp._id
+        }));
+      }
+
       const expenses = await this.getExpenses();
       return expenses.filter(expense => expense.tripId === tripId);
     } catch (error) {
-      console.error('Error getting expenses by trip ID:', error);
-      return [];
+      console.error('Error getting expenses by trip ID from API:', error);
+      const expenses = await this.getExpenses();
+      return expenses.filter(expense => expense.tripId === tripId);
     }
   }
 
@@ -195,11 +241,28 @@ class StorageManager {
 
   async addExpense(expense: Expense): Promise<void> {
     try {
+      const response = await fetch(`${API_URL}/expenses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tripId: expense.tripId,
+          amount: expense.amount,
+          paidBy: expense.paidBy[0]?.name || 'Unknown', // Backend expects String for now based on prompt
+          splitBetween: expense.splitBetween.map(name => ({ name, amount: expense.amount / expense.splitBetween.length }))
+        })
+      });
+
+      const json = await response.json();
+      if (!json.success) throw new Error(json.error);
+
+      const expenses = await this.getExpenses();
+      expenses.push({ ...expense, id: json.data._id });
+      await this.saveExpenses(expenses);
+    } catch (error) {
+      console.error('Error adding expense to API:', error);
       const expenses = await this.getExpenses();
       expenses.push(expense);
       await this.saveExpenses(expenses);
-    } catch (error) {
-      console.error('Error adding expense:', error);
     }
   }
 
