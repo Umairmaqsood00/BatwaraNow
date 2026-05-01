@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
   },
   balanceFrom: {
     fontWeight: "600",
-    color: "#FF6B6B",
+    color: "#EF4444",
   },
   balanceArrow: {
     color: "#6B7280",

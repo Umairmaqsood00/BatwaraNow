@@ -141,9 +141,9 @@ export default function ExpenseSplitApp() {
     };
 
     try {
-      await storage.addTrip(newTrip);
-      setTrips((prev) => [...prev, newTrip]);
-      setSelectedTripId(newTrip.id);
+      const savedTrip = await storage.addTrip(newTrip);
+      setTrips((prev) => [...prev, savedTrip]);
+      setSelectedTripId(savedTrip.id);
       setCurrentScreen("tripDetail");
     } catch (error) {
       console.error("Error saving trip:", error);

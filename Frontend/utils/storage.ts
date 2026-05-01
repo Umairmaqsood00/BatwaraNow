@@ -127,7 +127,7 @@ class StorageManager {
     }
   }
 
-  async addTrip(trip: Trip): Promise<void> {
+  async addTrip(trip: Trip): Promise<Trip> {
     try {
       const response = await fetch(`${API_URL}/trips`, {
         method: 'POST',
@@ -143,14 +143,17 @@ class StorageManager {
 
       // Also save locally as backup
       const trips = await this.getTrips();
-      trips.push({ ...trip, id: json.data._id });
+      const savedTrip = { ...trip, id: json.data._id };
+      trips.push(savedTrip);
       await this.saveTrips(trips);
+      return savedTrip;
     } catch (error) {
       console.error('Error adding trip to API:', error);
       // Still add locally if API fails
       const trips = await this.getTrips();
       trips.push(trip);
       await this.saveTrips(trips);
+      return trip;
     }
   }
 
