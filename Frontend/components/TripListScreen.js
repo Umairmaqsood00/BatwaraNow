@@ -1,22 +1,25 @@
-import {
-  BorderRadius,
-  Colors,
-  Icons,
-  Spacing,
-} from "../constants/DesignSystem";
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
+  Alert,
   FlatList,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Alert,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import {
+  BorderRadius,
+  Colors,
+  Icons,
+  Spacing,
+} from "../constants/DesignSystem";
 
 /**
  * @typedef {Object} Trip
@@ -38,11 +41,17 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
  */
 
 /** @param {TripListScreenProps} props */
-export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, onDeleteTrip }) {
+export default function TripListScreen({
+  trips,
+  onTripPress,
+  onCreateNewTrip,
+  onDeleteTrip,
+}) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const activeTripsLabel = `${trips.length} Active ${trips.length === 1 ? "Trip" : "Trips"
-    }`;
+  const activeTripsLabel = `${trips.length} Active ${
+    trips.length === 1 ? "Trip" : "Trips"
+  }`;
 
   /** @param {{ item: Trip }} param0 */
   const renderTripItem = ({ item }) => (
@@ -60,7 +69,7 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
               style: "destructive",
               onPress: () => onDeleteTrip && onDeleteTrip(item.id),
             },
-          ]
+          ],
         );
       }}
       activeOpacity={0.92}
@@ -70,7 +79,11 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
           <Text style={styles.tripName} numberOfLines={1} ellipsizeMode="tail">
             {item.name}
           </Text>
-          <Text style={styles.tripAmount} numberOfLines={1} ellipsizeMode="tail">
+          <Text
+            style={styles.tripAmount}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             Rs. {item.totalExpenses.toFixed(2)}
           </Text>
         </View>
@@ -101,10 +114,17 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
       <StatusBar barStyle="light-content" backgroundColor="#070B14" />
       <View style={[styles.header, { paddingTop: insets.top - 15 }]}>
         <View style={styles.headerTopRow}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity 
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <TouchableOpacity
               onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-              style={{ marginRight: 16, padding: 4 }}
+              style={{ marginRight: 16, padding: 4, flexShrink: 0 }}
             >
               <Ionicons name="menu" size={28} color="#ffffff" />
             </TouchableOpacity>
@@ -115,13 +135,6 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
               </Text>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.newTripButton}
-            onPress={onCreateNewTrip}
-            activeOpacity={0.9}
-          >
-            <Text style={styles.newTripButtonText}>+ New Trip</Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.activeTripsPill}>
           <Text style={styles.activeTripsPillText}>{activeTripsLabel}</Text>
@@ -133,7 +146,8 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>No trips yet</Text>
             <Text style={styles.emptySubtitle}>
-              Create your first trip to start splitting expenses with your group.
+              Create your first trip to start splitting expenses with your
+              group.
             </Text>
             <TouchableOpacity
               style={styles.emptyButton}
@@ -154,6 +168,14 @@ export default function TripListScreen({ trips, onTripPress, onCreateNewTrip, on
           />
         )}
       </View>
+
+      <TouchableOpacity
+        style={[styles.fab, { bottom: insets.bottom + 20, right: 20 }]}
+        onPress={onCreateNewTrip}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -175,7 +197,7 @@ const styles = StyleSheet.create({
   },
   headerTopRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "space-between",
     gap: Spacing.md,
   },
@@ -195,21 +217,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#5F6878",
     lineHeight: 20,
-  },
-  newTripButton: {
-    height: 40,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.full,
-    backgroundColor: "rgba(79,124,255,0.12)",
-    borderWidth: 1,
-    borderColor: "rgba(79,124,255,0.24)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  newTripButtonText: {
-    color: ACCENT,
-    fontSize: 14,
-    fontWeight: "600",
   },
   activeTripsPill: {
     marginTop: Spacing.md,
@@ -234,7 +241,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingTop: Spacing.md,
-    paddingBottom: Spacing.xl,
+    paddingBottom: Spacing.xl * 1.5,
   },
   separator: {
     height: 14,
@@ -338,5 +345,25 @@ const styles = StyleSheet.create({
     color: ACCENT,
     fontSize: 16,
     fontWeight: "600",
+  },
+  fab: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: ACCENT,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  fabText: {
+    fontSize: 32,
+    color: "#ffffff",
+    fontWeight: "300",
+    lineHeight: 36,
   },
 });

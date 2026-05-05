@@ -90,9 +90,9 @@ export default function AboutScreen() {
             </View>
             <Text style={styles.developerName}>Built by Umair</Text>
             <Text style={[CommonStyles.textBody, styles.developerDescription]}>
-              I’m a computer science undergraduate and developer interested in
-              cross platform mobile development and full-stack development. I
-              enjoy building apps and websites that solve real-world problems
+              I’m a CS undergraduate and developer interested in cross platform
+              mobile dev and full-stack development. I enjoy building apps and
+              websites that solve real-world problems
             </Text>
             <Text style={styles.developerDescription}>
               If you have feedback, suggestions, or encounter any issues, feel
@@ -189,7 +189,6 @@ const styles = StyleSheet.create({
   },
   developerDescription: {
     color: Colors.text.secondary,
-    textAlign: "justify",
   },
   developerEmail: {
     color: Colors.primary[500],

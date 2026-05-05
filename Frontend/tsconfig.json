@@ -11,6 +11,8 @@
   },
   "include": [
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
   ]
 }

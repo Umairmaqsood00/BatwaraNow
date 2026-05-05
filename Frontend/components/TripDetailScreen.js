@@ -1,4 +1,3 @@
-import { Icons } from "../constants/DesignSystem";
 import { BlurView } from "expo-blur";
 import React, { memo } from "react";
 import {
@@ -14,6 +13,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { Icons } from "../constants/DesignSystem";
 
 function getPayers(expense) {
   if (Array.isArray(expense.paidBy)) return expense.paidBy;
