@@ -21,12 +21,6 @@ A modern, mobile-friendly React Native app for splitting expenses between friend
 - Choose who should split each expense
 - Automatic date tracking
 
-### 🎨 Modern UI
-- Clean, responsive design with soft colors
-- Smooth navigation between screens
-- Intuitive user experience
-- Mobile-optimized interface
-
 ## Technical Details
 
 ### Built With
