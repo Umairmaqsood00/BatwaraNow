@@ -1,35 +1,29 @@
-import { Colors } from "@/constants/DesignSystem";
+import { Colors } from "../../constants/DesignSystem";
 import React, { useEffect, useState } from "react";
 import { Alert, Platform, StatusBar, StyleSheet, View } from "react-native";
 
-import AddExpenseScreen from "@/components/AddExpenseScreen";
-import CreateTripScreen from "@/components/CreateTripScreen";
-import TripDetailScreen from "@/components/TripDetailScreen";
-import TripListScreen from "@/components/TripListScreen";
+import AddExpenseScreen from "../../components/AddExpenseScreen";
+import CreateTripScreen from "../../components/CreateTripScreen";
+import TripDetailScreen from "../../components/TripDetailScreen";
+import TripListScreen from "../../components/TripListScreen";
 import {
   calculateBalances,
   calculateTripSummary,
-} from "@/utils/balanceCalculator";
+} from "../../utils/balanceCalculator";
 import {
   generateId,
   storage,
-  type Balance,
-  type Expense,
-  type SettlementHistory,
-  type Trip,
-} from "@/utils/storage";
+} from "../../utils/storage";
 
 console.log("Available storage methods:", Object.keys(storage));
 
-type Screen = "trips" | "tripDetail" | "addExpense" | "createTrip";
-
 export default function ExpenseSplitApp() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("trips");
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [settledBalances, setSettledBalances] = useState<Balance[]>([]);
-  const [settlementHistory, setSettlementHistory] = useState<SettlementHistory[]>([]);
+  const [currentScreen, setCurrentScreen] = useState("trips");
+  const [selectedTripId, setSelectedTripId] = useState(null);
+  const [trips, setTrips] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [settledBalances, setSettledBalances] = useState([]);
+  const [settlementHistory, setSettlementHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -119,7 +113,7 @@ export default function ExpenseSplitApp() {
   
   const tripSummary = selectedTrip ? calculateTripSummary(tripExpenses) : null;
 
-  const handleTripPress = (tripId: string) => {
+  const handleTripPress = (tripId) => {
     setSelectedTripId(tripId);
     setCurrentScreen("tripDetail");
   };
@@ -128,11 +122,8 @@ export default function ExpenseSplitApp() {
     setCurrentScreen("createTrip");
   };
 
-  const handleSaveTrip = async (tripData: {
-    name: string;
-    participants: string[];
-  }) => {
-    const newTrip: Trip = {
+  const handleSaveTrip = async (tripData) => {
+    const newTrip = {
       id: generateId(),
       name: tripData.name,
       participants: tripData.participants,
@@ -158,15 +149,10 @@ export default function ExpenseSplitApp() {
     setCurrentScreen("addExpense");
   };
 
-  const handleSaveExpense = async (expenseData: {
-    description: string;
-    amount: number;
-    paidBy: { name: string; amount: number }[];
-    splitBetween: string[];
-  }) => {
+  const handleSaveExpense = async (expenseData) => {
     if (!selectedTripId) return;
 
-    const newExpense: Expense = {
+    const newExpense = {
       id: generateId(),
       tripId: selectedTripId,
       ...expenseData,
@@ -193,7 +179,7 @@ export default function ExpenseSplitApp() {
     setSelectedTripId(null);
   };
 
-  const handleDeleteTrip = async (tripId: string) => {
+  const handleDeleteTrip = async (tripId) => {
     console.log("=== DELETE TRIP FUNCTION CALLED ===");
     console.log("Trip ID to delete:", tripId);
 
@@ -270,7 +256,7 @@ export default function ExpenseSplitApp() {
     }
   };
 
-  const handleDeleteExpense = async (expenseId: string) => {
+  const handleDeleteExpense = async (expenseId) => {
     try {
       await storage.deleteExpense(expenseId);
       setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
@@ -280,18 +266,13 @@ export default function ExpenseSplitApp() {
   };
 
   const handleUpdateExpense = async (
-    expenseId: string,
-    updatedData: {
-      description: string;
-      amount: number;
-      paidBy: { name: string; amount: number }[];
-      splitBetween: string[];
-    }
+    expenseId,
+    updatedData
   ) => {
     const expense = expenses.find((e) => e.id === expenseId);
     if (!expense) return;
 
-    const updatedExpense: Expense = {
+    const updatedExpense = {
       ...expense,
       ...updatedData,
       updatedAt: new Date().toISOString(),
@@ -307,7 +288,7 @@ export default function ExpenseSplitApp() {
     }
   };
 
-  const handleSettleBalance = async (from: string, to: string) => {
+  const handleSettleBalance = async (from, to) => {
     console.log("=== SETTLE BALANCE FUNCTION CALLED ===");
     console.log("From:", from, "To:", to);
 
@@ -318,19 +299,19 @@ export default function ExpenseSplitApp() {
 
     if (balanceToSettle) {
       try {
-        const settledBalance: Balance = {
+        const settledBalance = {
           ...balanceToSettle,
           isSettled: true,
           settledAt: new Date().toISOString(),
         };
         // Log settlement history
         if (selectedTrip) {
-          const historyEntry: SettlementHistory = {
+          const historyEntry = {
             id: generateId(),
             from: settledBalance.from,
             to: settledBalance.to,
             amount: settledBalance.amount,
-            settledAt: settledBalance.settledAt!,
+            settledAt: settledBalance.settledAt,
             tripId: selectedTrip.id,
             tripName: selectedTrip.name,
           };
@@ -369,16 +350,13 @@ export default function ExpenseSplitApp() {
   };
 
   const handleUpdateTrip = async (
-    tripId: string,
-    updatedData: {
-      name: string;
-      participants: string[];
-    }
+    tripId,
+    updatedData
   ) => {
     const trip = trips.find((t) => t.id === tripId);
     if (!trip) return;
 
-    const updatedTrip: Trip = {
+    const updatedTrip = {
       ...trip,
       ...updatedData,
       updatedAt: new Date().toISOString(),

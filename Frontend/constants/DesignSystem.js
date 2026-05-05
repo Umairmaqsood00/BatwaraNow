@@ -217,12 +217,12 @@ export const CommonStyles = StyleSheet.create({
   buttonTextPrimary: {
     color: '#ffffff',
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   buttonTextSecondary: {
     color: Colors.text.primary,
     fontSize: Typography.sizes.base,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   buttonFloating: {
     position: 'absolute',
@@ -238,37 +238,37 @@ export const CommonStyles = StyleSheet.create({
   },
   textH1: {
     fontSize: Typography.sizes['3xl'],
-    fontWeight: '700' as const,
+    fontWeight: '700',
     color: Colors.text.primary,
     lineHeight: Typography.sizes['3xl'] * Typography.lineHeights.tight,
   },
   textH2: {
     fontSize: Typography.sizes['2xl'],
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: Colors.text.primary,
     lineHeight: Typography.sizes['2xl'] * Typography.lineHeights.tight,
   },
   textH3: {
     fontSize: Typography.sizes.xl,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: Colors.text.primary,
     lineHeight: Typography.sizes.xl * Typography.lineHeights.tight,
   },
   textBody: {
     fontSize: Typography.sizes.base,
-    fontWeight: '400' as const,
+    fontWeight: '400',
     color: Colors.text.primary,
     lineHeight: Typography.sizes.base * Typography.lineHeights.normal,
   },
   textCaption: {
     fontSize: Typography.sizes.sm,
-    fontWeight: '400' as const,
+    fontWeight: '400',
     color: Colors.text.secondary,
     lineHeight: Typography.sizes.sm * Typography.lineHeights.normal,
   },
   textLabel: {
     fontSize: Typography.sizes.sm,
-    fontWeight: '500' as const,
+    fontWeight: '500',
     color: Colors.text.primary,
     lineHeight: Typography.sizes.sm * Typography.lineHeights.tight,
   },
@@ -298,7 +298,7 @@ export const CommonStyles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: Colors.text.primary,
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,

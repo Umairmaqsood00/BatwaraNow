@@ -1,11 +1,11 @@
-import { Colors, CommonStyles, Spacing, Typography } from '@/constants/DesignSystem';
+import { Colors, CommonStyles, Spacing, Typography } from '../../constants/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-function CustomDrawerContent(props: any) {
+function CustomDrawerContent(props) {
   return (
     <View style={styles.drawerContainer}>
       <View style={styles.drawerHeader}>

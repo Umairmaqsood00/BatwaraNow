@@ -1,4 +1,4 @@
-import { Colors, CommonStyles, Typography } from '@/constants/DesignSystem';
+import { Colors, CommonStyles } from '../constants/DesignSystem';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 

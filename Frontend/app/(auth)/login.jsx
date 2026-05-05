@@ -1,5 +1,5 @@
-import { Colors, CommonStyles, Spacing, Typography } from '@/constants/DesignSystem';
-import { useAuth } from '@/context/AuthContext';
+import { Colors, CommonStyles, Spacing, Typography } from '../../constants/DesignSystem';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -8,7 +8,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -17,60 +16,41 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function SignupScreen() {
-  const [fullName, setFullName] = useState('');
+export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleSignup = async () => {
-    if (!fullName || !email || !password || !confirmPassword) {
+  const handleLogin = async () => {
+    if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://192.168.100.70:5000/api/auth/signup', {
+      const response = await fetch('http://192.168.100.70:5000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          fullName: fullName.trim(), 
-          email: email.toLowerCase().trim(), 
-          password 
-        }),
+        body: JSON.stringify({ email: email.toLowerCase().trim(), password }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        Alert.alert(
-          'Account Created',
-          'Your account has been successfully created. Please log in with your credentials.',
-          [{ text: 'OK', onPress: () => router.replace('/(auth)/login') }]
-        );
+        await login(data.token, data.data);
+        // Router will automatically redirect based on AuthContext state
       } else {
-        Alert.alert('Signup Failed', data.error || 'An error occurred during signup');
+        Alert.alert('Login Failed', data.error || 'Invalid credentials');
       }
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Login error:', error);
       Alert.alert('Error', 'Could not connect to the server. Please try again.');
     } finally {
       setIsLoading(false);
@@ -83,25 +63,13 @@ export default function SignupScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join BatwaraNow to split expenses</Text>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Login to continue splitting expenses</Text>
           </View>
 
           <View style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="John Doe"
-                placeholderTextColor={Colors.text.tertiary}
-                value={fullName}
-                onChangeText={setFullName}
-                autoCapitalize="words"
-              />
-            </View>
-
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
               <TextInput
@@ -121,7 +89,7 @@ export default function SignupScreen() {
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={styles.passwordInput}
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
                   placeholderTextColor={Colors.text.tertiary}
                   value={password}
                   onChangeText={setPassword}
@@ -140,38 +108,26 @@ export default function SignupScreen() {
               </View>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Repeat your password"
-                placeholderTextColor={Colors.text.tertiary}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!showPassword}
-              />
-            </View>
-
             <TouchableOpacity 
-              style={[styles.signupButton, isLoading && styles.signupButtonDisabled]} 
-              onPress={handleSignup}
+              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+              onPress={handleLogin}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.signupButtonText}>Sign Up</Text>
+                <Text style={styles.loginButtonText}>Login</Text>
               )}
             </TouchableOpacity>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-                <Text style={styles.loginText}>Login</Text>
+              <Text style={styles.footerText}>Don&apos;t have an account? </Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
+                <Text style={styles.signupText}>Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -184,10 +140,9 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
+  content: {
+    flex: 1,
     paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.xl,
     justifyContent: 'center',
   },
   header: {
@@ -238,14 +193,14 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: Spacing.md,
   },
-  signupButton: {
+  loginButton: {
     ...CommonStyles.buttonPrimary,
     marginTop: Spacing.md,
   },
-  signupButtonDisabled: {
+  loginButtonDisabled: {
     opacity: 0.7,
   },
-  signupButtonText: {
+  loginButtonText: {
     ...CommonStyles.buttonTextPrimary,
   },
   footer: {
@@ -257,7 +212,7 @@ const styles = StyleSheet.create({
     ...CommonStyles.textBody,
     color: Colors.text.secondary,
   },
-  loginText: {
+  signupText: {
     ...CommonStyles.textBody,
     color: Colors.primary[500],
     fontWeight: 'bold',

@@ -6,21 +6,7 @@ const API_URL = 'http://192.168.100.70:5000/api';
 const TOKEN_KEY = 'batwaranow_auth_token';
 const USER_KEY = 'batwaranow_auth_user';
 
-type User = {
-  id: string;
-  fullName: string;
-  email: string;
-};
-
-type AuthContextType = {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-  login: (token: string, userData: User) => Promise<void>;
-  logout: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext({
   user: null,
   token: null,
   isLoading: true,
@@ -32,7 +18,7 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-function useProtectedRoute(user: User | null, isLoading: boolean) {
+function useProtectedRoute(user, isLoading) {
   const segments = useSegments();
   const router = useRouter();
 
@@ -46,14 +32,14 @@ function useProtectedRoute(user: User | null, isLoading: boolean) {
       router.replace('/(auth)/login');
     } else if (user && inAuthGroup) {
       // Redirect away from login if authenticated
-      router.replace('/(drawer)' as any);
+      router.replace('/(drawer)');
     }
   }, [user, segments, isLoading]);
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -79,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useProtectedRoute(user, isLoading);
 
-  const login = async (newToken: string, userData: User) => {
+  const login = async (newToken, userData) => {
     try {
       await AsyncStorage.setItem(TOKEN_KEY, newToken);
       await AsyncStorage.setItem(USER_KEY, JSON.stringify(userData));

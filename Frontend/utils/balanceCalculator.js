@@ -1,16 +1,14 @@
-import { Balance, Expense } from "./storage";
-
-function getPayers(expense: any): Array<{ name: string; amount: number }> {
+function getPayers(expense) {
   if (Array.isArray(expense.paidBy)) return expense.paidBy;
   if (typeof expense.paidBy === "string")
     return [{ name: expense.paidBy, amount: expense.amount }];
   return [];
 }
 
-export const calculateBalances = (expenses: Expense[], settlements: any[] = []): Balance[] => {
+export const calculateBalances = (expenses, settlements = []) => {
   if (expenses.length === 0 && settlements.length === 0) return [];
 
-  const allParticipants = new Set<string>();
+  const allParticipants = new Set();
   expenses.forEach((expense) => {
     getPayers(expense).forEach((payer) => allParticipants.add(payer.name));
     expense.splitBetween.forEach((participant) =>
@@ -23,7 +21,7 @@ export const calculateBalances = (expenses: Expense[], settlements: any[] = []):
   });
 
   const participants = Array.from(allParticipants);
-  const netAmounts = new Map<string, number>();
+  const netAmounts = new Map();
   participants.forEach((participant) => netAmounts.set(participant, 0));
 
   // Process normal expenses
@@ -57,8 +55,8 @@ export const calculateBalances = (expenses: Expense[], settlements: any[] = []):
       (netAmounts.get(settlement.to) || 0) - settlement.amount
     );
   });
-  const debtors: Array<{ name: string; amount: number }> = [];
-  const creditors: Array<{ name: string; amount: number }> = [];
+  const debtors = [];
+  const creditors = [];
 
   netAmounts.forEach((amount, participant) => {
     if (amount < 0) {
@@ -69,7 +67,7 @@ export const calculateBalances = (expenses: Expense[], settlements: any[] = []):
   });
   debtors.sort((a, b) => b.amount - a.amount);
   creditors.sort((a, b) => b.amount - a.amount);
-  const balances: Balance[] = [];
+  const balances = [];
   let debtorIndex = 0;
   let creditorIndex = 0;
 
@@ -101,12 +99,12 @@ export const calculateBalances = (expenses: Expense[], settlements: any[] = []):
   return balances;
 };
 
-export const calculateTripSummary = (expenses: Expense[]) => {
+export const calculateTripSummary = (expenses) => {
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + Math.abs(expense.amount),
     0
   );
-  const uniqueParticipants = new Set<string>();
+  const uniqueParticipants = new Set();
   expenses.forEach((expense) => {
     getPayers(expense).forEach((payer) => uniqueParticipants.add(payer.name));
     expense.splitBetween.forEach((participant) =>
@@ -123,8 +121,8 @@ export const calculateTripSummary = (expenses: Expense[]) => {
 };
 
 export const calculateParticipantSummary = (
-  expenses: Expense[],
-  participantName: string
+  expenses,
+  participantName
 ) => {
   let totalPaid = 0;
   let totalOwed = 0;
@@ -153,10 +151,10 @@ export const calculateParticipantSummary = (
 };
 
 export const markBalanceAsSettled = (
-  balances: Balance[],
-  from: string,
-  to: string
-): Balance[] => {
+  balances,
+  from,
+  to
+) => {
   return balances.map((balance) => {
     if (balance.from === from && balance.to === to && !balance.isSettled) {
       return {
@@ -169,21 +167,21 @@ export const markBalanceAsSettled = (
   });
 };
 
-export const getSettledBalances = (balances: Balance[]): Balance[] => {
+export const getSettledBalances = (balances) => {
   return balances.filter((balance) => balance.isSettled);
 };
 
-export const getUnsettledBalances = (balances: Balance[]): Balance[] => {
+export const getUnsettledBalances = (balances) => {
   return balances.filter((balance) => !balance.isSettled);
 };
 
-export const getTotalSettledAmount = (balances: Balance[]): number => {
+export const getTotalSettledAmount = (balances) => {
   return balances
     .filter((balance) => balance.isSettled)
     .reduce((sum, balance) => sum + balance.amount, 0);
 };
 
-export const getTotalUnsettledAmount = (balances: Balance[]): number => {
+export const getTotalUnsettledAmount = (balances) => {
   return balances
     .filter((balance) => !balance.isSettled)
     .reduce((sum, balance) => sum + balance.amount, 0);

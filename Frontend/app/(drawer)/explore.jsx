@@ -1,8 +1,8 @@
-import { Colors, CommonStyles, Spacing, Typography } from "@/constants/DesignSystem";
-import { storage, type SettlementHistory } from "@/utils/storage";
+import { Colors, CommonStyles, Spacing } from "../../constants/DesignSystem";
+import { storage } from "../../utils/storage";
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions, useNavigation } from "@react-navigation/native";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext.jsx";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -16,7 +16,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
-  const [history, setHistory] = useState<SettlementHistory[]>([]);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     storage.getSettlementHistory().then(setHistory);

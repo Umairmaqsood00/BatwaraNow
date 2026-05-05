@@ -3,7 +3,7 @@ import {
   Colors,
   Icons,
   Spacing,
-} from "@/constants/DesignSystem";
+} from "../constants/DesignSystem";
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import React from "react";

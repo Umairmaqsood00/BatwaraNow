@@ -1,4 +1,4 @@
-import { Icons } from "@/constants/DesignSystem";
+import { Icons } from "../constants/DesignSystem";
 import { BlurView } from "expo-blur";
 import React, { memo } from "react";
 import {

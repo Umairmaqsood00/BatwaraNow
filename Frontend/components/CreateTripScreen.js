@@ -1,4 +1,4 @@
-import InputField from "@/components/InputField";
+import InputField from "./InputField";
 import { BlurView } from "expo-blur";
 import React, {
   memo,

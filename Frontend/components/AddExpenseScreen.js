@@ -1,5 +1,5 @@
-import InputField from "@/components/InputField";
-import { Icons } from "@/constants/DesignSystem";
+import InputField from "./InputField";
+import { Icons } from "../constants/DesignSystem";
 import { BlurView } from "expo-blur";
 import React, { memo, useCallback, useImperativeHandle, useRef, useState } from "react";
 import {

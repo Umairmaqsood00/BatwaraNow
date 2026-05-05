@@ -4,30 +4,15 @@ import {
     Shadows,
     Spacing,
     Typography,
-} from "@/constants/DesignSystem";
+} from "../../constants/DesignSystem";
 import React from "react";
 import {
     ActivityIndicator,
-    StyleProp,
     StyleSheet,
     Text,
-    TextStyle,
     TouchableOpacity,
     View,
-    ViewStyle,
 } from "react-native";
-
-interface GradientButtonProps {
-  title: string;
-  onPress: () => void;
-  variant?: "primary" | "secondary" | "success" | "warning" | "error";
-  size?: "small" | "medium" | "large";
-  disabled?: boolean;
-  loading?: boolean;
-  icon?: string;
-  style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
-}
 
 export default function GradientButton({
   title,
@@ -39,8 +24,8 @@ export default function GradientButton({
   icon,
   style,
   textStyle,
-}: GradientButtonProps) {
-  const getButtonStyle = (): StyleProp<ViewStyle> => {
+}) {
+  const getButtonStyle = () => {
     const baseStyle = styles.button;
     const sizeStyle = styles[size];
     const disabledStyle = disabled ? styles.disabled : {};
@@ -48,7 +33,7 @@ export default function GradientButton({
     return [baseStyle, sizeStyle, disabledStyle, style];
   };
 
-  const getTextStyle = (): StyleProp<TextStyle> => {
+  const getTextStyle = () => {
     const baseTextStyle = styles.text;
     const sizeTextStyle = styles[`${size}Text`];
     const disabledTextStyle = disabled ? styles.disabledText : {};
@@ -82,46 +67,46 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     overflow: "hidden",
     ...Shadows.md,
-  } as ViewStyle,
+  },
   gradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: Spacing.lg,
-  } as ViewStyle,
+  },
   text: {
     color: Colors.text.inverse,
-    fontWeight: "600" as const,
+    fontWeight: "600",
     textAlign: "center",
-  } as TextStyle,
+  },
   icon: {
     fontSize: Typography.sizes.lg,
     marginRight: Spacing.sm,
-  } as TextStyle,
+  },
   // Size variants
   small: {
     paddingVertical: Spacing.sm,
-  } as ViewStyle,
+  },
   medium: {
     paddingVertical: Spacing.md,
-  } as ViewStyle,
+  },
   large: {
     paddingVertical: Spacing.lg,
-  } as ViewStyle,
+  },
   smallText: {
     fontSize: Typography.sizes.sm,
-  } as TextStyle,
+  },
   mediumText: {
     fontSize: Typography.sizes.base,
-  } as TextStyle,
+  },
   largeText: {
     fontSize: Typography.sizes.lg,
-  } as TextStyle,
+  },
   // State variants
   disabled: {
     opacity: 0.6,
-  } as ViewStyle,
+  },
   disabledText: {
     color: Colors.text.tertiary,
-  } as TextStyle,
+  },
 });

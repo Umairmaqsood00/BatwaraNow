@@ -9,56 +9,12 @@ const STORAGE_KEYS = {
   SETTINGS: 'expense_tracker_settings',
   SETTLED_BALANCES: 'expense_tracker_settled_balances',
 };
-export type Trip = {
-  id: string;
-  name: string;
-  participants: string[];
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type Expense = {
-  id: string;
-  tripId: string;
-  description: string;
-  amount: number;
-  paidBy: Array<{ name: string; amount: number }>;
-  splitBetween: string[];
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type Balance = {
-  from: string;
-  to: string;
-  amount: number;
-  isSettled: boolean;
-  settledAt?: string;
-};
-
-export type Settings = {
-  currency: string;
-  theme: 'dark' | 'light';
-  notifications: boolean;
-};
-
-export type SettlementHistory = {
-  id: string;
-  from: string;
-  to: string;
-  amount: number;
-  settledAt: string;
-  tripId: string;
-  tripName: string;
-};
-
 const SETTLEMENT_HISTORY_KEY = 'settlement_history';
 
 class StorageManager {
-  private isWeb = Platform.OS === 'web';
+  isWeb = Platform.OS === 'web';
 
-  private async ensureStorageAvailable(): Promise<boolean> {
+  async ensureStorageAvailable() {
     if (this.isWeb) {
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
@@ -75,21 +31,21 @@ class StorageManager {
     return true;
   }
 
-  private async webStorageGetItem(key: string): Promise<string | null> {
+  async webStorageGetItem(key) {
     if (this.isWeb && typeof window !== 'undefined' && window.localStorage) {
       return window.localStorage.getItem(key);
     }
     return await AsyncStorage.getItem(key);
   }
 
-  private async webStorageSetItem(key: string, value: string): Promise<void> {
+  async webStorageSetItem(key, value) {
     if (this.isWeb && typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.setItem(key, value);
       return;
     }
     await AsyncStorage.setItem(key, value);
   }
-  async getTrips(): Promise<Trip[]> {
+  async getTrips() {
     try {
       // Try to get from API first
       const response = await fetch(`${API_URL}/trips`);
@@ -97,7 +53,7 @@ class StorageManager {
       
       if (json.success) {
         // Map MongoDB _id to id for frontend compatibility
-        return json.data.map((trip: any) => ({
+        return json.data.map((trip) => ({
           ...trip,
           id: trip._id
         }));
@@ -113,7 +69,7 @@ class StorageManager {
     }
   }
 
-  async saveTrips(trips: Trip[]): Promise<void> {
+  async saveTrips(trips) {
     try {
       const tripsJson = JSON.stringify(trips);
       console.log('Storage: Saving trips JSON:', tripsJson.substring(0, 100) + '...');
@@ -127,7 +83,7 @@ class StorageManager {
     }
   }
 
-  async addTrip(trip: Trip): Promise<Trip> {
+  async addTrip(trip) {
     try {
       const response = await fetch(`${API_URL}/trips`, {
         method: 'POST',
@@ -157,7 +113,7 @@ class StorageManager {
     }
   }
 
-  async updateTrip(updatedTrip: Trip): Promise<void> {
+  async updateTrip(updatedTrip) {
     try {
       const trips = await this.getTrips();
       const index = trips.findIndex(trip => trip.id === updatedTrip.id);
@@ -170,7 +126,7 @@ class StorageManager {
     }
   }
 
-  async deleteTrip(tripId: string): Promise<void> {
+  async deleteTrip(tripId) {
     console.log('Storage: deleteTrip called with tripId:', tripId);
     console.log('Storage: Platform is:', Platform.OS);
     
@@ -201,7 +157,7 @@ class StorageManager {
       throw error;
     }
   }
-  async getExpenses(): Promise<Expense[]> {
+  async getExpenses() {
     try {
       // Note: In a real app, we'd fetch expenses per trip. 
       // For now, we'll rely on the getTrip endpoint or fetch all if needed.
@@ -213,13 +169,13 @@ class StorageManager {
     }
   }
 
-  async getExpensesByTripId(tripId: string): Promise<Expense[]> {
+  async getExpensesByTripId(tripId) {
     try {
       const response = await fetch(`${API_URL}/trips/${tripId}`);
       const json = await response.json();
       
       if (json.success && json.data.expenses) {
-        return json.data.expenses.map((exp: any) => ({
+        return json.data.expenses.map((exp) => ({
           ...exp,
           id: exp._id
         }));
@@ -234,7 +190,7 @@ class StorageManager {
     }
   }
 
-  async saveExpenses(expenses: Expense[]): Promise<void> {
+  async saveExpenses(expenses) {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
     } catch (error) {
@@ -242,7 +198,7 @@ class StorageManager {
     }
   }
 
-  async addExpense(expense: Expense): Promise<void> {
+  async addExpense(expense) {
     try {
       const response = await fetch(`${API_URL}/expenses`, {
         method: 'POST',
@@ -269,7 +225,7 @@ class StorageManager {
     }
   }
 
-  async updateExpense(updatedExpense: Expense): Promise<void> {
+  async updateExpense(updatedExpense) {
     try {
       const expenses = await this.getExpenses();
       const index = expenses.findIndex(expense => expense.id === updatedExpense.id);
@@ -282,7 +238,7 @@ class StorageManager {
     }
   }
 
-  async deleteExpense(expenseId: string): Promise<void> {
+  async deleteExpense(expenseId) {
     try {
       const expenses = await this.getExpenses();
       const filteredExpenses = expenses.filter(expense => expense.id !== expenseId);
@@ -292,7 +248,7 @@ class StorageManager {
     }
   }
 
-  async deleteExpensesByTripId(tripId: string): Promise<void> {
+  async deleteExpensesByTripId(tripId) {
     try {
       const expenses = await this.getExpenses();
       const filteredExpenses = expenses.filter(expense => expense.tripId !== tripId);
@@ -301,7 +257,7 @@ class StorageManager {
       console.error('Error deleting expenses by trip ID:', error);
     }
   }
-  async getSettings(): Promise<Settings> {
+  async getSettings() {
     try {
       const settingsJson = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS);
       return settingsJson ? JSON.parse(settingsJson) : {
@@ -319,14 +275,14 @@ class StorageManager {
     }
   }
 
-  async saveSettings(settings: Settings): Promise<void> {
+  async saveSettings(settings) {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
     } catch (error) {
       console.error('Error saving settings:', error);
     }
   }
-  async getSettledBalances(): Promise<Balance[]> {
+  async getSettledBalances() {
     try {
       const balancesJson = await AsyncStorage.getItem(STORAGE_KEYS.SETTLED_BALANCES);
       return balancesJson ? JSON.parse(balancesJson) : [];
@@ -336,7 +292,7 @@ class StorageManager {
     }
   }
 
-  async saveSettledBalances(balances: Balance[]): Promise<void> {
+  async saveSettledBalances(balances) {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SETTLED_BALANCES, JSON.stringify(balances));
     } catch (error) {
@@ -344,7 +300,7 @@ class StorageManager {
     }
   }
 
-  async addSettledBalance(balance: Balance): Promise<void> {
+  async addSettledBalance(balance) {
     console.log('Storage: addSettledBalance called with balance:', balance);
     try {
       const balances = await this.getSettledBalances();
@@ -357,7 +313,7 @@ class StorageManager {
     }
   }
 
-  async updateSettledBalance(updatedBalance: Balance): Promise<void> {
+  async updateSettledBalance(updatedBalance) {
     try {
       const balances = await this.getSettledBalances();
       const index = balances.findIndex(balance => balance.from === updatedBalance.from && balance.to === updatedBalance.to);
@@ -370,7 +326,7 @@ class StorageManager {
     }
   }
 
-  async deleteSettledBalance(from: string, to: string): Promise<void> {
+  async deleteSettledBalance(from, to) {
     try {
       const balances = await this.getSettledBalances();
       const filteredBalances = balances.filter(balance => !(balance.from === from && balance.to === to));
@@ -379,7 +335,7 @@ class StorageManager {
       console.error('Error deleting settled balance:', error);
     }
   }
-  async getSettlementHistory(): Promise<SettlementHistory[]> {
+  async getSettlementHistory() {
     try {
       const historyJson = await AsyncStorage.getItem(SETTLEMENT_HISTORY_KEY);
       return historyJson ? JSON.parse(historyJson) : [];
@@ -389,7 +345,7 @@ class StorageManager {
     }
   }
 
-  async addSettlementHistory(entry: SettlementHistory): Promise<void> {
+  async addSettlementHistory(entry) {
     try {
       const history = await this.getSettlementHistory();
       history.push(entry);
@@ -399,14 +355,14 @@ class StorageManager {
     }
   }
 
-  async clearSettlementHistory(): Promise<void> {
+  async clearSettlementHistory() {
     try {
       await AsyncStorage.removeItem(SETTLEMENT_HISTORY_KEY);
     } catch (error) {
       console.error('Error clearing settlement history:', error);
     }
   }
-  async clearAllData(): Promise<void> {
+  async clearAllData() {
     try {
       await AsyncStorage.multiRemove([
         STORAGE_KEYS.TRIPS,
@@ -419,7 +375,7 @@ class StorageManager {
     }
   }
 
-  async exportData(): Promise<{ trips: Trip[]; expenses: Expense[]; settings: Settings }> {
+  async exportData() {
     try {
       const [trips, expenses, settings] = await Promise.all([
         this.getTrips(),
@@ -434,7 +390,7 @@ class StorageManager {
     }
   }
 
-  async importData(data: { trips: Trip[]; expenses: Expense[]; settings: Settings }): Promise<void> {
+  async importData(data) {
     try {
       await Promise.all([
         this.saveTrips(data.trips),
@@ -447,15 +403,15 @@ class StorageManager {
   }
 }
 export const storage = new StorageManager();
-export const generateId = (): string => {
+export const generateId = () => {
   return Date.now().toString() + Math.random().toString(36).substring(2, 9);
 };
 
-export const formatCurrency = (amount: number, currency: string = 'Rs.'): string => {
+export const formatCurrency = (amount, currency = 'Rs.') => {
   return `${currency}${amount.toFixed(2)}`;
 };
 
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-IN', {
     year: 'numeric',
@@ -464,7 +420,7 @@ export const formatDate = (dateString: string): string => {
   });
 };
 
-export const formatDateTime = (dateString: string): string => {
+export const formatDateTime = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-IN', {
     year: 'numeric',
