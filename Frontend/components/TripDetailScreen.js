@@ -1,16 +1,15 @@
-import { BlurView } from "expo-blur";
 import React, { memo } from "react";
 import {
-  Pressable,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View
+    Pressable,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Icons } from "../constants/DesignSystem";
 import { confirmTwoAction } from "../utils/confirmDialog";
@@ -84,7 +83,9 @@ const ExpenseItem = memo(({ item }) => {
         </View>
         <View style={styles.expenseMetaRight}>
           <Text style={styles.metaLabel}>Split between</Text>
-          <Text style={styles.metaValue}>{item.splitBetween.length} people</Text>
+          <Text style={styles.metaValue}>
+            {item.splitBetween.length} people
+          </Text>
         </View>
       </View>
     </Card>
@@ -120,8 +121,7 @@ const BalanceItem = memo(({ balance, onSettleBalance }) => {
               message: `Mark that ${balance.from} has paid ${balance.to} Rs.${balance.amount.toFixed(2)}?`,
               confirmText: "Mark as Paid",
               destructive: false,
-              onConfirm: () =>
-                onSettleBalance?.(balance.from, balance.to),
+              onConfirm: () => onSettleBalance?.(balance.from, balance.to),
             });
           }}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -137,11 +137,7 @@ BalanceItem.displayName = "BalanceItem";
 const ScreenHeader = memo(({ trip, expensesCount, onBack, onAddExpense }) => {
   const insets = useSafeAreaInsets();
   return (
-    <BlurView
-      intensity={24}
-      tint="dark"
-      style={[styles.headerBlur, { paddingTop: insets.top - 25 }]}
-    >
+    <View style={[styles.headerBlur, { paddingTop: insets.top - 25 }]}>
       <View style={styles.headerContent}>
         <Pressable
           onPress={onBack}
@@ -172,7 +168,7 @@ const ScreenHeader = memo(({ trip, expensesCount, onBack, onAddExpense }) => {
           <Text style={styles.actionButtonText}>+ Add Expense</Text>
         </Pressable>
       </View>
-    </BlurView>
+    </View>
   );
 });
 ScreenHeader.displayName = "ScreenHeader";
@@ -194,7 +190,7 @@ export default function TripDetailScreen({
 }) {
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + expense.amount,
-    0
+    0,
   );
 
   return (
@@ -447,7 +443,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#E5E7EB",
   },
- 
+
   emptyStateContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -500,7 +496,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#4F7CFF",
   },
- 
+
   expenseCard: {
     padding: 16,
   },

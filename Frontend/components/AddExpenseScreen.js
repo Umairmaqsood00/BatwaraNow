@@ -1,31 +1,35 @@
-import InputField from "./InputField";
-import { Icons } from "../constants/DesignSystem";
-import { BlurView } from "expo-blur";
-import React, { memo, useCallback, useImperativeHandle, useRef, useState } from "react";
+import React, {
+    memo,
+    useCallback,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+    SafeAreaView,
+    useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { Icons } from "../constants/DesignSystem";
+import InputField from "./InputField";
 
 // ─── Reusable Components ──────────────────────────────────────────────────────
 
 const ScreenHeader = memo(function ScreenHeader({ onCancel }) {
   const insets = useSafeAreaInsets();
   return (
-    <BlurView
-      intensity={24}
-      tint="dark"
-      style={[styles.headerBlur, { paddingTop: insets.top - 10 }]}
-    >
+    <View style={[styles.headerBlur, { paddingTop: insets.top - 10 }]}>
       <View style={styles.headerContent}>
         <Pressable
           onPress={onCancel}
@@ -39,11 +43,13 @@ const ScreenHeader = memo(function ScreenHeader({ onCancel }) {
         </Pressable>
         <View style={styles.headerTextWrap}>
           <Text style={styles.headerTitle}>Add Expense</Text>
-          <Text style={styles.headerSubtitle}>Track and split your expense</Text>
+          <Text style={styles.headerSubtitle}>
+            Track and split your expense
+          </Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
-    </BlurView>
+    </View>
   );
 });
 
@@ -105,7 +111,7 @@ const PayerInput = memo(
         </View>
       </View>
     );
-  })
+  }),
 );
 
 const ParticipantCheckbox = memo(({ participant, isSelected, onToggle }) => {
@@ -117,9 +123,7 @@ const ParticipantCheckbox = memo(({ participant, isSelected, onToggle }) => {
       ]}
       onPress={() => onToggle(participant)}
     >
-      <View
-        style={[styles.checkbox, isSelected && styles.checkboxSelected]}
-      >
+      <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
         {isSelected && <Text style={styles.checkmark}>{Icons.check}</Text>}
       </View>
       <View style={styles.checkboxInfo}>
@@ -147,7 +151,7 @@ export default function AddExpenseScreen({ participants, onSave, onCancel }) {
     setSplitBetween((prev) =>
       prev.includes(participant)
         ? prev.filter((p) => p !== participant)
-        : [...prev, participant]
+        : [...prev, participant],
     );
   }, []);
 
