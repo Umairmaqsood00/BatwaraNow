@@ -18,7 +18,8 @@
       },
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.umairmaqsood488.expensetracker"
+      "package": "com.umairmaqsood488.expensetracker",
+      "enableProguardInReleaseBuilds": true
     },
     "web": {
       "bundler": "metro",
