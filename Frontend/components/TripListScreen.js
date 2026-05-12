@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
-  Alert,
   FlatList,
   StatusBar,
   StyleSheet,
@@ -20,6 +19,7 @@ import {
   Icons,
   Spacing,
 } from "../constants/DesignSystem";
+import { confirmTwoAction } from "../utils/confirmDialog";
 
 /**
  * @typedef {Object} Trip
@@ -59,18 +59,14 @@ export default function TripListScreen({
       style={styles.tripCardTouchable}
       onPress={() => onTripPress(item.id)}
       onLongPress={() => {
-        Alert.alert(
-          "Delete Trip",
-          "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
-          [
-            { text: "Cancel", style: "cancel" },
-            {
-              text: "Delete",
-              style: "destructive",
-              onPress: () => onDeleteTrip && onDeleteTrip(item.id),
-            },
-          ],
-        );
+        confirmTwoAction({
+          title: "Delete Trip",
+          message:
+            "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
+          confirmText: "Delete",
+          destructive: true,
+          onConfirm: () => onDeleteTrip && onDeleteTrip(item.id),
+        });
       }}
       activeOpacity={0.92}
     >

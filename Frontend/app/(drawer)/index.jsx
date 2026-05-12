@@ -1,6 +1,16 @@
-import { Colors } from "../../constants/DesignSystem";
-import React, { useEffect, useState } from "react";
-import { Alert, Platform, StatusBar, StyleSheet, View } from "react-native";
+import { Colors, CommonStyles } from "../../constants/DesignSystem";
+import { useAuth } from "../../context/AuthContext.jsx";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  InteractionManager,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import AddExpenseScreen from "../../components/AddExpenseScreen";
 import CreateTripScreen from "../../components/CreateTripScreen";
@@ -10,14 +20,27 @@ import {
   calculateBalances,
   calculateTripSummary,
 } from "../../utils/balanceCalculator";
+import { alertOne, confirmTwoAction } from "../../utils/confirmDialog";
 import {
   generateId,
   storage,
 } from "../../utils/storage";
+import { stableUserSessionKey } from "../../utils/userSession";
 
-console.log("Available storage methods:", Object.keys(storage));
+/** Avoid stacking Alerts on Android immediately after an Alert dismiss (RN quirk). */
+function safeAlert(title, message) {
+  if (Platform.OS === "web") {
+    alertOne(title, message);
+    return;
+  }
+  InteractionManager.runAfterInteractions(() => {
+    const delay = Platform.OS === "android" ? 300 : 0;
+    setTimeout(() => Alert.alert(title, message), delay);
+  });
+}
 
 export default function ExpenseSplitApp() {
+  const { user, token } = useAuth();
   const [currentScreen, setCurrentScreen] = useState("trips");
   const [selectedTripId, setSelectedTripId] = useState(null);
   const [trips, setTrips] = useState([]);
@@ -26,9 +49,28 @@ export default function ExpenseSplitApp() {
   const [settlementHistory, setSettlementHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-    testStorageMethods();
+  const sessionKey = stableUserSessionKey(user);
+
+  const loadData = useCallback(async () => {
+    console.log("[BatwaraNow][home] loadData start");
+    try {
+      const [loadedTrips, loadedExpenses, loadedSettledBalances, loadedHistory] =
+        await Promise.all([
+          storage.getTrips(),
+          storage.getExpenses(),
+          storage.getSettledBalances(),
+          storage.getSettlementHistory(),
+        ]);
+      setTrips(loadedTrips);
+      setExpenses(loadedExpenses);
+      setSettledBalances(loadedSettledBalances);
+      setSettlementHistory(loadedHistory);
+      console.log("[BatwaraNow][home] loadData ok trips=", loadedTrips?.length);
+    } catch (error) {
+      console.error("[BatwaraNow][home] Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const testStorageMethods = async () => {
@@ -47,7 +89,7 @@ export default function ExpenseSplitApp() {
       console.log(
         "getSettledBalances result:",
         testBalances.length,
-        "balances"
+        "balances",
       );
 
       console.log("=== STORAGE METHODS TEST COMPLETED ===");
@@ -56,25 +98,29 @@ export default function ExpenseSplitApp() {
     }
   };
 
-  const loadData = async () => {
-    try {
-      const [loadedTrips, loadedExpenses, loadedSettledBalances, loadedHistory] =
-        await Promise.all([
-          storage.getTrips(),
-          storage.getExpenses(),
-          storage.getSettledBalances(),
-          storage.getSettlementHistory(),
-        ]);
-      setTrips(loadedTrips);
-      setExpenses(loadedExpenses);
-      setSettledBalances(loadedSettledBalances);
-      setSettlementHistory(loadedHistory);
-    } catch (error) {
-      console.error("Error loading data:", error);
-    } finally {
+  useEffect(() => {
+    if (!sessionKey || !token) {
       setLoading(false);
+      setTrips([]);
+      setExpenses([]);
+      setSettledBalances([]);
+      setSettlementHistory([]);
+      setSelectedTripId(null);
+      setCurrentScreen("trips");
+      return;
     }
-  };
+    setLoading(true);
+    setTrips([]);
+    setExpenses([]);
+    setSettledBalances([]);
+    setSettlementHistory([]);
+    setSelectedTripId(null);
+    setCurrentScreen("trips");
+    queueMicrotask(() => {
+      loadData();
+      testStorageMethods();
+    });
+  }, [sessionKey, token, loadData]);
 
   const refreshData = async () => {
     try {
@@ -100,12 +146,19 @@ export default function ExpenseSplitApp() {
     }
   };
 
-  const selectedTrip = trips.find((trip) => trip.id === selectedTripId);
+  const selectedTrip = trips.find(
+    (trip) => String(trip.id) === String(selectedTripId),
+  );
   const tripExpenses = selectedTrip
-    ? expenses.filter((expense) => expense.tripId === selectedTrip.id)
+    ? expenses.filter(
+        (expense) =>
+          String(expense.tripId) === String(selectedTrip.id),
+      )
     : [];
   const tripSettlements = selectedTrip
-    ? settlementHistory.filter((s) => s.tripId === selectedTrip.id)
+    ? settlementHistory.filter(
+        (s) => String(s.tripId) === String(selectedTrip.id),
+      )
     : [];
   
   // calculateBalances now handles settlements correctly by treating them as payments
@@ -138,6 +191,10 @@ export default function ExpenseSplitApp() {
       setCurrentScreen("tripDetail");
     } catch (error) {
       console.error("Error saving trip:", error);
+      Alert.alert(
+        "Could not create trip",
+        error?.message || "Please sign in and try again.",
+      );
     }
   };
 
@@ -167,6 +224,10 @@ export default function ExpenseSplitApp() {
       setCurrentScreen("tripDetail");
     } catch (error) {
       console.error("Error saving expense:", error);
+      Alert.alert(
+        "Could not save expense",
+        error?.message || "Please sign in and try again.",
+      );
     }
   };
 
@@ -188,7 +249,9 @@ export default function ExpenseSplitApp() {
       await storage.deleteTrip(tripId);
       console.log("Storage deleteTrip completed successfully");
 
-      const tripExpenses = expenses.filter((exp) => exp.tripId === tripId);
+      const tripExpenses = expenses.filter(
+        (exp) => String(exp.tripId) === String(tripId),
+      );
       const tripBalances = calculateBalances(tripExpenses);
       const updatedSettledBalances = settledBalances.filter(
         (settled) =>
@@ -199,7 +262,9 @@ export default function ExpenseSplitApp() {
       );
 
       setTrips((prev) => {
-        const updated = prev.filter((trip) => trip.id !== tripId);
+        const updated = prev.filter(
+          (trip) => String(trip.id) !== String(tripId),
+        );
         console.log(
           "Trips before:",
           prev.length,
@@ -210,7 +275,9 @@ export default function ExpenseSplitApp() {
       });
 
       setExpenses((prev) => {
-        const updated = prev.filter((expense) => expense.tripId !== tripId);
+        const updated = prev.filter(
+          (expense) => String(expense.tripId) !== String(tripId),
+        );
         console.log(
           "Expenses before:",
           prev.length,
@@ -223,7 +290,7 @@ export default function ExpenseSplitApp() {
       setSettledBalances(updatedSettledBalances);
       await storage.saveSettledBalances(updatedSettledBalances);
 
-      if (selectedTripId === tripId) {
+      if (String(selectedTripId) === String(tripId)) {
         setSelectedTripId(null);
         setCurrentScreen("trips");
       }
@@ -248,11 +315,11 @@ export default function ExpenseSplitApp() {
       if (Platform.OS === "web") {
         alert("Trip has been deleted successfully!");
       } else {
-        Alert.alert("Success!", "Trip has been deleted.");
+        safeAlert("Success!", "Trip has been deleted.");
       }
     } catch (error) {
       console.error("=== ERROR DELETING TRIP ===", error);
-      Alert.alert("Error", "Failed to delete trip. Please try again.");
+      safeAlert("Error", "Failed to delete trip. Please try again.");
     }
   };
 
@@ -293,7 +360,9 @@ export default function ExpenseSplitApp() {
     console.log("From:", from, "To:", to);
 
     const balanceToSettle = balances.find(
-      (b) => b.from === from && b.to === to
+      (b) =>
+        String(b.from).trim() === String(from).trim() &&
+        String(b.to).trim() === String(to).trim(),
     );
     console.log("Balance found:", balanceToSettle);
 
@@ -335,17 +404,17 @@ export default function ExpenseSplitApp() {
           return updated;
         });
         console.log("=== BALANCE SETTLED SUCCESSFULLY ===");
-        Alert.alert(
+        safeAlert(
           "Success!",
-          `${from} has paid ${to} Rs.${balanceToSettle.amount.toFixed(2)}`
+          `${from} has paid ${to} Rs.${balanceToSettle.amount.toFixed(2)}`,
         );
       } catch (error) {
         console.error("=== ERROR SETTLING BALANCE ===", error);
-        Alert.alert("Error", "Failed to settle balance. Please try again.");
+        safeAlert("Error", "Failed to settle balance. Please try again.");
       }
     } else {
       console.log("=== NO BALANCE FOUND ===");
-      Alert.alert("Error", "Balance not found. Please try again.");
+      safeAlert("Error", "Balance not found. Please try again.");
     }
   };
 
@@ -371,42 +440,40 @@ export default function ExpenseSplitApp() {
   };
 
   const handleClearAllData = async () => {
-    Alert.alert(
-      "Clear All Data",
-      "Are you sure you want to delete ALL trips, expenses, and settings? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Clear All Data",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              console.log("Clearing all data...");
-              await storage.clearAllData();
-              setTrips([]);
-              setExpenses([]);
-              setSettledBalances([]);
-              setSettlementHistory([]);
-              setSelectedTripId(null);
-              setCurrentScreen("trips");
-              Alert.alert("Success", "All data has been cleared successfully.");
-              console.log("All data cleared successfully");
-            } catch (error) {
-              console.error("Error clearing all data:", error);
-              Alert.alert(
-                "Error",
-                "Failed to clear all data. Please try again."
-              );
-            }
-          },
-        },
-      ]
-    );
+    confirmTwoAction({
+      title: "Clear All Data",
+      message:
+        "Are you sure you want to delete ALL trips, expenses, and settings? This action cannot be undone.",
+      confirmText: "Clear All Data",
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          console.log("Clearing all data...");
+          await storage.clearAllData();
+          setTrips([]);
+          setExpenses([]);
+          setSettledBalances([]);
+          setSettlementHistory([]);
+          setSelectedTripId(null);
+          setCurrentScreen("trips");
+          alertOne("Success", "All data has been cleared successfully.");
+          console.log("All data cleared successfully");
+        } catch (error) {
+          console.error("Error clearing all data:", error);
+          alertOne("Error", "Failed to clear all data. Please try again.");
+        }
+      },
+    });
   };
 
   const renderScreen = () => {
     if (loading) {
-      return null; // You could add a loading screen here
+      return (
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="large" color={Colors.primary[500]} />
+          <Text style={styles.loadingText}>Loading trips…</Text>
+        </View>
+      );
     }
 
     switch (currentScreen) {
@@ -489,5 +556,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background.primary,
+  },
+  loadingWrap: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+  },
+  loadingText: {
+    ...CommonStyles.textBody,
+    color: Colors.text.secondary,
   },
 });

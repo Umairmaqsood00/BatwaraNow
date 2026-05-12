@@ -1,7 +1,6 @@
 import { BlurView } from "expo-blur";
 import React, { memo } from "react";
 import {
-  Alert,
   Pressable,
   ScrollView,
   StatusBar,
@@ -14,6 +13,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Icons } from "../constants/DesignSystem";
+import { confirmTwoAction } from "../utils/confirmDialog";
 
 function getPayers(expense) {
   if (Array.isArray(expense.paidBy)) return expense.paidBy;
@@ -115,18 +115,14 @@ const BalanceItem = memo(({ balance, onSettleBalance }) => {
             pressed && styles.pressedScale,
           ]}
           onPress={() => {
-            Alert.alert(
-              "Mark as Paid",
-              `Mark that ${balance.from} has paid ${balance.to} Rs.${balance.amount.toFixed(2)}?`,
-              [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Mark as Paid",
-                  style: "default",
-                  onPress: () => onSettleBalance?.(balance.from, balance.to),
-                },
-              ]
-            );
+            confirmTwoAction({
+              title: "Mark as Paid",
+              message: `Mark that ${balance.from} has paid ${balance.to} Rs.${balance.amount.toFixed(2)}?`,
+              confirmText: "Mark as Paid",
+              destructive: false,
+              onConfirm: () =>
+                onSettleBalance?.(balance.from, balance.to),
+            });
           }}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
@@ -179,7 +175,6 @@ const ScreenHeader = memo(({ trip, expensesCount, onBack, onAddExpense }) => {
     </BlurView>
   );
 });
-ScreenHeader.displayName = "ScreenHeader";
 ScreenHeader.displayName = "ScreenHeader";
 
 // ─── Main Screen Component ─────────────────────────────────────────────────────
@@ -304,18 +299,16 @@ export default function TripDetailScreen({
               pressed && styles.pressedScale,
             ]}
             onPress={() => {
-              Alert.alert(
-                "Delete Trip",
-                "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
-                [
-                  { text: "Cancel", style: "cancel" },
-                  {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => onDeleteTrip && onDeleteTrip(trip.id),
-                  },
-                ]
-              );
+              confirmTwoAction({
+                title: "Delete Trip",
+                message:
+                  "Are you sure you want to delete this trip? All expenses and settlements will be permanently removed.",
+                confirmText: "Delete",
+                destructive: true,
+                onConfirm: () => {
+                  onDeleteTrip && onDeleteTrip(trip.id);
+                },
+              });
             }}
           >
             <Text style={styles.deleteTripText}> Delete Trip</Text>
@@ -454,7 +447,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#E5E7EB",
   },
-  // ── Empty State ──
+ 
   emptyStateContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -491,7 +484,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     maxWidth: "80%",
   },
-  // ── Primary Button ──
+
   primaryButton: {
     height: 44,
     paddingHorizontal: 20,
@@ -507,7 +500,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#4F7CFF",
   },
-  // ── Expense Item ──
+ 
   expenseCard: {
     padding: 16,
   },

@@ -5,7 +5,6 @@ import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext.jsx";
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -14,6 +13,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { alertOne, confirmTwoAction } from "../../utils/confirmDialog";
 
 export default function SettingsScreen() {
   const [history, setHistory] = useState([]);
@@ -27,39 +28,28 @@ export default function SettingsScreen() {
   const { logout } = useAuth();
 
   const handleClearHistory = () => {
-    Alert.alert(
-      "Clear History",
-      "Are you sure you want to delete all settlement history? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Clear",
-          style: "destructive",
-          onPress: async () => {
-            await storage.clearSettlementHistory();
-            setHistory([]);
-            Alert.alert("Success", "Settlement history has been cleared.");
-          }
-        }
-      ]
-    );
+    confirmTwoAction({
+      title: "Clear History",
+      message:
+        "Are you sure you want to delete all settlement history? This action cannot be undone.",
+      confirmText: "Clear",
+      destructive: true,
+      onConfirm: async () => {
+        await storage.clearSettlementHistory();
+        setHistory([]);
+        alertOne("Success", "Settlement history has been cleared.");
+      },
+    });
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to log out?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Logout", 
-          style: "destructive", 
-          onPress: async () => {
-            await logout();
-          }
-        }
-      ]
-    );
+    confirmTwoAction({
+      title: "Logout",
+      message: "Are you sure you want to log out?",
+      confirmText: "Logout",
+      destructive: true,
+      onConfirm: () => logout(),
+    });
   };
 
   return (

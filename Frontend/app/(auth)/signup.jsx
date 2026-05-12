@@ -1,8 +1,6 @@
-import { Colors, CommonStyles, Spacing, Typography } from '../../constants/DesignSystem';
-import { useAuth } from '../../context/AuthContext.jsx';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -13,15 +11,24 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Colors,
+  CommonStyles,
+  Spacing,
+  Typography,
+} from "../../constants/DesignSystem";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { API_URL, fetchWithTimeout, parseJsonResponse } from "../../utils/api";
+import { clearLocalUserDataCache } from "../../utils/storage";
 
 export default function SignupScreen() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,48 +37,58 @@ export default function SignupScreen() {
 
   const handleSignup = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert("Error", "Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      Alert.alert("Error", "Password must be at least 6 characters long");
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://192.168.100.70:5000/api/auth/signup', {
-        method: 'POST',
+      const signupUrl = `${API_URL}/auth/signup`;
+      console.log("[BatwaraNow][signup] POST", signupUrl);
+      const response = await fetchWithTimeout(signupUrl, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          fullName: fullName.trim(), 
-          email: email.toLowerCase().trim(), 
-          password 
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          email: email.toLowerCase().trim(),
+          password,
         }),
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response, signupUrl);
+      console.log("[BatwaraNow][signup] status", response.status);
 
       if (data.success) {
+        await clearLocalUserDataCache();
         Alert.alert(
-          'Account Created',
-          'Your account has been successfully created. Please log in with your credentials.',
-          [{ text: 'OK', onPress: () => router.replace('/(auth)/login') }]
+          "Account Created",
+          "Your account has been successfully created. Please log in with your credentials.",
+          [{ text: "OK", onPress: () => router.replace("/(auth)/login") }],
         );
       } else {
-        Alert.alert('Signup Failed', data.error || 'An error occurred during signup');
+        Alert.alert(
+          "Signup Failed",
+          data.error || "An error occurred during signup",
+        );
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      Alert.alert('Error', 'Could not connect to the server. Please try again.');
+      console.error("Signup error:", error);
+      Alert.alert(
+        "Error",
+        "Could not connect to the server. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -79,14 +96,19 @@ export default function SignupScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.header}>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join BatwaraNow to split expenses</Text>
+            <Text style={styles.subtitle}>
+              Join BatwaraNow to split expenses
+            </Text>
           </View>
 
           <View style={styles.form}>
@@ -127,14 +149,14 @@ export default function SignupScreen() {
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
                 />
-                <TouchableOpacity 
-                  style={styles.eyeIcon} 
+                <TouchableOpacity
+                  style={styles.eyeIcon}
                   onPress={() => setShowPassword(!showPassword)}
                 >
-                  <Ionicons 
-                    name={showPassword ? 'eye-off-outline' : 'eye-outline'} 
-                    size={20} 
-                    color={Colors.text.secondary} 
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={20}
+                    color={Colors.text.secondary}
                   />
                 </TouchableOpacity>
               </View>
@@ -152,8 +174,11 @@ export default function SignupScreen() {
               />
             </View>
 
-            <TouchableOpacity 
-              style={[styles.signupButton, isLoading && styles.signupButtonDisabled]} 
+            <TouchableOpacity
+              style={[
+                styles.signupButton,
+                isLoading && styles.signupButtonDisabled,
+              ]}
               onPress={handleSignup}
               disabled={isLoading}
             >
@@ -166,7 +191,7 @@ export default function SignupScreen() {
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
+              <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
                 <Text style={styles.loginText}>Login</Text>
               </TouchableOpacity>
             </View>
@@ -188,10 +213,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.xl,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   header: {
-    marginBottom: Spacing['2xl'],
+    marginBottom: Spacing["2xl"],
   },
   title: {
     ...CommonStyles.textH1,
@@ -215,18 +240,18 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: Colors.background.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
     padding: Spacing.md,
     color: Colors.text.primary,
     fontSize: Typography.sizes.base,
   },
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: Colors.background.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
   },
   passwordInput: {
@@ -249,8 +274,8 @@ const styles = StyleSheet.create({
     ...CommonStyles.buttonTextPrimary,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: Spacing.xl,
   },
   footerText: {
@@ -260,6 +285,6 @@ const styles = StyleSheet.create({
   loginText: {
     ...CommonStyles.textBody,
     color: Colors.primary[500],
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

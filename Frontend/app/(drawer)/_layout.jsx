@@ -5,6 +5,9 @@ import { Drawer } from 'expo-router/drawer';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useAuth } from '../../context/AuthContext.jsx';
+import { stableUserSessionKey } from '../../utils/userSession';
+
 function CustomDrawerContent(props) {
   return (
     <View style={styles.drawerContainer}>
@@ -22,8 +25,12 @@ function CustomDrawerContent(props) {
 }
 
 export default function DrawerLayout() {
+  const { user } = useAuth();
+  const drawerKey = stableUserSessionKey(user) || "guest";
+
   return (
     <Drawer
+      key={drawerKey}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
