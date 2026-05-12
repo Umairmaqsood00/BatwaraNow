@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 16.17.0",
+    "version": ">= 18.11.0",
     "appVersionSource": "remote"
   },
   "build": {
@@ -11,14 +11,14 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "buildType": "aab"
+        "buildType": "app-bundle"
       }
     },
     "production": {
       "autoIncrement": true,
+      "enableBundleCompression": true,
       "android": {
-        "buildType": "aab",
-        "enableBundleCompression": true
+        "buildType": "app-bundle"
       }
     }
   },
