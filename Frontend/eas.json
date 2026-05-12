@@ -16,7 +16,6 @@
     },
     "production": {
       "autoIncrement": true,
-      "enableBundleCompression": true,
       "android": {
         "buildType": "app-bundle"
       }
