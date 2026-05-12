@@ -1,41 +1,35 @@
-import InputField from "./InputField";
-import { BlurView } from "expo-blur";
 import React, {
-  memo,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-  useState,
+    memo,
+    useCallback,
+    useImperativeHandle,
+    useRef,
+    useState,
 } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import InputField from "./InputField";
 
 let _id = Date.now();
 const nextId = () => ++_id;
 
-
 const ScreenHeader = memo(function ScreenHeader({ onCancel }) {
   const insets = useSafeAreaInsets();
   return (
-    <BlurView
-      intensity={24}
-      tint="dark"
-      style={[styles.headerBlur, { paddingTop: insets.top - 10 }]}
-    >
+    <View style={[styles.headerBlur, { paddingTop: insets.top - 10 }]}>
       <View style={styles.headerContent}>
         <Pressable
           onPress={onCancel}
@@ -54,13 +48,15 @@ const ScreenHeader = memo(function ScreenHeader({ onCancel }) {
           </Text>
         </View>
       </View>
-    </BlurView>
+    </View>
   );
 });
 
-
 const ParticipantInput = memo(
-  React.forwardRef(function ParticipantInput({ id, onRemove, showRemove }, ref) {
+  React.forwardRef(function ParticipantInput(
+    { id, onRemove, showRemove },
+    ref,
+  ) {
     const valueRef = useRef("");
 
     useImperativeHandle(ref, () => ({ getValue: () => valueRef.current }), []);
